@@ -1,7 +1,7 @@
 // common.js 파일 내용
 
 // 1. 헤더 불러오기
-fetch('header.html')
+fetch('.common/header.html')
   .then(res => res.text())
   .then(data => {
     const headerArea = document.getElementById('header-area');
@@ -9,7 +9,7 @@ fetch('header.html')
   });
 
 // 2. 바디(공통 콘텐츠) 불러오기
-fetch('body.html')
+fetch('.common/body.html')
   .then(res => res.text())
   .then(data => {
     const bodyArea = document.getElementById('body-area');
@@ -17,7 +17,7 @@ fetch('body.html')
   });
 
 // 3. 푸터 불러오기
-fetch('footer.html')
+fetch('.common/footer.html')
   .then(res => res.text())
   .then(data => {
     const footerArea = document.getElementById('footer-area');
