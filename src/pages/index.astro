@@ -1,30 +1,10 @@
 ---
-import Header from '../common/Header.astro';
-import Body from '../common/Body.astro';
-import Footer from '../common/Footer.astro';
+import Layout from '..common/Layout.astro';
 ---
 
-<html lang="ko">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="generator" content={Astro.generator} />
-		<title>sn2025</title>
-	</head>
-	<body>
-		<Header />
-		<Body />
-		<p>djlsjlklsjgjhk</p>
-
-
-
-		<a href="about">About 페이지로 가기</a>
-
-
-
-		<Footer />
-		
-	</body>
-</html>
+<Layout>
+    <!-- 이 안의 내용이 레이아웃의 <slot /> 자리에 쏙 들어갑니다! -->
+    <h1>메인 페이지 환영합니다!</h1>
+    <p>djlsjlklsjgjhk</p>
+    <a href="about">About 페이지로 가기</a>
+</Layout>
