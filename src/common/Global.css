@@ -42,6 +42,7 @@
 body, main, p, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6, button, input, textarea, select { 
   margin: 0; padding: 0; max-width: none;
 }
+
 main { width: 100%;}
 
 *, *::before, *::after {
@@ -105,7 +106,7 @@ html body {
   -ms-user-select: none;     /* 인터넷 익스플로러/엣지 */
   user-select: none;         /* 표준 */
 
-  margin: 0; padding: 0;
+  margin: 0; padding: var(--pad);
 }
 
 /* layout */
