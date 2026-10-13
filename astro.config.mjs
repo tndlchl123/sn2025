@@ -6,7 +6,11 @@ import compress from 'astro-compress';
 export default defineConfig({
   integrations: [
     compress({
-      Image: false, // 범인이었던 이미지 강제 압축 기능만 끕니다!
+      HTML: true,       // HTML 압축 켜기
+      CSS: true,        // CSS 압축 켜기
+      JavaScript: true, // JS 압축 켜기
+      Image: false,     // 이미지 압축 절대 금지
+      SVG: false,       // SVG 이미지 압축 절대 금지
     })
   ]
 });
