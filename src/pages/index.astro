@@ -1,10 +1,128 @@
 ---
-import Layout from '../common/Layout.astro';
+import Layout from '@common/Layout.astro';
 ---
 
-<Layout>
-    <!-- 이 안의 내용이 레이아웃의 <slot /> 자리에 쏙 들어갑니다! -->
-    <h1>메인 페이지 환영합니다!</h1>
-    <p>djlsjlklsjgffffffffkddjhk</p>
-    <a href="about">About 페이지로 가기</a>
+<Layout>    
+    <section>
+        <div class="main-typo translate col-start-4 span-3"
+        data-en="sn looks at the world with a new perspectives of design, bringing forth new shapes grounded in true essence.">
+
+            sn은 디자인을 통해 세상을 새롭게 바라보고, 본질을 바탕으로 새로운 형태를 제안합니다. 
+        </div>
+        
+        <!--
+        <div class="main-typo translate"
+        data-en="
+            sn is a design agency creating new shapes of experience.
+            we see the world anew through design, proposing new shapes grounded in essence.
+            ">
+
+            sn은 새로운 형태의 경험을 만드는 디자인 에이전시입니다. 
+            디자인을 통해 세상을 새롭게 바라보고, 본질을 바탕으로 새로운 형태를 제안합니다. 
+        </div>
+
+        <div class="scroll-container">
+            <img src="https://sn2025.co.kr/test/1-1.webp" alt="img">
+            <img src="https://sn2025.co.kr/test/3-4.webp" alt="img">
+            <img src="https://sn2025.co.kr/test/4-3.webp" alt="img">
+            <img src="https://sn2025.co.kr/test/9-16.webp" alt="img">
+            <img src="https://sn2025.co.kr/test/16-9.webp" alt="img">
+            <img src="https://sn2025.co.kr/test/4-5.webp" alt="img">
+            <img src="https://sn2025.co.kr/test/5-4.webp" alt="img">
+        </div>
+
+
+        <p class="translate"
+            data-en="A B C D E F G H I J K L M N O P Q R S T U V W X Y Z<br>Typographic excellence and... (이하 전체 영어 번역문)<br>The state has the duty...">
+            A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+            <br>"Typographic excellence and fluid responsive architecture... (중략) ...identity of the digital brand."
+            <br>국가는 노인과 청소년의 복지향상을 위한 정책을 실시할 의무를 진다. ... (중략)
+        </p>
+
+        
+        <a href="about">About 페이지로 가기</a>
+        -->
+
+
+
+
+    </section>
+
 </Layout>
+
+<!-- grid col -->
+<style>
+    section {
+        
+        width: 100%;
+
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        
+        gap: var(--pad);
+    }
+    section > * {
+        min-width: 0;
+    }
+
+    /* 시작선 위치 */
+    .col-start-1 { grid-column-start: 1; }
+    .col-start-2 { grid-column-start: 2; }
+    .col-start-3 { grid-column-start: 3; }
+    .col-start-4 { grid-column-start: 4; }
+    .col-start-5 { grid-column-start: 5; }
+    .col-start-6 { grid-column-start: 6; }
+
+    /* 칸 수 */
+    .span-1 { grid-column-end: span 1; }
+    .span-2 { grid-column-end: span 2; }
+    .span-3 { grid-column-end: span 3; }
+    .span-4 { grid-column-end: span 4; }
+    .span-5 { grid-column-end: span 5; }
+    .span-6 { grid-column: 1 / 7; }
+
+
+</style>
+
+<!-- main typo -->
+<style>
+    /* 기본: 한글 */
+    .main-typo {
+        font-family: 'Asta Sans', sans-serif;
+
+        font-size: 3.5vw;
+        font-weight: 350;
+        line-height: 1.2;
+        
+    }
+
+    /* 번역: 영어 */
+    :global(html:has(.lang-toggle-btn.active)) .main-typo.translate {
+        font-family: 'Geist', sans-serif;
+        font-weight: 600;
+        line-height: 1;
+    }
+
+    /* pc */
+    @media (min-width: 769px) {
+        .main-typo {
+            
+        }
+    }
+
+    /* mob */
+    @media (max-width: 768px) {
+        .main-typo {
+            font-size: 6vw;
+            font-weight: 500;
+        }
+    }
+
+</style>
+
+
+<style>
+
+
+</style>
+

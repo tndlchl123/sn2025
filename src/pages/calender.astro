@@ -1,0 +1,701 @@
+---
+import Layout from '../common/Layout.astro';
+const govApiKey = import.meta.env.PUBLIC_GOV_API_KEY;
+---
+
+<Layout title="calender">
+
+<div class="timeline_container">
+
+  <!-- 필터 버튼 2개 (이벤트 삭제) -->
+    <div class="timeline_filter_wrap" id="timeline_filter_wrap" role="group" aria-label="달력 선택">
+        <!-- year 버튼 -->
+        <button class="timeline_filter_btn filter_year active" data-filter="year" aria-pressed="true">
+            <span class="sr-only">연 달력</span>
+            <span class="rolling-text" aria-hidden="true">
+            <span class="char" data-char="y" style="--i: 1;" aria-hidden="true">y</span>
+            <span class="char" data-char="e" style="--i: 2;" aria-hidden="true">e</span>
+            <span class="char" data-char="a" style="--i: 3;" aria-hidden="true">a</span>
+            <span class="char" data-char="r" style="--i: 4;" aria-hidden="true">r</span>
+            </span>
+        </button>
+        
+        <!-- month 버튼 -->
+        <button class="timeline_filter_btn" data-filter="month" aria-pressed="false">
+            <span class="sr-only">월 달력</span>
+            <span class="rolling-text" aria-hidden="true">
+            <span class="char" data-char="m" style="--i: 1;" aria-hidden="true">m</span>
+            <span class="char" data-char="o" style="--i: 2;" aria-hidden="true">o</span>
+            <span class="char" data-char="n" style="--i: 3;" aria-hidden="true">n</span>
+            <span class="char" data-char="t" style="--i: 4;" aria-hidden="true">t</span>
+            <span class="char" data-char="h" style="--i: 5;" aria-hidden="true">h</span>
+            </span>
+        </button>
+    </div>
+
+    <div class="timeline_nav_wrap" id="timeline_nav_wrap"></div>
+    
+    <div id="timeline_board" class="timeline_board"></div>
+
+</div>
+
+</Layout>
+
+
+<!-- container -->
+<style is:global>
+html, body {
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+.timeline_container {
+  width: 100%;
+  font-size: 1rem; 
+  font-weight: 400;
+  line-height: 1;
+  /*
+  padding-top: var(--pad); 
+    */
+}
+
+
+</style>
+
+<!-- filter -->
+<style is:global>
+.timeline_filter_wrap {
+  display: flex;
+
+  padding-bottom: 5vh;
+}
+
+.timeline_filter_btn {
+    display: flex;
+    flex: 1;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    background: transparent;
+
+    
+    
+    border: none;
+    cursor: pointer;
+
+    opacity: 0.3;
+    
+    transition: all 0.5s var(--motion);
+}
+
+/* 롤링 텍스트 공통 컨테이너 */
+.rolling-text {
+  display: inline-flex;
+  overflow: hidden;
+  height: 1.2em;
+  line-height: 1;
+}
+
+/* 개별 글자 순차 딜레이 설정 */
+.char {
+  position: relative;
+  display: inline-block;
+  transition: transform 0.5s var(--motion);
+  /* HTML의 --i 변수에 0.05초를 곱해 순차적으로 말려 올라감 */
+  transition-delay: calc(0.05s * var(--i));
+}
+
+/* 밑에서 따라 올라올 가짜 글자 생성 */
+.char::after {
+  content: attr(data-char);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+}
+
+/* 선택된(Active) 상태: 진해지고 텍스트가 롤링됨 */
+.timeline_filter_btn.active {
+  opacity: 1;
+}
+.timeline_filter_btn.active .char {
+  transform: translateY(-100%);
+}
+
+/* 마우스 호버 (PC 전용) */
+@media (hover: hover) and (pointer: fine) {
+  .timeline_filter_btn:hover {
+    opacity: 1;
+  }
+  .timeline_filter_btn:hover .char {
+    transform: translateY(-100%);
+  }
+}
+
+/* 터치 클릭 (모바일 전용) */
+@media (hover: none) {
+  .timeline_filter_btn:active {
+    opacity: 1;
+  }
+  .timeline_filter_btn:active .char {
+    transform: translateY(-100%);
+  }
+}
+
+</style>
+
+<!-- nav -->
+<style is:global>
+.timeline_nav_wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  position: relative;
+
+  padding-bottom: 2vh;
+}
+
+.nav_item {
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  
+  flex: 1; 
+  opacity: 0.3;
+  transition: all 0.5s var(--motion);
+}
+
+.nav_item.active {
+  font-weight: 600;
+  opacity: 1;
+}
+</style>
+
+<!-- board common -->
+<style is:global>
+
+.timeline_filter_btn,
+.nav_item {
+    font-family: 'Geist';
+    font-size: 1.5rem;
+    color: var(--txt-color);
+    font-weight: 600;
+}
+
+#timeline_board {
+  width: 100%;
+  min-height: 50vh; 
+  transition: all 1s var(--motion);
+  opacity: 1;
+  transform: translateX(0);
+}
+
+#timeline_board.slide_out {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+#timeline_board.slide_prep {
+  transition: none;
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+
+
+.holiday,
+.event_day { 
+  opacity: 0.3;
+}
+
+.view_year,
+.view_month {
+  font-family: 'Geist', sans-serif;
+}
+
+
+</style>
+
+<!-- year -->
+<style is:global>
+.view_year {
+  display: block;
+  width: 100%;
+  font-size: 3vw;
+  line-height: 1.1;
+  word-break: keep-all;
+}
+
+.year_month_label {
+  display: inline-block;
+  padding-right: 2vw;
+  font-weight: 600;
+}
+.year_month_label:not(:first-of-type) {
+  padding-left: 5vw; /* ⭐️ 첫 번째를 제외한 두 번째부터 마지막까지 좌측 패딩 적용 */
+}
+
+.year_days_wrap {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--pad);
+  place-items: center;
+  
+}
+
+.year_day_item {
+  display: inline-block;
+  margin-right: 1vw;
+  
+}
+
+.last_day {
+  margin-right: 2vw;
+}
+</style>
+
+<!-- month -->
+<style is:global>
+.view_month {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--pad);
+  font-size: 10vw;
+  line-height: 0.8;
+}
+
+.grid_header {
+  margin-bottom: 2vh;
+  text-align: left;
+}
+
+.timeline_cell {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+}
+</style>
+
+<!-- mobile -->
+<style is:global>
+@media (max-width: 768px) {
+
+    .view_year { font-size: 5vw; }
+    .view_month { font-size: 12vw; font-weight: 450;}
+
+    .timeline_filter_btn,
+    .nav_item {
+        font-size: 1rem;
+    }
+
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+<!-- 1. 기본 설정 및 데이터 -->
+<script is:inline define:vars={{ govApiKey }}>
+window.GOV_API_KEY = govApiKey;
+window.projectEvents = [
+    { title: "-", start: "26/01/01", end: "26/12/01" }
+];
+</script>
+
+<!-- 2. 공휴일 API 및 전역 상태 관리 -->
+<script is:inline>
+window.currentView = 'year'; 
+window.currentDate = new Date(); 
+window.currentRealYear = new Date().getFullYear();
+
+window.formatDate = function(y, m, d) {
+    return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+};
+
+window.fetchKoreanHolidays = async function(year) {
+    const cacheKey = `holidays_${year}`;
+    
+    // [플랜 A] 로컬 스토리지 백업 데이터 (트래픽 절약)
+    const cachedData = localStorage.getItem(cacheKey);
+    if (cachedData) return JSON.parse(cachedData);
+
+    const url = `https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo?solYear=${year}&ServiceKey=${window.GOV_API_KEY}&_type=json&numOfRows=100`;
+    
+    try {
+        const response = await fetch(url);
+        const textData = await response.text();
+        let data;
+        
+        try { 
+            data = JSON.parse(textData); 
+        } catch (e) { 
+            throw new Error("API 서버 에러 (응답이 JSON 형식이 아님)"); 
+        }
+
+        const items = data.response?.body?.items?.item;
+        
+        if (!items) throw new Error("데이터 없음 (API 일일 트래픽 초과 또는 서버 점검 중)");
+
+        const holidays = {};
+        const itemList = Array.isArray(items) ? items : [items];
+        
+        itemList.forEach(item => {
+            if (item.isHoliday === 'Y') {
+                let dStr = String(item.locdate);
+                let formatted = `${dStr.substring(0,4)}-${dStr.substring(4,6)}-${dStr.substring(6,8)}`;
+                holidays[formatted] = item.dateName;
+            }
+        });
+        
+        if (Object.keys(holidays).length > 0) {
+            localStorage.setItem(cacheKey, JSON.stringify(holidays)); 
+            return holidays;
+        }
+
+        return {}; 
+
+    } catch (error) { 
+        // 고장 났을 때 개발자 도구(F12) 콘솔에 눈에 띄게 로그 찍기
+        console.warn(`[달력 API 오류] ${year}년 공휴일 통신 실패: ${error.message}`);
+        console.warn(`비상용 자동 계산 데이터로 ${year}년 고정 공휴일을 렌더링합니다.`);
+        
+        // 플랜 B: 당해 연도(year)가 몇 년이든 알아서 고정 공휴일을 생성해서 반환
+        const fallbackHolidays = {};
+        const fixedDates = {
+            "01-01": "신정",
+            "03-01": "삼일절",
+            "05-05": "어린이날",
+            "06-06": "현충일",
+            "08-15": "광복절",
+            "10-03": "개천절",
+            "10-09": "한글날",
+            "12-25": "기독탄신일"
+        };
+        
+        for (const [md, name] of Object.entries(fixedDates)) {
+            fallbackHolidays[`${year}-${md}`] = name;
+        }
+        
+        return fallbackHolidays; 
+    }
+};
+</script>
+
+<!-- 3. Nav(년/월 텍스트 애니메이션) 렌더링 -->
+<script is:inline>
+window.renderNav = function() {
+    const navWrap = document.getElementById('timeline_nav_wrap');
+    if (!navWrap) return;
+
+    navWrap.innerHTML = '';
+    const monthNames = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+
+    const scrambleText = (element, finalString) => {
+        element.innerText = String(Math.floor(Math.random() * 100)).padStart(2, '0');
+        let count = 0;
+        const maxCount = 10;
+        const speed = 50;
+        const timer = setInterval(() => {
+            element.innerText = String(Math.floor(Math.random() * 100)).padStart(2, '0');
+            count++;
+            if (count >= maxCount) {
+                clearInterval(timer);
+                element.innerText = finalString;
+            }
+        }, speed);
+    };
+
+    // ⭐️ events 조건 완전 삭제됨
+    if (window.currentView === 'year') {
+        for (let i = 0; i < 12; i++) {
+            let targetYear = window.currentRealYear + i;
+            let item = document.createElement('button');
+            item.className = 'nav_item';
+            item.setAttribute('aria-label', `${targetYear}년`);
+            
+            let finalVal = String(targetYear).slice(-2);
+            scrambleText(item, finalVal); 
+            
+            if (window.currentDate.getFullYear() === targetYear) {
+                item.classList.add('active');
+            }
+            item.addEventListener('click', () => {
+                window.currentDate.setFullYear(targetYear);
+                if (typeof window.renderCalendar === 'function') window.renderCalendar();
+            });
+            navWrap.appendChild(item);
+        }
+    } 
+    else if (window.currentView === 'month') {
+        for (let i = 0; i < 12; i++) {
+            let item = document.createElement('button');
+            item.className = 'nav_item';
+            item.setAttribute('aria-label', `${i + 1}월`);
+            
+            let finalVal = monthNames[i];
+            scrambleText(item, finalVal); 
+            
+            if (window.currentDate.getMonth() === i) {
+                item.classList.add('active');
+            }
+            item.addEventListener('click', () => {
+                window.currentDate.setMonth(i);
+                if (typeof window.renderCalendar === 'function') window.renderCalendar();
+            });
+            navWrap.appendChild(item);
+        }
+    }
+};
+</script>
+
+<!-- 4. 달력 메인 렌더링 -->
+<script is:inline>
+window.renderToken = 0;
+window.fadePromise = null;
+
+window.formatDateForSR = function(dateStr) {
+    if (!dateStr) return '';
+    const parts = dateStr.split('/');
+    if (parts.length === 3) {
+        return `20${parts[0]}년 ${parseInt(parts[1], 10)}월 ${parseInt(parts[2], 10)}일`;
+    }
+    return dateStr;
+};
+
+window.renderCalendar = async function(isSilentUpdate = false) {
+    const myToken = isSilentUpdate ? window.renderToken : ++window.renderToken;
+
+    if (!isSilentUpdate && typeof window.renderNav === 'function') window.renderNav();
+    
+    const board = document.getElementById('timeline_board');
+    if (!board) return;
+
+    if (!isSilentUpdate && board.offsetHeight > 0) {
+        board.style.minHeight = board.offsetHeight + 'px';
+    }
+
+    if (!isSilentUpdate && board.innerHTML !== '') {
+        if (!window.fadePromise) {
+            board.classList.add('slide_out');
+            window.fadePromise = new Promise(resolve => {
+                setTimeout(() => {
+                    window.fadePromise = null;
+                    board.innerHTML = ''; 
+                    resolve();
+                }, 500);
+            });
+        }
+        await window.fadePromise;
+    }
+
+    if (myToken !== window.renderToken) return;
+
+    const y = window.currentDate.getFullYear();
+    const m = window.currentDate.getMonth();
+    
+    let holidaysMap = {};
+    const cacheKey = `holidays_${y}`;
+    const cachedData = localStorage.getItem(cacheKey);
+
+    if (cachedData) {
+        holidaysMap = JSON.parse(cachedData);
+    } else {
+        window.fetchKoreanHolidays(y).then(() => {
+            if (myToken === window.renderToken) window.renderCalendar(true); 
+        });
+    }
+
+    if (myToken !== window.renderToken) return;
+
+    board.innerHTML = ''; 
+    if (!isSilentUpdate) board.className = `timeline_board view_${window.currentView} slide_prep`;
+
+    // [ YEAR 렌더링 ]
+    if (window.currentView === 'year') {
+        const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        
+        let srSummary = `<div class="sr-only" tabindex="0"><h3>${y}년 달력 요약</h3>`;
+        const shortYear = String(y).slice(-2);
+        const yearEvents = window.projectEvents.filter(ev => ev.start.startsWith(shortYear) || ev.end.startsWith(shortYear));
+        
+        if (yearEvents.length === 0) {
+            srSummary += `<p>등록된 일정이 없습니다.</p>`;
+        } else {
+            yearEvents.forEach(ev => {
+                const startM = parseInt(ev.start.split('/')[1], 10);
+                const endM = parseInt(ev.end.split('/')[1], 10);
+                // ⭐️ ev.title 제거됨
+                srSummary += `<p>대략 ${startM}월부터 ${endM}월 사이에 일정이 있습니다.</p>`;
+            });
+        }
+        srSummary += `</div>`;
+        
+        let yearHtmlStr = `<div aria-hidden="true">`; 
+        const eventRanges = window.projectEvents.map(ev => {
+            const [ey, em, ed] = ev.start.split('/');
+            const [ey2, em2, ed2] = ev.end.split('/');
+            return {
+                start: 20000000 + parseInt(ey)*10000 + parseInt(em)*100 + parseInt(ed),
+                end: 20000000 + parseInt(ey2)*10000 + parseInt(em2)*100 + parseInt(ed2)
+            };
+        });
+        
+        for (let i = 0; i < 12; i++) {
+            yearHtmlStr += `<span class="year_month_label">${monthNames[i]}</span>`;
+            let daysInMonth = new Date(y, i + 1, 0).getDate(); 
+            for (let d = 1; d <= daysInMonth; d++) {
+                let dotw = new Date(y, i, d).getDay();
+                let dateStr = window.formatDate(y, i + 1, d);
+                let currentInt = y * 10000 + (i + 1) * 100 + d;
+                let isEventDay = eventRanges.some(ev => currentInt >= ev.start && currentInt <= ev.end);
+                
+                let holiClass = (dotw === 0 || dotw === 6 || holidaysMap[dateStr]) ? ' holiday' : '';
+                let lastDayClass = (d === daysInMonth) ? ' last_day' : '';
+                let eventClass = isEventDay ? ' event_day' : ''; 
+                
+                yearHtmlStr += `<span class="year_day_item${holiClass}${lastDayClass}${eventClass}">${d}</span>`;
+            }
+        }
+        yearHtmlStr += `</div>`;
+        board.innerHTML = srSummary + yearHtmlStr;
+    }
+    // [ MONTH 렌더링 ]
+    else if (window.currentView === 'month') {
+        let srSummary = `<div class="sr-only" tabindex="0"><h3>${y}년 ${m + 1}월 달력 요약</h3>`;
+        let hasData = false;
+        const thisMonthPrefix = `${y}-${String(m+1).padStart(2, '0')}`;
+
+        // 1. 해당 월 공휴일 안내
+        Object.keys(holidaysMap).forEach(date => {
+            if (date.startsWith(thisMonthPrefix)) {
+                srSummary += `<p>${parseInt(date.split('-')[2], 10)}일은 ${holidaysMap[date]}입니다.</p>`;
+                hasData = true;
+            }
+        });
+
+        // 2. 해당 월 프로젝트 일정 상세 안내
+        const shortY = String(y).slice(-2);
+        const shortM = String(m+1).padStart(2, '0');
+        window.projectEvents.forEach(ev => {
+            if (ev.start.startsWith(`${shortY}/${shortM}`) || ev.end.startsWith(`${shortY}/${shortM}`)) {
+                srSummary += `<p>${window.formatDateForSR(ev.start)}부터 ${window.formatDateForSR(ev.end)}까지 일정이 있습니다.</p>`;
+                hasData = true;
+            }
+        });
+
+        if (!hasData) srSummary += `<p>이 달에는 공휴일이나 일정이 없습니다.</p>`;
+        srSummary += `</div>`;
+
+        let monthHtmlStr = `<div aria-hidden="true" style="display:contents;">`; 
+        const daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"];
+        
+        daysOfWeek.forEach((day, index) => {
+            let holiClass = (index === 0 || index === 6) ? ' holiday' : '';
+            monthHtmlStr += `<div class="grid_header${holiClass}">${day}</div>`;
+        });
+
+        const eventRanges = window.projectEvents.map(ev => {
+            const [ey, em, ed] = ev.start.split('/');
+            const [ey2, em2, ed2] = ev.end.split('/');
+            return {
+                start: 20000000 + parseInt(ey)*10000 + parseInt(em)*100 + parseInt(ed),
+                end: 20000000 + parseInt(ey2)*10000 + parseInt(em2)*100 + parseInt(ed2)
+            };
+        });
+
+        let firstDay = new Date(y, m, 1).getDay(); 
+        let daysInMonth = new Date(y, m + 1, 0).getDate(); 
+
+        for (let i = 0; i < firstDay; i++) {
+            monthHtmlStr += `<div class="timeline_cell"></div>`;
+        }
+        for (let d = 1; d <= daysInMonth; d++) {
+            let dotw = new Date(y, m, d).getDay();
+            let dateStr = window.formatDate(y, m + 1, d);
+            let currentInt = y * 10000 + (m + 1) * 100 + d;
+            let isEventDay = eventRanges.some(ev => currentInt >= ev.start && currentInt <= ev.end);
+            
+            let holiClass = (dotw === 0 || dotw === 6 || holidaysMap[dateStr]) ? ' holiday' : '';
+            let eventClass = isEventDay ? ' event_day' : ''; 
+            
+            monthHtmlStr += `
+                <div class="timeline_cell">
+                    <div class="timeline_cell_title${holiClass}${eventClass}">${d}</div>
+                </div>`;
+        }
+        monthHtmlStr += `</div>`;
+        board.innerHTML = srSummary + monthHtmlStr;
+    }
+
+    if (!isSilentUpdate) {
+        void board.offsetWidth; 
+        board.classList.remove('slide_prep');
+        
+        // ⭐️ 새로운 화면이 다 그려지고 나면 억지로 잡고 있던 높이 제한을 부드럽게 해제
+        setTimeout(() => {
+            board.style.minHeight = '';
+        }, 500);
+    }
+};
+</script>
+
+<!-- 5. 클릭 이벤트 (Astro 라우팅 호환 및 상태 초기화) -->
+<script is:inline>
+document.addEventListener('astro:page-load', () => {
+    
+    // 핵심: 달력 페이지에 들어올 때마다 무조건 '올해', '연 달력(year)'으로 기억을 강제 리셋
+    window.currentView = 'year';
+    window.currentDate = new Date();
+
+    const filterBtns = document.querySelectorAll('.timeline_filter_btn');
+
+    filterBtns.forEach(btn => {
+        // UI 버튼 불빛도 확실하게 year 쪽에만 켜지도록 강제 초기화
+        if (btn.getAttribute('data-filter') === 'year') {
+            btn.classList.add('active');
+            btn.setAttribute('aria-pressed', 'true');
+        } else {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
+        }
+
+        // 클릭 이벤트
+        btn.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            e.stopPropagation(); 
+
+            let filter = btn.getAttribute('data-filter');
+
+            filterBtns.forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-pressed', 'false');
+            });
+            btn.classList.add('active');
+            btn.setAttribute('aria-pressed', 'true');
+
+            if (window.currentView !== filter) {
+                window.currentView = filter;
+                if (typeof window.renderCalendar === 'function') {
+                    window.renderCalendar();
+                }
+            }
+        });
+    });
+
+    // 2️⃣ 리셋된 맑은 상태로 최초 렌더링 시작!
+    if (typeof window.renderCalendar === 'function') {
+        window.renderCalendar();
+    }
+});
+</script>

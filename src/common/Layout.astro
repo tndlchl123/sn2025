@@ -1,20 +1,34 @@
 ---
-import Header from '../common/Header.astro';
-import Footer from '../common/Footer.astro';
+import '@common/Global.css';
+import Header from '@common/Header.astro';
+import Footer from '@common/Footer.astro';
+import { ClientRouter } from 'astro:transitions';
+const { title = "sn2025" } = Astro.props;
 ---
 <html lang="ko">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		<ClientRouter />
+		<link rel="icon" id="dynamic-favicon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="generator" content={Astro.generator} />
-		<title>sn2025</title>
+		<!-- <meta name="generator" content={Astro.generator} />  -->
+		<meta name="color-scheme" content="light dark">
+		<title>{title}</title>
+
+		<link rel="preload" href="/fonts/GeistMono.woff2" as="font" type="font/woff2" crossorigin>
+		<link rel="preload" href="/fonts/AstaSans.woff2" as="font" type="font/woff2" crossorigin>
+
+		<script is:inline src="/favicon.js"></script>
 	</head>
 	<body>
         <Header />
-        <!-- 각 페이지의 내용이 이 자리에 쏙 들어옵니다 -->
-        <slot />
+		<main>
+			<!-- 각 페이지의 내용이 이 자리에 쏙 들어옵니다 -->
+			<slot />
+		</main>
         <Footer />
+		<script>import '@common/Global.js';</script>
     </body>
 </html>
+
+<style> html body { padding: var(--pad);} </style>

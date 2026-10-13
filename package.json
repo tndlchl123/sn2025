@@ -12,7 +12,9 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.3.5"
+    "astro": "^7.3.5",
+    "astro-compress": "^2.4.3",
+    "lenis": "^1.3.26"
   },
   "allowScripts": {
     "esbuild": true

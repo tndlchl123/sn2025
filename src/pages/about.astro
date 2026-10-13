@@ -5,4 +5,114 @@ import Layout from '../common/Layout.astro';
 <Layout>
   <h1>여기는 어바웃 페이지입니다!</h1>
   <a href="/">메인으로 돌아가기</a>
+
+  
+
+  <!--
+  <div style=" height: 100vh; margin: var(--pad); border-radius: var(--rad); background-color: aqua;">gtrgrt</div>
+   -->
+  <div style=" height: 100vh; background-color: #000;">gtrgrt</div>
+  <div style=" height: 100vh; background-color: #fff;">gtrgrt</div>
+  
+  <!--
+  <button class="replay-btn" id="replayBtn">애니메이션 다시 보기 ↻</button>
+
+  <div class="gooey-container" id="gooeyBox">
+    <nav class="mobile-nav">
+      <a href="#" class="menu-item">HELLO</a>
+      <a href="#" class="menu-item">ASTRO</a>
+      <a href="#" class="menu-item">SOLID INK</a>
+    </nav>
+  </div>
+
+  <svg style="width: 0; height: 0; position: absolute;" aria-hidden="true">
+    <filter id="ink-threshold" x="-50%" y="-50%" width="200%" height="200%">
+      <feColorMatrix in="SourceGraphic" type="matrix" values="
+        1 0 0 0 0
+        0 1 0 0 0
+        0 0 1 0 0
+        0 0 0 50 -20" />
+    </filter>
+  </svg>
+
+  <style>
+    .replay-btn {
+      margin: 20px;
+      padding: 12px 24px;
+      background: transparent;
+      color: var(--txt-color, #000);
+      border: 1px solid var(--txt-color, #000);
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .gooey-container {
+      padding: 100px 0; 
+      /* SVG 필터를 상시 적용 (여기서는 텍스트를 선명하게 깎아주는 역할만 함) */
+      filter: url('#ink-threshold');
+      -webkit-filter: url('#ink-threshold');
+    }
+
+    .mobile-nav {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .menu-item {
+      font-size: 4rem;
+      font-weight: 800;
+      color: var(--txt-color, #000);
+      text-decoration: none;
+      
+      /* 처음엔 텍스트 자체가 심하게 퍼져 있는 상태 */
+      filter: blur(30px); 
+    }
+
+    .gooey-container.play .menu-item {
+      animation: solidInkReveal 1.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+    }
+
+    /* 딜레이 순차 적용 */
+    .gooey-container.play .menu-item:nth-child(1) { animation-delay: 0s; }
+    .gooey-container.play .menu-item:nth-child(2) { animation-delay: 0.15s; }
+    .gooey-container.play .menu-item:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes solidInkReveal {
+      0% {
+        filter: blur(30px);
+        transform: scale(0.9) translateY(10px);
+        letter-spacing: -0.2em; /* 잉크 덩어리로 뭉쳐 있게 만듦 */
+      }
+      100% {
+        /* 블러가 0이 되면서 본래의 텍스트 원형으로 완벽하게 돌아옴 */
+        filter: blur(0px);
+        transform: scale(1) translateY(0);
+        letter-spacing: -0.05em;
+      }
+    }
+  </style>
+
+  <script is:inline>
+    const gooeyBox = document.getElementById('gooeyBox');
+    const replayBtn = document.getElementById('replayBtn');
+
+    const triggerAnimation = () => {
+      gooeyBox.classList.remove('play');
+      void gooeyBox.offsetWidth; 
+      gooeyBox.classList.add('play');
+    };
+
+    if (gooeyBox) {
+      triggerAnimation();
+    }
+
+    if (replayBtn) {
+      replayBtn.addEventListener("click", triggerAnimation);
+    }
+  </script>
+
+-->
 </Layout>

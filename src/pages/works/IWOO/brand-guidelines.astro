@@ -1,0 +1,99 @@
+---
+import Layout from '@common/Brand-guidelines.astro';
+---
+
+<Layout title="brand-guidelines">
+<!-- 첫 번째 페이지: 브랜드 전략 -->
+<section>
+    <h2>01. Brand Strategy & Core Values</h2>
+    <p>웹 화면에서는 아래쪽에 구분선과 여백이 들어가서 페이지가 뚝뚝 떨어져 보이고, PDF로 저장하면 이 시각적 장치들이 싹 사라지면서 A4 한 장에 깔끔하게 채워집니다.</p>
+    
+    <div>
+        <p><strong>Mission:</strong> Intersection Works Of Object</p>
+        <p><strong>Vision:</strong> 물리적인 오브젝트의 결을 디지털 공간으로 확장하다.</p>
+    </div>
+</section>
+
+<!-- 두 번째 페이지: 로고 가이드 -->
+<section>
+    <h2>02. Logo Guidelines</h2>
+    <p>두 번째 페이지 테스트 내용입니다. `break-after: page` 설정 덕분에 인쇄/PDF 저장 시 이 섹션부터 무조건 다음 장으로 넘어갑니다.</p>
+    
+    <div>
+        <div>Primary Logo</div>
+        <div>Secondary Logo</div>
+    </div>
+</section>
+
+<!-- 세 번째 페이지: 컬러 시스템 -->
+<section>
+    <h2>03. Color System</h2>
+    <p>세 번째 페이지 테스트 내용입니다. 이런 식으로 섹션 단위로 내용을 얹어가며 가이드북을 채워나가시면 됩니다.</p>
+</section>
+
+
+</Layout>
+
+
+
+
+
+
+<!-- var, font  -->
+<style>
+@font-face {
+  font-family: 'IWOO';
+  src: url('https://cdn.jsdelivr.net/gh/tndlchl123/iwoo@main/IWOO.woff2?v=1') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+    font-family: 'HakgyoansimBareondotumR';
+    src: url('https://cdn.jsdelivr.net/gh/tndlchl123/iwoo@main/HakgyoansimBareondotumR.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body, h1, h2, h3, h4, h5, h6, section, button, input, textarea, select {
+  font-family: 'Asta Sans', 'IWOO', sans-serif;
+  font-synthesis: none;
+}
+
+/* var */
+:root {
+  --iw-0: #141719;
+  --iw-1: #eceef2;
+  --iw-2: #dcdee2;
+  --iw-3: #7b95aa;
+  --iw-4: #1d2c3f;
+  --iw-5: #0a141e; 
+  --iw-6: #1e1411;
+  --iw-7: #3e312a;
+  --iw-8: #726558; 
+
+  --iw-0r: 20, 23, 25;
+  --iw-1r: 236, 238, 242;
+  --iw-2r: 220, 222, 226;
+  --iw-3r: 123, 149, 170;
+  --iw-4r: 29, 44, 63;
+  --iw-5r: 10, 20, 30; 
+  --iw-6r: 30, 20, 17;
+  --iw-7r: 69, 49, 42;
+  --iw-8r: 114, 101, 88;
+
+    /* 0.7, 0, 0.3, 1 */
+  --iw-mo: cubic-bezier(0.5, 0, 0, 1);
+  --iw-space: 1vw;
+}
+
+</style>
+
+<style>
+  p, h1, h2, h3, h4, h5, h6 {
+    color
+  }
+  h2 {
+    font-size: ;
+  }
+
+</style>

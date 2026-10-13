@@ -1,27 +1,767 @@
-<div style="width: 50vw; background-color: aqua;">ddkjs</div>
-<div class="sample-body">
-  <!-- 상단 메뉴처럼 생긴 바디 내부 요소 -->
-  <header class="sub-nav">
-    <div class="logo">SN2025 BRAND</div>
-    <nav class="menu-links">
-      <a href="index.html">HOME</a>
-      <a href="about.html">ABOUT</a>
-      <a href="#contact">CONTACT</a>
-    </nav>
-  </header>
+<header class="global-header">
+  <div class="header-container">
+    
+    <!-- 로고 슬라이더 -->
+    <div class="logo-link" data-astro-transition-persist="slider">
+      <label for="home-slider" class="sr-only">홈으로 이동 및 배경 테마 밝기 조절</label>
+      <input 
+        type="range" 
+        id="home-slider" 
+        class="logo-slider" 
+        min="0" 
+        max="100" 
+        value="50"
+      />
+    </div>
+    
+    <!-- PC용 메뉴 -->
+    <nav class="nav-links pc-only">
+      <a href="/works">
+        <span class="sr-only">작업물</span>
+        <span class="rolling-text" aria-hidden="true">
+          <span class="char" data-char="w" style="--i: 1;" aria-hidden="true">w</span>
+          <span class="char" data-char="o" style="--i: 2;" aria-hidden="true">o</span>
+          <span class="char" data-char="r" style="--i: 3;" aria-hidden="true">r</span>
+          <span class="char" data-char="k" style="--i: 4;" aria-hidden="true">k</span>
+          <span class="char" data-char="s" style="--i: 5;" aria-hidden="true">s</span>
+        </span>
+      </a>
+      <a href="/calender">
+        <span class="sr-only">일정</span>
+        <span class="rolling-text" aria-hidden="true">
+          <span class="char" data-char="c" style="--i: 1;" aria-hidden="true">c</span>
+          <span class="char" data-char="a" style="--i: 2;" aria-hidden="true">a</span>
+          <span class="char" data-char="l" style="--i: 3;" aria-hidden="true">l</span>
+          <span class="char" data-char="e" style="--i: 4;" aria-hidden="true">e</span>
+          <span class="char" data-char="n" style="--i: 5;" aria-hidden="true">n</span>
+          <span class="char" data-char="d" style="--i: 6;" aria-hidden="true">d</span>
+          <span class="char" data-char="e" style="--i: 7;" aria-hidden="true">e</span>
+          <span class="char" data-char="r" style="--i: 8;" aria-hidden="true">r</span>
+        </span>
+      </a>
+      <a href="mailto:contact@sn2025.co.kr">
+        <span class="sr-only">문의</span>
+        <span class="rolling-text" aria-hidden="true">
+          <span class="char" data-char="c" style="--i: 1;" aria-hidden="true">c</span>
+          <span class="char" data-char="o" style="--i: 2;" aria-hidden="true">o</span>
+          <span class="char" data-char="n" style="--i: 3;" aria-hidden="true">n</span>
+          <span class="char" data-char="t" style="--i: 4;" aria-hidden="true">t</span>
+          <span class="char" data-char="a" style="--i: 5;" aria-hidden="true">a</span>
+          <span class="char" data-char="c" style="--i: 6;" aria-hidden="true">c</span>
+          <span class="char" data-char="t" style="--i: 7;" aria-hidden="true">t</span>
+        </span>
+      </a>
 
-  <!-- 본문 내용 예시 -->
-  <main class="content-box">
-    <h1>환영합니다!</h1>
-    <p>이곳은 공통 바디(`body.html`) 파일이 들어오는 자리입니다.</p>
-  </main>
+      <button type="button" class="lang-toggle-btn">
+        <span class="sr-only">영어 및 한국어 언어 변경</span>
+        <span class="lang-text rolling-text" aria-hidden="true">
+          <span class="char" data-char="e" style="--i: 1;" aria-hidden="true">e</span>
+          <span class="char" data-char="n" style="--i: 2;" aria-hidden="true">n</span>
+          <span class="char" data-char="g" style="--i: 3;" aria-hidden="true">g</span>
+        </span>
+      </button>
+
+    </nav>
+
+    <!-- 모바일 메뉴 버튼 -->
+    <button 
+      class="menu-toggle mobile-only" 
+      aria-expanded="false" 
+      aria-controls="mobileMenu"
+    >
+      <span class="sr-only">모바일 메뉴 열기</span>
+      <span class="line line-1"></span>
+      <span class="line line-2"></span>
+    </button>
+    
+  </div>
+</header>
+
+<!-- 모바일 오버레이 메뉴 -->
+<div class="mobile-menu-overlay" id="mobileMenu">
+  <nav class="mobile-nav">
+    <a href="/works">
+      <span class="sr-only">작업물</span>
+      <span class="rolling-text" aria-hidden="true">
+        <span class="char" data-char="w" style="--i: 1;" aria-hidden="true">w</span>
+        <span class="char" data-char="o" style="--i: 2;" aria-hidden="true">o</span>
+        <span class="char" data-char="r" style="--i: 3;" aria-hidden="true">r</span>
+        <span class="char" data-char="k" style="--i: 4;" aria-hidden="true">k</span>
+        <span class="char" data-char="s" style="--i: 5;" aria-hidden="true">s</span>
+      </span>
+    </a>
+    <a href="/calender">
+      <span class="sr-only">일정</span>
+      <span class="rolling-text" aria-hidden="true">
+        <span class="char" data-char="c" style="--i: 1;" aria-hidden="true">c</span>
+        <span class="char" data-char="a" style="--i: 2;" aria-hidden="true">a</span>
+        <span class="char" data-char="l" style="--i: 3;" aria-hidden="true">l</span>
+        <span class="char" data-char="e" style="--i: 4;" aria-hidden="true">e</span>
+        <span class="char" data-char="n" style="--i: 5;" aria-hidden="true">n</span>
+        <span class="char" data-char="d" style="--i: 6;" aria-hidden="true">d</span>
+        <span class="char" data-char="e" style="--i: 7;" aria-hidden="true">e</span>
+        <span class="char" data-char="r" style="--i: 8;" aria-hidden="true">r</span>
+      </span>
+    </a>
+    <a href="/contact">
+      <span class="sr-only">문의</span>
+      <span class="rolling-text" aria-hidden="true">
+        <span class="char" data-char="c" style="--i: 1;" aria-hidden="true">c</span>
+        <span class="char" data-char="o" style="--i: 2;" aria-hidden="true">o</span>
+        <span class="char" data-char="n" style="--i: 3;" aria-hidden="true">n</span>
+        <span class="char" data-char="t" style="--i: 4;" aria-hidden="true">t</span>
+        <span class="char" data-char="a" style="--i: 5;" aria-hidden="true">a</span>
+        <span class="char" data-char="c" style="--i: 6;" aria-hidden="true">c</span>
+        <span class="char" data-char="t" style="--i: 7;" aria-hidden="true">t</span>
+      </span>
+    </a>
+
+    <button type="button" class="lang-toggle-btn">
+      <span class="sr-only">영어 및 한국어 언어 변경</span>
+      <span class="lang-text rolling-text" aria-hidden="true">
+        <span class="char" data-char="e" style="--i: 1;" aria-hidden="true">e</span>
+        <span class="char" data-char="n" style="--i: 2;" aria-hidden="true">n</span>
+        <span class="char" data-char="g" style="--i: 3;" aria-hidden="true">g</span>
+      </span>
+    </button>
+  </nav>
 </div>
 
+<!-- svg ink filter -->
+<svg style="width: 0; height: 0; position: absolute;" aria-hidden="true">
+  <filter id="ink-threshold" x="-50%" y="-50%" width="200%" height="200%">
+    <feColorMatrix in="SourceGraphic" type="matrix" values="
+      1 0 0 0 0
+      0 1 0 0 0
+      0 0 1 0 0
+      0 0 0 50 -20" />
+  </filter>
+</svg>
 
-
+<!-- header: menu: basic style -->
 <style>
+/* --- 1. 기본 레이아웃 --- */
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-    h1 {
-        font-size: 5px;
-    }
+  padding-bottom: 20vh;
+}
+
+/* PC 메뉴, 모바일 메뉴, 번역 버튼 일괄 폰트 및 크기 지정 */
+.nav-links a,
+.mobile-nav a,
+.nav-links .lang-toggle-btn,
+.mobile-nav .lang-toggle-btn {
+  font-family: 'Geist', sans-serif;
+  color: var(--txt-color);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+  /* text-transform: uppercase; */
+}
+
+@media (max-width: 768px) {
+.nav-links a,
+.mobile-nav,
+.mobile-nav a,
+.nav-links .lang-toggle-btn,
+.mobile-nav .lang-toggle-btn {
+  font-size: 3.5rem;
+  letter-spacing: -0.07em;
+}
+}
+
+
+/* ----- pc 메뉴 ----- */
+.nav-links {
+  display: flex;
+  gap: var(--pad);
+}
+
+/* --- 슬라이더 --- */
+.logo-link {
+  display: flex;
+  align-items: center;
+  transition: transform 0.5s var(--motion);
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+  .logo-link:hover {
+    transform: scale(1.05);
+  }
+}
+
+
+/* --- 트랙 --- */
+.logo-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20vw;
+  height: 5vh; /* 트랙 높이 */
+  background: rgba(var(--txt-color-r), 0.1);
+
+  border-radius: var(--rad);
+
+  padding: 0;
+  margin: 0;
+
+  cursor: pointer;
+  outline: none;
+  touch-action: none;
+  
+  box-sizing: border-box;
+  
+  overflow: hidden; 
+
+  transition: background-color 1s var(--motion);
+}
+
+/* 터치/드래그 scale */
+.logo-link.is-dragging {
+  transform: scale(1.05);
+}
+
+/* --- 손잡이 (크롬, 사파리, 엣지) --- */
+.logo-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+
+  width: 7vw;
+  height: 10vh;
+  
+  background: rgba(var(--txt-color-r), 1);
+  
+  -webkit-filter: blur(15px);
+  filter: blur(15px);
+
+  transition: background-color 1s var(--motion);
+}
+
+/* --- 손잡이 (파이어폭스 전용) --- */
+.logo-slider::-moz-range-thumb {
+  width: 7vw;
+  height: 10vh;
+
+  background: rgba(var(--txt-color-r), 1);
+  border: none;
+  
+  -webkit-filter: blur(15px);
+  filter: blur(15px);
+
+  transition: background-color 1s var(--motion);
+}
+
+
+
+/* 모바일 오버레창(메뉴창) */
+.mobile-menu-overlay {
+  display: none;
+}
+/* JS로 활성화되었을 때만 노출 */
+.mobile-menu-overlay.show {
+  display: block;
+}
+
+
+/* --- 모바일 메뉴 아이콘 --- */
+.menu-toggle {
+  position: fixed;
+  top: var(--pad);
+  right: var(--pad);
+
+  width: 6vh;
+  height: 6vh;
+
+  z-index: 2;
+
+  background: rgba(var(--txt-color-r), 0.2);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+
+  border-radius: 10%;
+
+  border: none;
+  cursor: pointer;
+
+}
+@media (hover: none) and (pointer: coarse) {
+  .menu-toggle:active {
+    transform: scale(1.05);
+    /* 터치하는 순간 transition 시간을 짧게 주어 즉각 반응하게 만듦 */
+    transition: transform 0.5s var(--motion);
+  }
+}
+
+/* 선 공통 스타일 */
+.menu-toggle .line {
+  position: absolute;
+  left: var(--pad);
+  right: var(--pad);
+  height: 2px;
+  background-color: var(--bg-color);
+  transition: transform 0.5s var(--motion);
+}
+
+.menu-toggle .line-1 {
+  top: calc(50% - 4px); /* 중앙에서 위로 4px 띄우기 */
+}
+
+.menu-toggle .line-2 {
+  top: calc(50% + 4px); /* 중앙에서 아래로 4px 띄우기 */
+}
+
+/* --- X 모양 교차 애니메이션 (기존과 동일) --- */
+.menu-toggle.active .line-1 {
+  transform: translateY(4px) rotate(45deg);
+}
+
+.menu-toggle.active .line-2 {
+  transform: translateY(-4px) rotate(-45deg);
+}
+
+
+/* --- 4. 모바일 오버레이 창 --- */
+.mobile-menu-overlay {
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+
+  background: rgba(var(--txt-color-r), 0.9);
+
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transform: translateZ(0);
+
+  padding: var(--pad);
+  
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s var(--motion);
+  
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 1;
+}
+
+.mobile-menu-overlay.show {
+  display: flex; 
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+
+/* --- 모바일 메뉴 --- */
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  
+  filter: url('#ink-threshold');
+  -webkit-filter: url('#ink-threshold');
+}
+
+/* 1. 공통 대기 상태 */
+.mobile-nav a,
+.mobile-nav .lang-toggle-btn {
+  opacity: 0;
+  transition: opacity 0.5s var(--motion);
+  
+  filter: blur(30px);
+  transform: translateY(20px);
+
+  color: var(--bg-color);
+
+}
+
+/* 2. 메뉴가 열렸을 때(.show) 일반 링크 복귀 */
+#mobileMenu.show .mobile-nav a {
+  opacity: 1;
+  animation: inkSlideUp 1.2s var(--motion) forwards;
+}
+
+/* 3. 메뉴가 열렸을 때(.show) 번역 버튼 복귀 */
+#mobileMenu.show .mobile-nav .lang-toggle-btn {
+  opacity: 1; 
+  animation: inkSlideUp 1.2s var(--motion) forwards;
+}
+
+/* 4. 순차 딜레이 */
+#mobileMenu.show .mobile-nav > *:nth-child(1) { transition-delay: 0.1s; animation-delay: 0.1s; }
+#mobileMenu.show .mobile-nav > *:nth-child(2) { transition-delay: 0.2s; animation-delay: 0.2s; }
+#mobileMenu.show .mobile-nav > *:nth-child(3) { transition-delay: 0.3s; animation-delay: 0.3s; }
+#mobileMenu.show .mobile-nav > *:nth-child(4) { transition-delay: 0.4s; animation-delay: 0.4s; }
+
+@keyframes inkSlideUp {
+  0% {
+    filter: blur(30px);
+    transform: translateY(20px) scale(0.9);
+  }
+  100% {
+    filter: blur(0px);
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* --- 번역 버튼 --- */
+.lang-toggle-btn {
+  background: none;
+  border: none;
+  padding: 0; 
+  margin: 0;
+  cursor: pointer;
+  color: var(--txt-color); 
+}
+
+/* --- pc --- */
+@media (min-width: 769px) {
+  .pc-only {
+    display: flex;
+  }
+  .mobile-only {
+    display: none 
+  }
+
+  
+}
+
+/* --- 5. 모바일 미디어 쿼리 --- */
+@media (max-width: 768px) {
+  .header-container {
+    justify-content: space-between;
+  }
+  
+
+  .logo-slider {
+    width: 30vw;
+    height: 6vh;
+  }
+
+  /* PC 메뉴 숨기고 모바일 버튼 켜기 */
+  .pc-only { display: none; }
+  .mobile-only { display: block; }
+}
+
+
+/* 1. 버튼 및 링크 레이아웃 정렬 */
+.nav-links a,
+.mobile-nav a,
+.lang-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+/* 2. 롤링 텍스트를 감싸는 프레임 (대기 중인 글자 숨김) */
+.rolling-text {
+  display: inline-flex;
+  overflow: hidden;
+  height: 1.2em; 
+  padding-right: 2px;
+}
+
+/* 3. 개별 글자 세팅 */
+.char {
+  display: inline-block;
+  position: relative;
+  height: 1/2em;
+  transition: transform 0.5s var(--motion);
+  transition-delay: calc(var(--i) * 0.02s); 
+}
+
+/* 4. 밑에 숨어서 대기 중인 복제 텍스트 */
+.char::after {
+  content: attr(data-char);
+  position: absolute;
+  left: 0;
+  top: 100%; 
+  width: 100%;
+}
+
+/* 5. 마우스를 올리면 전체 글자를 끌어올림 */
+.nav-links a:hover .char,
+.mobile-nav a:hover .char,
+.lang-toggle-btn:hover .char { 
+  transform: translateY(-100%);
+}
+
 </style>
+
+<!-- color theme  -->
+<script is:inline>
+if (typeof document !== 'undefined') {
+
+  // URL이 /works/브랜드명 인지 확인하는 함수
+  const isWorksDetailPage = () => {
+    const path = window.location.pathname;
+    return path.startsWith('/works/') && path.replace('/works/', '').trim().length > 0;
+  };
+
+  const updateTheme = (val) => {
+    if (isWorksDetailPage()) {
+      document.documentElement.style.removeProperty('--bg-color-r');
+      document.documentElement.style.removeProperty('--txt-color-r');
+      document.documentElement.style.removeProperty('--bg-color');
+      document.documentElement.style.removeProperty('--txt-color');
+      return; 
+    }
+
+    const bgLightness = 10 + (val * 0.85); 
+    
+    let textLightness;
+    if (bgLightness < 35) {
+      textLightness = 95; 
+    } else if (bgLightness > 70) {
+      textLightness = 10; 
+    } else {
+      textLightness = 95; 
+    }
+
+    const bgRgb = Math.round((bgLightness / 100) * 255);
+    const textRgb = Math.round((textLightness / 100) * 255);
+
+    document.documentElement.style.setProperty('--bg-color-r', `${bgRgb}, ${bgRgb}, ${bgRgb}`);
+    document.documentElement.style.setProperty('--txt-color-r', `${textRgb}, ${textRgb}, ${textRgb}`);
+
+    const bgColor = `hsl(0, 0%, ${bgLightness}%)`;
+    const textColor = `hsl(0, 0%, ${textLightness}%)`;
+
+    document.documentElement.style.setProperty('--bg-color', bgColor);
+    document.documentElement.style.setProperty('--txt-color', textColor);
+
+    if (document.body) {
+      document.body.style.setProperty('background-color', bgColor, 'important');
+      document.body.style.setProperty('color', textColor, 'important');
+    }
+  };
+
+  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+  const savedValue = localStorage.getItem('sn-theme-value');
+  // 원본 로직 유지: 로드되자마자 즉시 실행하여 페이지 이동 시 깜빡임(Flash) 완벽 방지
+  const initialThemeValue = savedValue !== null ? parseFloat(savedValue) : (systemPrefersDark.matches ? 0 : 100);
+  
+  updateTheme(initialThemeValue);
+
+  const initMobileMenu = () => {
+    const toggleBtn = document.querySelector('.menu-toggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (toggleBtn && mobileMenu) {
+      toggleBtn.onclick = null;
+      toggleBtn.onclick = () => {
+        toggleBtn.classList.toggle('active');
+        mobileMenu.classList.toggle('show');
+      };
+    }
+  };
+
+  const initSlider = () => {
+    if (isWorksDetailPage()) return;
+
+    const homeSlider = document.getElementById('home-slider');
+    
+    if (homeSlider) {
+      const currentSaved = localStorage.getItem('sn-theme-value');
+      const activeValue = currentSaved !== null ? parseFloat(currentSaved) : (systemPrefersDark.matches ? 0 : 100);
+
+      homeSlider.value = activeValue; 
+      homeSlider.setAttribute('aria-valuetext', `${Math.round(activeValue)}%`);
+      
+      const animateSlider = (targetValue) => {
+        const startValue = parseFloat(homeSlider.value);
+        const duration = 500; 
+        let startTime = null;
+
+        const step = (timestamp) => {
+          if (!startTime) startTime = timestamp;
+          const progress = Math.min((timestamp - startTime) / duration, 1);
+          const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+          
+          const currentVal = startValue + (targetValue - startValue) * ease;
+          homeSlider.value = currentVal;
+          updateTheme(currentVal);
+
+          if (progress < 1) {
+            requestAnimationFrame(step);
+          } else {
+            homeSlider.setAttribute('aria-valuetext', `${Math.round(targetValue)}%`);
+          }
+        };
+        requestAnimationFrame(step);
+      };
+
+      // [최적화] addEventListener 대신 onchange를 써서 Astro 페이지 이동 시 이벤트 중복 발생(메모리 렉) 차단
+      systemPrefersDark.onchange = (e) => {
+        const newVal = e.matches ? 0 : 100;
+        animateSlider(newVal); 
+        localStorage.setItem('sn-theme-value', newVal); 
+      };
+
+      let startX = 0;
+      let isLongPress = false;
+      let pressTimer = null;
+      let initialValue = homeSlider.value;
+      let rafId = null; // 부드러운 렌더링을 위한 변수
+
+      // 0.5초 타이머 로직 원본 그대로 유지
+      homeSlider.onpointerdown = (e) => {
+        startX = e.clientX;
+        isLongPress = false;
+        initialValue = homeSlider.value;
+        pressTimer = setTimeout(() => { isLongPress = true; }, 500); 
+      };
+
+      homeSlider.oninput = () => {
+        if (!isLongPress) {
+          homeSlider.value = initialValue; 
+        } else {
+          // ★ 렉 해결의 핵심: 드래그하는 도중에는 aria-valuetext를 업데이트하지 않고 렌더링만 부드럽게 넘김
+          if (rafId) cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(() => {
+            updateTheme(homeSlider.value);
+          });
+        }
+      };
+
+      homeSlider.onchange = () => {
+        if (isLongPress) {
+          localStorage.setItem('sn-theme-value', homeSlider.value);
+          // ★ 드래그가 끝난 직후(onchange)에 딱 한 번만 속성 업데이트 (렉 원천 차단)
+          homeSlider.setAttribute('aria-valuetext', `${Math.round(homeSlider.value)}%`);
+        } else {
+          homeSlider.value = initialValue;
+        }
+      };
+
+      homeSlider.onkeydown = (e) => {
+        isLongPress = true; 
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+          updateTheme(homeSlider.value);
+        });
+      };
+      
+      homeSlider.onkeyup = () => {
+        homeSlider.setAttribute('aria-valuetext', `${Math.round(homeSlider.value)}%`);
+        localStorage.setItem('sn-theme-value', homeSlider.value);
+      };
+
+      // 링크 이동 로직 원본 그대로 유지
+      homeSlider.onpointerup = (e) => {
+        clearTimeout(pressTimer); 
+        const endX = e.clientX;
+        if (!isLongPress && Math.abs(startX - endX) < 5) {
+          const tempLink = document.createElement('a');
+          tempLink.href = '/';
+          document.body.appendChild(tempLink);
+          tempLink.click();
+          tempLink.remove();
+        }
+      };
+
+      homeSlider.onpointerleave = () => clearTimeout(pressTimer);
+      homeSlider.onpointercancel = homeSlider.onpointerleave;
+    }
+  };
+
+  // Astro 렌더링 생명주기 원본 그대로 유지
+  document.addEventListener('DOMContentLoaded', () => { initMobileMenu(); initSlider(); });
+  document.addEventListener('astro:page-load', () => { initMobileMenu(); initSlider(); });
+
+  document.addEventListener('astro:after-swap', () => {
+    if (isWorksDetailPage()) {
+      updateTheme(0); 
+      return; 
+    }
+    const savedValue = localStorage.getItem('sn-theme-value');
+    if (savedValue !== null) {
+      updateTheme(savedValue);
+    } else {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      updateTheme(isDark ? 0 : 100);
+    }
+  });
+}
+</script>
+
+<!-- pc/mob: area hidden/label: for menu -->
+<script>
+  const initMenuAccessibility = () => {
+    const pcMenu = document.querySelector('.pc-only');
+    const mobileNav = document.querySelector('.mobile-nav'); 
+    const mobileMenuOverlay = document.getElementById('mobileMenu');
+    
+    // CSS 미디어 쿼리와 동일한 기준점 (768px)
+    const mediaQuery = window.matchMedia('(max-width: 768px)');
+
+    const updateA11y = (e) => {
+      const isMobile = e.matches;
+
+      if (isMobile) {
+        // 모바일 화면: PC 메뉴 차단 및 라벨 제거
+        if (pcMenu) {
+          pcMenu.setAttribute('aria-hidden', 'true');
+          pcMenu.setAttribute('inert', '');
+          pcMenu.removeAttribute('aria-label'); 
+        }
+        // 모바일 메뉴에 공통 라벨 부여
+        if (mobileNav) {
+          mobileNav.setAttribute('aria-label', '주요 탐색 메뉴');
+        }
+      } else {
+        // PC 화면: PC 메뉴 활성화 및 라벨 부여
+        if (pcMenu) {
+          pcMenu.removeAttribute('aria-hidden');
+          pcMenu.removeAttribute('inert');
+          pcMenu.setAttribute('aria-label', '주요 탐색 메뉴'); 
+        }
+        // 모바일 메뉴 차단 및 라벨 제거
+        if (mobileMenuOverlay) {
+          mobileMenuOverlay.setAttribute('aria-hidden', 'true');
+          mobileMenuOverlay.setAttribute('inert', '');
+        }
+        if (mobileNav) {
+          mobileNav.removeAttribute('aria-label'); 
+        }
+      }
+    };
+
+    // 1. 처음 페이지 로딩 시 즉시 실행
+    updateA11y(mediaQuery);
+
+    // 2. 창 크기 조절 시 실시간 반영
+    mediaQuery.addEventListener('change', updateA11y);
+  };
+
+  // 일반 로드 및 Astro의 페이지 전환(View Transitions) 대응
+  document.addEventListener('DOMContentLoaded', initMenuAccessibility);
+  document.addEventListener('astro:page-load', initMenuAccessibility);
+</script>
+
+<!-- add class: slider touch scale -->
+<script>
+const slider = document.getElementById('home-slider');
+const logoLink = document.querySelector('.logo-link');
+
+if (slider && logoLink) {
+  slider.addEventListener('pointerdown', (e) => {
+    logoLink.classList.add('is-dragging');
+    slider.setPointerCapture(e.pointerId);
+  });
+
+  const stopDrag = (e) => {
+    logoLink.classList.remove('is-dragging');
+    if (slider.hasPointerCapture(e.pointerId)) {
+      slider.releasePointerCapture(e.pointerId);
+    }
+  };
+
+  slider.addEventListener('pointerup', stopDrag);
+  slider.addEventListener('pointercancel', stopDrag);
+}
+</script>
+

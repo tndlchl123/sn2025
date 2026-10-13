@@ -1,0 +1,59 @@
+---
+import Layout from '@common/Layout.astro';
+---
+
+<Layout title="works">
+  <div class="works-grid">
+    <a href="/works/IWOO" class="work-item">
+      <img src="https://sn2025.co.kr/test/1-1.webp" alt="테스트 이미지 1-1">
+    </a>
+    <a href="/works/project-2" class="work-item">
+      <img src="https://sn2025.co.kr/test/3-4.webp" alt="테스트 이미지 3-4">
+    </a>
+    <a href="/works/project-3" class="work-item">
+      <img src="https://sn2025.co.kr/test/4-3.webp" alt="테스트 이미지 4-3">
+    </a>
+    <a href="/works/project-4" class="work-item">
+      <img src="https://sn2025.co.kr/test/4-5.webp" alt="테스트 이미지 4-5">
+    </a>
+    <a href="/works/project-5" class="work-item">
+      <img src="https://sn2025.co.kr/test/5-4.webp" alt="테스트 이미지 5-4">
+    </a>
+    <a href="/works/project-6" class="work-item">
+      <img src="https://sn2025.co.kr/test/9-16.webp" alt="테스트 이미지 9-16">
+    </a>
+    <a href="/works/project-7" class="work-item">
+      <img src="https://sn2025.co.kr/test/16-9.webp" alt="테스트 이미지 16-9">
+    </a>
+  </div>
+</Layout>
+
+<style>
+  /* 웍스 페이지 전체 여백 설정 */
+  .works-container {
+    max-width: 100%;
+  }
+
+  /* CSS 그리드 설정 */
+  .works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--pad);
+
+  }
+
+  .work-item {
+    display: block;
+    text-decoration: none;
+    overflow: hidden;
+  }
+
+  .work-item img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+
+</style>
