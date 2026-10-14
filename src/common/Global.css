@@ -106,9 +106,11 @@ html body {
   -ms-user-select: none;     /* 인터넷 익스플로러/엣지 */
   user-select: none;         /* 표준 */
 
-  margin: 0; padding: var(--pad);
+  margin: 0; padding: 0;
 }
-
+html body.default-body {
+  padding: var(--pad);
+}
 /* layout */
 a, button, input, textarea {
   -webkit-tap-highlight-color: transparent;
