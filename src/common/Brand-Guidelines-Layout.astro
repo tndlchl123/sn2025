@@ -1,0 +1,332 @@
+---
+import '@common/Global.css';
+import { ClientRouter } from 'astro:transitions';
+const { title = "sn2025" } = Astro.props;
+---
+<html lang="ko">
+    <head>
+        <meta charset="utf-8" />
+        <ClientRouter />
+        <link rel="icon" id="dynamic-favicon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="color-scheme" content="light dark">
+        <title>{title}</title>
+
+        <link rel="preload" href="/fonts/GeistMono.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/fonts/AstaSans.woff2" as="font" type="font/woff2" crossorigin>
+
+        <script is:inline src="/favicon.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" is:inline></script>
+    </head>
+    
+    <body>
+      <main class="guidelines-main" id="pdf-content">
+        <slot />
+      </main>
+
+      <!-- 하단 툴바 -->
+      <div class="print-toolbar">
+        <!-- 세로형 버튼 -->
+        <button id="btn-portrait" class="icon-btn" title="세로형 보기">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+          </svg>
+        </button>
+        
+        <!-- 가로형 버튼 -->
+        <button id="btn-landscape" class="icon-btn active" title="가로형 보기">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect>
+          </svg>
+        </button>
+        
+        <div class="divider"></div>
+          
+        <!-- PDF 다운로드 버튼 (js 연동용 ID 유지) -->
+        <button id="pdf-download-btn" class="icon-btn" title="PDF 인쇄">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 4v12"></path>
+            <polyline points="8 12 12 16 16 12"></polyline>
+            <line x1="4" y1="20" x2="20" y2="20"></line>
+          </svg>
+        </button>
+
+      </div>
+      
+      <script>import '@common/Global.js';</script>
+
+      <!-- 하단 툴바 -->
+      <script is:inline>
+        let isLandscapeMode = true;
+
+        function initPdfToolbar() {
+          const btnDownload = document.getElementById('pdf-download-btn');
+          const btnLand = document.getElementById('btn-landscape');
+          const btnPort = document.getElementById('btn-portrait');
+          const toolbar = document.querySelector('.print-toolbar'); // 클래스로 안전하게 선택
+          const body = document.body;
+
+          if (!btnDownload || !btnLand || !btnPort) return;
+
+          // 1. 가로/세로 전환 기능
+          const setOrientation = (landscape) => {
+            isLandscapeMode = landscape;
+            if (landscape) {
+              body.classList.remove('is-portrait');
+              body.classList.add('is-landscape');
+              btnLand.classList.add('active');
+              btnPort.classList.remove('active');
+            } else {
+              body.classList.remove('is-landscape');
+              body.classList.add('is-portrait');
+              btnPort.classList.add('active');
+              btnLand.classList.remove('active');
+            }
+          };
+
+          // 초기 상태 세팅 (현재 화면 폭 기준 또는 가로형 기본)
+          setOrientation(window.innerWidth >= 768);
+
+          btnLand.onclick = (e) => { e.preventDefault(); setOrientation(true); };
+          btnPort.onclick = (e) => { e.preventDefault(); setOrientation(false); };
+
+          // 2. 인쇄 창 없는 PDF 다운로드 기능
+          btnDownload.onclick = async (e) => {
+            e.preventDefault();
+
+            // 캡처 중 툴바 숨김 및 섹션 여백(5vh) 제거용 클래스 추가
+            if (toolbar) toolbar.style.display = 'none';
+            body.classList.add('pdf-exporting');
+
+            const element = document.getElementById('pdf-content');
+
+            // URL 기반 파일명 생성 (/works/iwoo/brand-guidelines -> iwoo-brand-guidelines.pdf)
+            let fileName = 'brand-guidelines.pdf';
+            const path = window.location.pathname.replace(/\/$/, '');
+            if (path.includes('/works/')) {
+              const extracted = path.split('/works/')[1];
+              if (extracted) fileName = extracted.replace(/\//g, '-') + '.pdf';
+            }
+
+            const opt = {
+              margin:       0,
+              filename:     fileName,
+              image:        { type: 'jpeg', quality: 0.95 },
+              html2canvas:  { scale: 1.5, useCORS: true, letterRendering: true, scrollY: 0 },
+              jsPDF:        { unit: 'mm', format: 'a4', orientation: isLandscapeMode ? 'landscape' : 'portrait' },
+              pagebreak:    { mode: ['css', 'legacy'] }
+            };
+
+            try {
+              await html2pdf().set(opt).from(element).save();
+            } catch (error) {
+              console.error('PDF 다운로드 에러:', error);
+              alert('PDF 다운로드 중 오류가 발생했습니다.');
+            } finally {
+              // 다운로드 완료 후 원상복구
+              body.classList.remove('pdf-exporting');
+              if (toolbar) toolbar.style.display = 'flex';
+            }
+          };
+        }
+
+        document.addEventListener('astro:page-load', initPdfToolbar);
+        document.addEventListener('DOMContentLoaded', initPdfToolbar);
+      </script>
+      
+    </body>
+</html>
+
+<!-- 기본배경 -->
+<style is:global>
+:root {
+    /* 배경 덮어쓰기 */
+    --bg-color: #000;
+    --txt-color: #000;
+    --bg-color-r: #000;
+    --txt-color-r: #000;
+
+    --guide-txt: #111111; 
+}
+
+html body {
+    background-color: var(--bg-color);
+    color: var(--guide-txt);
+    
+    -webkit-user-select: auto;
+    -moz-user-select: auto;
+    -ms-user-select: auto;
+    user-select: auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* text selection */
+::selection {background-color: var(--guide-txt); color: #fff;}
+::-moz-selection {background-color: var(--guide-txt);color: #fff;}
+
+
+</style>
+
+<!-- 인쇄 설정 -->
+<style is:global>
+/* 컨테이너 가로폭 */
+.guidelines-main, #pdf-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 🌐 공통 섹션 스타일 (기본: 가로형, 0.5mm 여유로 빈 페이지 방지) */
+section {
+  width: 100%;
+  aspect-ratio: 297 / 209.5;
+
+  /* 인쇄 여백 */
+  padding: 10mm;
+
+  background-color: #fff;
+  margin-bottom: 5vh;
+  color: #111;
+  overflow: hidden;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* 섹션 내부 첫 요소(h2 등)의 기본 위쪽 여백 제거 -> 모든 페이지 상단 여백 15mm로 통일 */
+section > :first-child {
+  margin-top: 0;
+}
+
+/* 📱 모바일 웹 화면 기본 세로형 */
+@media screen and (max-width: 767px) {
+  section {
+    aspect-ratio: 210 / 296.5;
+  }
+}
+
+/* 🎛️ 버튼 클릭 시 가로/세로 판형 전환 (선택자 우선순위로 !important 없이 덮어씀) */
+body.is-landscape section {
+  aspect-ratio: 297 / 209.5;
+}
+
+body.is-portrait section {
+  aspect-ratio: 210 / 296.5;
+}
+
+/* 📥 PDF 다운로드 버튼 클릭 순간: 섹션 간격(5vh) 제거 및 칼같은 페이지 나눔 */
+body.pdf-exporting section {
+  margin: 0;
+  page-break-after: always;
+  break-after: page;
+}
+
+body.pdf-exporting section:last-of-type {
+  page-break-after: auto;
+  break-after: auto;
+}
+
+/* 🖨️ 시스템 인쇄(Cmd + P) 시 스타일 */
+@page {
+  size: A4 landscape;
+  margin: 0;
+}
+
+@media print {
+  html body {
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    display: block;
+  }
+
+  .print-toolbar {
+    display: none;
+  }
+
+  .guidelines-main, #pdf-content {
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+
+  section {
+    width: 297mm;
+    height: 209.5mm;
+    margin: 0;
+    padding: 15mm;
+    page-break-after: always;
+    break-after: page;
+  }
+
+  body.is-portrait section {
+    width: 210mm;
+    height: 296.5mm;
+  }
+
+  section:last-of-type {
+    page-break-after: auto;
+    break-after: auto;
+  }
+}
+
+
+</style>
+
+<style is:global>
+.print-toolbar {
+    position: fixed;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0,0,0, 0.5);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    padding: var(--pad);
+    border-radius: 100px;
+    border: 0.5px rgba(255,255,255, 0.2) solid;
+    display: flex;
+    align-items: center;
+    gap: var(--pad);
+    z-index: 1;
+}
+
+.print-toolbar .divider {
+    width: 1px;
+    height: 20px;
+    background-color: #999;
+}
+
+.print-toolbar .icon-btn {
+    background: transparent;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    
+    padding: 10px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: all 0.5s var(--motion);
+}
+
+.print-toolbar .icon-btn:hover {
+    color: #fff;
+    background-color: #999;
+}
+
+.print-toolbar .icon-btn.active {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+</style>

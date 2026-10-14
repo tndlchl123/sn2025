@@ -108,9 +108,11 @@ html body {
 
   margin: 0; padding: 0;
 }
+
 html body.default-body {
   padding: var(--pad);
 }
+
 /* layout */
 a, button, input, textarea {
   -webkit-tap-highlight-color: transparent;
