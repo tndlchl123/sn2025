@@ -345,8 +345,7 @@ import Layout from '@common/Design-Layout.astro';
 
     </div>
 
-
-  <img src="/iwoo/logo/1.webp" alt="백토 위 음각 로고">
+  <video src="/iwoo/logo/1.mp4" autoplay muted loop playsinline aria-label="로고 합성 이미지"></video>
 
 </section>
 
@@ -792,7 +791,8 @@ import Layout from '@common/Design-Layout.astro';
     </p>
   </div>
 
-  <img src="/iwoo/grid/1.gif" alt="그리드 적용 예시 애니메이션" style="background-color: var(--iw-0);">
+  <video src="/iwoo/grid/1.mp4" autoplay muted loop playsinline aria-label="그리드 적용 예시 애니메이션"></video>
+
 
   <div class="box-1">
     <div class="custom-slider">
@@ -942,10 +942,10 @@ p { margin: 0; } button { border: none; } input, textarea, select, button, .iw-t
   --iw-2: #dcdee2;
   --iw-3: #7b95aa;
   --iw-4: #1d2c3f;
-  --iw-5: #0a141e; 
+  --iw-5: #0a141e;
   --iw-6: #1e1411;
   --iw-7: #3e312a;
-  --iw-8: #726558; 
+  --iw-8: #726558;
 
   --iw-0r: 20, 23, 25;
   --iw-1r: 236, 238, 242;
@@ -1237,6 +1237,12 @@ img {
   display: block;
 }
 
+
+video {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+}
 </style>
 
 
@@ -1318,11 +1324,9 @@ width: 60%;
 
 
 
+
 /* 1. 단일 비디오 */
 .iw-1 > video {
-  display: block;
-  width: 100%;
-  object-fit: cover;
   padding-inline: var(--iw-space);
 }
 
@@ -1950,9 +1954,6 @@ width: 60%;
   padding-inline: 0;
 }
 .iw-taglinevalue video {
-  display: block;
-  width: 100%;
-  object-fit: cover;
   padding-bottom: var(--iw-space);
 }
 
@@ -2596,6 +2597,7 @@ width: 60%;
 
 /* 폰트 정보(p) */
 .iw-typography .font-info-display {
+  visibility: hidden;
   pointer-events: none;
   z-index: 1;
   font-family: 'Geist mono';
@@ -3081,6 +3083,7 @@ width: 60%;
   padding-bottom: 10vw;
   width: 60%;
 }
+
 .iw-grid .box-1,
 .iw-grid .box-2 {
   display: flex;
@@ -3213,11 +3216,7 @@ width: 60%;
   margin: 0;
   
 }
-.iw-applications video {
-  display: block;
-  width: 100%;
-  object-fit: cover;
-}
+
 
 /* 첫 번째 이미지 */
 .iw-applications .box-stationery img:first-of-type {

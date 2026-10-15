@@ -19,7 +19,7 @@ const { title = "sn2025" } = Astro.props;
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" is:inline></script>
     </head>
-    
+
     <body>
       <main class="guidelines-main" id="pdf-content">
         <slot />
@@ -133,6 +133,29 @@ const { title = "sn2025" } = Astro.props;
 
         document.addEventListener('astro:page-load', initPdfToolbar);
         document.addEventListener('DOMContentLoaded', initPdfToolbar);
+      </script>
+
+      <!-- svg 복사 -->
+      <script>
+        const wrappers = document.querySelectorAll('.svg-wrapper');
+
+        wrappers.forEach((wrapper) => {
+          wrapper.addEventListener('click', async () => {
+            const svg = wrapper.querySelector('svg');
+            if (!svg) return;
+
+            try {
+              // SVG 전체 코드를 클립보드에 복사
+              await navigator.clipboard.writeText(svg.outerHTML);
+              
+              // 복사 완료 피드백 (잠깐 클래스 추가)
+              wrapper.classList.add('copied');
+              setTimeout(() => wrapper.classList.remove('copied'), 1200);
+            } catch (err) {
+              console.error('SVG 복사 실패:', err);
+            }
+          });
+        });
       </script>
       
     </body>
@@ -277,6 +300,7 @@ body.pdf-exporting section:last-of-type {
 
 </style>
 
+<!-- 하단 툴바 -->
 <style is:global>
 .print-toolbar {
     position: fixed;
