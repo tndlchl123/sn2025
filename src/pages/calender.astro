@@ -166,6 +166,8 @@ html, body {
   flex: 1; 
   opacity: 0.3;
   transition: all 0.5s var(--motion);
+
+  z-index: 1;
 }
 
 .nav_item.active {
@@ -521,9 +523,14 @@ window.renderCalendar = async function(isSilentUpdate = false) {
     board.innerHTML = ''; 
     if (!isSilentUpdate) board.className = `timeline_board view_${window.currentView} slide_prep`;
 
+    // 💡 현재 언어 상태 확인 (새로 그려질 때 현재 언어에 맞게 바로 출력하기 위함)
+    const isEnglish = localStorage.getItem('isEnglish') === 'true';
+
     // [ YEAR 렌더링 ]
     if (window.currentView === 'year') {
-        const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        // 💡 영어 배열과 한국어 배열 분리
+        const monthNamesEn = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        const monthNamesKo = ["일월", "이월", "삼월", "사월", "오월", "유월", "칠월", "팔월", "구월", "시월", "십일월", "십이월"];
         
         let srSummary = `<div class="sr-only" tabindex="0"><h3>${y}년 달력 요약</h3>`;
         const shortYear = String(y).slice(-2);
@@ -535,7 +542,6 @@ window.renderCalendar = async function(isSilentUpdate = false) {
             yearEvents.forEach(ev => {
                 const startM = parseInt(ev.start.split('/')[1], 10);
                 const endM = parseInt(ev.end.split('/')[1], 10);
-                // ⭐️ ev.title 제거됨
                 srSummary += `<p>대략 ${startM}월부터 ${endM}월 사이에 일정이 있습니다.</p>`;
             });
         }
@@ -552,7 +558,14 @@ window.renderCalendar = async function(isSilentUpdate = false) {
         });
         
         for (let i = 0; i < 12; i++) {
-            yearHtmlStr += `<span class="year_month_label">${monthNames[i]}</span>`;
+            // 💡 번역 스크립트가 인식할 수 있도록 클래스와 데이터 속성 부여
+            const mEn = monthNamesEn[i];
+            const mKo = monthNamesKo[i];
+            const displayMonth = isEnglish ? mEn : mKo;
+            
+            // 여기에 translate 클래스가 들어갑니다!
+            yearHtmlStr += `<span class="year_month_label translate" data-en="${mEn}" data-ko="${mKo}">${displayMonth}</span>`;
+            
             let daysInMonth = new Date(y, i + 1, 0).getDate(); 
             for (let d = 1; d <= daysInMonth; d++) {
                 let dotw = new Date(y, i, d).getDay();
@@ -576,7 +589,6 @@ window.renderCalendar = async function(isSilentUpdate = false) {
         let hasData = false;
         const thisMonthPrefix = `${y}-${String(m+1).padStart(2, '0')}`;
 
-        // 1. 해당 월 공휴일 안내
         Object.keys(holidaysMap).forEach(date => {
             if (date.startsWith(thisMonthPrefix)) {
                 srSummary += `<p>${parseInt(date.split('-')[2], 10)}일은 ${holidaysMap[date]}입니다.</p>`;
@@ -584,7 +596,6 @@ window.renderCalendar = async function(isSilentUpdate = false) {
             }
         });
 
-        // 2. 해당 월 프로젝트 일정 상세 안내
         const shortY = String(y).slice(-2);
         const shortM = String(m+1).padStart(2, '0');
         window.projectEvents.forEach(ev => {
@@ -598,11 +609,20 @@ window.renderCalendar = async function(isSilentUpdate = false) {
         srSummary += `</div>`;
 
         let monthHtmlStr = `<div aria-hidden="true" style="display:contents;">`; 
-        const daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"];
         
-        daysOfWeek.forEach((day, index) => {
+        // 💡 영어/한국어 요일 배열 분리
+        const daysOfWeekEn = ["S", "M", "T", "W", "T", "F", "S"];
+        const daysOfWeekKo = ["일", "월", "화", "수", "목", "금", "토"];
+        
+        daysOfWeekEn.forEach((dayEn, index) => {
             let holiClass = (index === 0 || index === 6) ? ' holiday' : '';
-            monthHtmlStr += `<div class="grid_header${holiClass}">${day}</div>`;
+            
+            // 💡 번역 스크립트 연동을 위한 데이터 준비
+            let dayKo = daysOfWeekKo[index];
+            let displayDay = isEnglish ? dayEn : dayKo;
+            
+            // 여기에 translate 클래스가 들어갑니다!
+            monthHtmlStr += `<div class="grid_header${holiClass} translate" data-en="${dayEn}" data-ko="${dayKo}">${displayDay}</div>`;
         });
 
         const eventRanges = window.projectEvents.map(ev => {
@@ -642,9 +662,13 @@ window.renderCalendar = async function(isSilentUpdate = false) {
         void board.offsetWidth; 
         board.classList.remove('slide_prep');
         
-        // ⭐️ 새로운 화면이 다 그려지고 나면 억지로 잡고 있던 높이 제한을 부드럽게 해제
         setTimeout(() => {
             board.style.minHeight = '';
+            
+            // 💡 달력이 그려진 직후, 새롭게 생성된 translate 요소들을 번역 JS가 인식하도록 업데이트
+            if (typeof window.applyLanguageState === 'function') {
+                window.applyLanguageState(true);
+            }
         }, 500);
     }
 };

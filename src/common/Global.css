@@ -140,26 +140,10 @@ a, button, input, textarea {
   transition: all 0.5s var(--motion);
 }
 
-
-/* 사이트 내 모든 이미지와 비디오에 기본 적용 */
-img, video {
-  opacity: 0;
-  
-  /* 크로스 브라우징을 위한 webkit 추가 */
-  -webkit-filter: blur(10px);
-  filter: blur(10px);
-  
-  /* var(--motion) 변수 사용 및 webkit-filter 트랜지션 추가 */
-  transition: opacity var(--motion), filter var(--motion), -webkit-filter var(--motion);
-  
-  /* 블러가 가장자리 밖으로 튀어나오지 않게 이미지 테두리에 맞춰 잘라냄 */
-  -webkit-clip-path: inset(0);
-  clip-path: inset(0);
-}
-
-/* 로딩 완료 후 스크립트가 클래스를 붙여주면 선명해짐 */
-img.is-loaded, video.is-loaded {
-  opacity: 1;
-  -webkit-filter: blur(0);
-  filter: blur(0);
+.basic-txt {
+  font-family: 'Geist', sans-serif;
+  color: var(--txt-color);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
 }

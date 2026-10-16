@@ -20,7 +20,6 @@ import Layout from '@common/Layout.astro';
 <!-- grid col -->
 <style>
     section {
-        
         width: 100%;
 
         display: grid;
@@ -28,6 +27,7 @@ import Layout from '@common/Layout.astro';
         
         gap: var(--pad);
     }
+
     section > * {
         min-width: 0;
     }
@@ -58,7 +58,7 @@ import Layout from '@common/Layout.astro';
         font-family: 'Asta Sans', sans-serif;
 
         font-size: 3.5vw;
-        font-weight: 350;
+        font-weight: 600;
         line-height: 1.2;
         
     }
@@ -66,7 +66,6 @@ import Layout from '@common/Layout.astro';
     /* 번역: 영어 */
     :global(html:has(.lang-toggle-btn.active)) .main-typo.translate {
         font-family: 'Geist', sans-serif;
-        font-weight: 600;
         line-height: 1;
     }
 
@@ -81,7 +80,6 @@ import Layout from '@common/Layout.astro';
     @media (max-width: 768px) {
         .main-typo {
             font-size: 6vw;
-            font-weight: 500;
         }
     }
 
@@ -89,7 +87,6 @@ import Layout from '@common/Layout.astro';
 
 
 <style>
-
 .test {
     width: 100%;
     height: 100vh;

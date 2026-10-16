@@ -3,59 +3,565 @@ import Layout from '@common/Layout.astro';
 ---
 
 <Layout title="works">
-  <div class="works-grid">
-    <a href="/works/IWOO" class="work-item">
+  <!-- 1. 필터 및 검색 영역 -->
+  <div class="filter-container">
+    <div class="filter-tabs">
+      
+      <!-- All -->
+      <button class="filter-btn active" data-filter="all">
+        <span class="sr-only">전체</span>
+        <span class="rolling-text" aria-hidden="true">
+          <span class="char" data-char="a" style="--i: 1;" aria-hidden="true">a</span>
+          <span class="char" data-char="l" style="--i: 2;" aria-hidden="true">l</span>
+          <span class="char" data-char="l" style="--i: 3;" aria-hidden="true">l</span>
+        </span>
+      </button>
+
+      <!-- Works -->
+      <button class="filter-btn" data-filter="works">
+        <span class="sr-only">작업물</span>
+        <span class="rolling-text" aria-hidden="true">
+          <span class="char" data-char="w" style="--i: 1;" aria-hidden="true">w</span>
+          <span class="char" data-char="o" style="--i: 2;" aria-hidden="true">o</span>
+          <span class="char" data-char="r" style="--i: 3;" aria-hidden="true">r</span>
+          <span class="char" data-char="k" style="--i: 4;" aria-hidden="true">k</span>
+          <span class="char" data-char="s" style="--i: 5;" aria-hidden="true">s</span>
+        </span>
+      </button>
+
+      <!-- Lab -->
+      <button class="filter-btn" data-filter="lab">
+        <span class="sr-only">실험작</span>
+        <span class="rolling-text" aria-hidden="true">
+          <span class="char" data-char="l" style="--i: 1;" aria-hidden="true">l</span>
+          <span class="char" data-char="a" style="--i: 2;" aria-hidden="true">a</span>
+          <span class="char" data-char="b" style="--i: 3;" aria-hidden="true">b</span>
+        </span>
+      </button>
+
+      <!-- Brand -->
+      <button class="filter-btn" data-filter="brand">
+        <span class="sr-only">브랜드</span>
+        <span class="rolling-text" aria-hidden="true">
+          <span class="char" data-char="b" style="--i: 1;" aria-hidden="true">b</span>
+          <span class="char" data-char="r" style="--i: 2;" aria-hidden="true">r</span>
+          <span class="char" data-char="a" style="--i: 3;" aria-hidden="true">a</span>
+          <span class="char" data-char="n" style="--i: 4;" aria-hidden="true">n</span>
+          <span class="char" data-char="d" style="--i: 5;" aria-hidden="true">d</span>
+        </span>
+      </button>
+
+      <!-- Web -->
+      <button class="filter-btn" data-filter="web">
+        <span class="sr-only">웹</span>
+        <span class="rolling-text" aria-hidden="true">
+          <span class="char" data-char="w" style="--i: 1;" aria-hidden="true">w</span>
+          <span class="char" data-char="e" style="--i: 2;" aria-hidden="true">e</span>
+          <span class="char" data-char="b" style="--i: 3;" aria-hidden="true">b</span>
+        </span>
+      </button>
+
+      <!-- Editorial -->
+      <button class="filter-btn" data-filter="editorial">
+        <span class="sr-only">편집</span>
+        <span class="rolling-text" aria-hidden="true">
+          <span class="char" data-char="e" style="--i: 1;" aria-hidden="true">e</span>
+          <span class="char" data-char="d" style="--i: 2;" aria-hidden="true">d</span>
+          <span class="char" data-char="i" style="--i: 3;" aria-hidden="true">i</span>
+          <span class="char" data-char="t" style="--i: 4;" aria-hidden="true">t</span>
+          <span class="char" data-char="o" style="--i: 5;" aria-hidden="true">o</span>
+          <span class="char" data-char="r" style="--i: 6;" aria-hidden="true">r</span>
+          <span class="char" data-char="i" style="--i: 7;" aria-hidden="true">i</span>
+          <span class="char" data-char="a" style="--i: 8;" aria-hidden="true">a</span>
+          <span class="char" data-char="l" style="--i: 9;" aria-hidden="true">l</span>
+        </span>
+      </button>
+
+    </div>
+
+    <div class="filter-search">
+      <input type="text" id="work-search" class="search-input" placeholder="search" aria-label="검색">
+    </div>
+  </div>
+
+  <!-- 2. 그리드 영역 -->
+  <div class="works-grid" id="works-grid">
+    <a href="/works/IWOO" class="work-item" data-category="works web" data-title="iwoo 이우 브랜드">
       <img src="/test/1-1.webp" alt="테스트 이미지 1-1">
+      <div class="item-tags">
+        <span class="tag-badge translate" 
+        data-en="eng" data-ko="kor"></span>
+      </div>
     </a>
-    <a href="/works/project-2" class="work-item">
+
+    <a href="/works/project-2" class="work-item" data-category="lab editorial" data-title="project 2 실험작">
       <img src="/test/3-4.webp" alt="테스트 이미지 3-4">
     </a>
-    <a href="/works/project-3" class="work-item">
+
+    <a href="/works/project-3" class="work-item" data-category="works brand" data-title="project 3">
+      <img src="/test/4-5.webp" alt="테스트 이미지 4-3">
+    </a>
+
+    <a href="/works/project-3" class="work-item" data-category="lab web" data-title="project 3">
+      <img src="/test/9-16.webp" alt="테스트 이미지 4-3">
+    </a>
+
+    <a href="/works/project-3" class="work-item" data-category="works editorial" data-title="project 3">
+      <img src="/test/16-9.webp" alt="테스트 이미지 4-3">
+    </a>
+
+    <a href="/works/project-3" class="work-item" data-category="lab brand" data-title="project 3">
       <img src="/test/4-3.webp" alt="테스트 이미지 4-3">
     </a>
-    <a href="/works/project-4" class="work-item">
-      <img src="/test/4-5.webp" alt="테스트 이미지 4-5">
-    </a>
-    <a href="/works/project-5" class="work-item">
-      <img src="/test/5-4.webp" alt="테스트 이미지 5-4">
-    </a>
-    <a href="/works/project-6" class="work-item">
-      <img src="/test/9-16.webp" alt="테스트 이미지 9-16">
-    </a>
-    <a href="/works/project-7" class="work-item">
-      <img src="/test/16-9.webp" alt="테스트 이미지 16-9">
-    </a>
   </div>
+  
 </Layout>
 
+<!-- 필터 / 검색창 -->
 <style>
-  /* 웍스 페이지 전체 여백 설정 */
-  .works-container {
-    max-width: 100%;
+.filter-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--pad);
+  padding-bottom: 5vh;
+
+  /* 기준 폰트 스타일 */
+  font-family: 'Geist', sans-serif;
+  color: var(--txt-color);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 1rem;
+}
+
+/* 기본 버튼 스타일 */
+.filter-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+
+  font: inherit;
+  color: inherit;
+  opacity: 0.3;
+  transition: opacity var(--motion);
+  
+  /* 롤링을 위해 튀어나온 글자 숨김 */
+  display: inline-flex;
+  overflow: hidden;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  opacity: 1;
+}
+
+/* 2. 롤링 텍스트를 감싸는 프레임 (대기 중인 글자 숨김) */
+.filter-btn .rolling-text {
+  display: inline-flex;
+  overflow: hidden;
+  height: 1.2em; 
+  padding-right: 2px;
+}
+
+/* 3. 개별 글자 세팅 */
+.filter-btn .char {
+  display: inline-block;
+  position: relative;
+  transition: all 0.5s var(--motion);
+  transition-delay: calc(var(--i) * 0.02s); 
+}
+
+/* 4. 밑에 숨어서 대기 중인 복제 텍스트 */
+.filter-btn .char::after {
+  content: attr(data-char);
+  position: absolute;
+  left: 0;
+  top: 100%; 
+  width: 100%;
+}
+
+/* 5. 마우스를 올리거나 활성화(.active)되면 전체 글자를 끌어올림 */
+.filter-btn:hover .char,
+.filter-btn.active .char { 
+  transform: translateY(-100%);
+}
+
+.search-input {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  outline: none;
+  width: 10vw;
+
+  /* 부모(.filter-container) 폰트/색상 상속 */
+  font: inherit;
+  color: inherit;
+}
+
+.search-input::placeholder {
+  color: inherit;
+  opacity: 0.4;
+}
+
+@media (max-width: 768px) {
+  .filter-container {
+    flex-direction: column;
+    align-items: flex-start;
   }
-
-  /* CSS 그리드 설정 */
-  .works-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: var(--pad);
-
-  }
-
-  .work-item {
-    display: block;
-    text-decoration: none;
-    overflow: hidden;
-
-    
-  }
-
-  .work-item img {
-    display: block;
+  .search-input {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+  }
+}
+</style>
+
+<!-- 그리드 아이템 -->
+<style>
+.works-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* gap: calc(var(--pad) / 10); */
+  gap: var(--pad);
+  align-items: start; /* 각 아이템이 딱지 공간만큼 알아서 차지하게 함 */
+}
+
+.work-item {
+  display: block;
+  text-decoration: none;
+  overflow: hidden;
+  opacity: 1;
+  
+  transform: translate3d(0, 0, 0) scale(1);
+  transition: all 0.5s var(--motion);
+  will-change: transform, opacity;
+}
+
+.work-item img {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+
+  border-radius: var(--pad);
+}
+
+@media (max-width: 768px) {
+  .works-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<!-- 딱지(데이터 카테고리) -->
+<style is:global>
+.item-tags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  padding-block: var(--pad);
+}
+
+.tag-badge {
+  padding: 5px 10px;
+
+  border-radius: 5px;
+
+  background-color: rgba(var(--txt-color-r), 1);
+  color: var(--bg-color);
+
+  transition: all 0.5s var(--motion);
+}
+
+/* 활성화 시 포인트 컬러 */
+.tag-badge.point-bg {
+  background-color: rgba(var(--dynamic-point-r), 1);
+}
+
+
+@media (max-width: 768px) {
+  .item-tags {
+    gap: 2px;
   }
 
+  .tag-badge,
+  .auto-tag {
+    font-size: 0.8rem;
+  }
+}
 
 </style>
+
+<!-- 필터 애니메이션 -->
+<style>
+
+/* 사라질 때만 투명해지며 축소 */
+.work-item.is-vanishing {
+  opacity: 0;
+  transform: translate3d(0, 0, 0) scale(0.85);
+  pointer-events: none;
+}
+
+/* 레이아웃에서 완전히 제외 */
+.work-item.is-hidden {
+  display: none;
+}
+
+</style>
+
+<!-- 이미지 이동 -->
+<script is:inline>
+if (typeof document !== 'undefined') {
+  const initWorksFilter = () => {
+    const grid = document.getElementById('works-grid');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const searchInput = document.getElementById('work-search');
+    const workItems = document.querySelectorAll('.work-item');
+
+    if (!grid || !filterBtns.length || !workItems.length) return;
+
+    let filterTimeout;
+
+    // CSS var(--motion)에 설정된 전환 시간을 자동으로 읽어오는 함수
+    const getMotionDuration = (el) => {
+      const durationStr = window.getComputedStyle(el).transitionDuration.split(',')[0].trim();
+      if (!durationStr) return 400;
+      if (durationStr.endsWith('ms')) return parseFloat(durationStr) || 400;
+      if (durationStr.endsWith('s')) return (parseFloat(durationStr) * 1000) || 400;
+      return 400;
+    };
+
+    const categoryMap = {};
+    filterBtns.forEach(btn => {
+      const filterKey = btn.dataset.filter;
+      const srText = btn.querySelector('.sr-only');
+      if (filterKey && srText) {
+        categoryMap[filterKey] = srText.textContent.trim().toLowerCase();
+      }
+    });
+
+    // 카테고리 및 텍스트 일치 여부 확인
+    const checkMatch = (item, filter, keyword) => {
+      const category = item.dataset.category || 'all'; // 예: "works brand"
+      const dataTitle = item.dataset.title || '';
+      const altTexts = Array.from(item.querySelectorAll('img')).map(img => img.alt || '').join(' ');
+      
+      // 핵심: "works brand" 같은 영문 카테고리를 "작업물 브랜드"라는 한글로 자동 변환
+      const koreanCategories = category.split(' ').map(c => categoryMap[c] || '').join(' ');
+      
+      // 검색 가능한 텍스트에 영문 카테고리와 한글 카테고리 모두 포함
+      const searchableText = `${category} ${koreanCategories} ${dataTitle} ${altTexts} ${item.textContent}`.toLowerCase();
+
+      const matchCategory = (filter === 'all') || category.split(' ').includes(filter);
+      const matchKeyword = (keyword === '') || searchableText.includes(keyword);
+      
+      return matchCategory && matchKeyword;
+    };
+
+    const runFilter = (filter, keyword = '') => {
+      keyword = keyword.toLowerCase().trim();
+      let hasVanishingItems = false;
+
+      // 1단계: 조건에 맞지 않는 요소만 먼저 투명하게 사라지도록 처리
+      workItems.forEach(item => {
+        const isMatch = checkMatch(item, filter, keyword);
+
+        if (!item.classList.contains('is-hidden') && !isMatch) {
+          item.classList.add('is-vanishing');
+          hasVanishingItems = true;
+        } else if (isMatch) {
+          item.classList.remove('is-vanishing');
+        }
+      });
+
+      const delay = hasVanishingItems ? getMotionDuration(workItems[0]) : 0;
+
+      clearTimeout(filterTimeout);
+      filterTimeout = setTimeout(() => {
+        // 2단계: 화면에 남아있던 요소들의 이동 전 좌표 저장 (First)
+        const firstRects = new Map();
+        workItems.forEach(item => {
+          const isMatch = checkMatch(item, filter, keyword);
+          if (!item.classList.contains('is-hidden') && isMatch) {
+            firstRects.set(item, item.getBoundingClientRect());
+          }
+        });
+
+        // 3단계: 실제 DOM 표시/숨김 반영 (Last)
+        const newlyShownItems = [];
+        workItems.forEach(item => {
+          const isMatch = checkMatch(item, filter, keyword);
+          if (!isMatch) {
+            item.classList.add('is-hidden');
+            item.classList.remove('is-vanishing');
+          } else {
+            if (item.classList.contains('is-hidden')) {
+              item.classList.remove('is-hidden');
+              newlyShownItems.push(item);
+            }
+            item.classList.remove('is-vanishing');
+          }
+        });
+
+        // 4단계: 이동 거리 계산 및 시작 위치 고정 (Invert)
+        workItems.forEach(item => {
+          if (item.classList.contains('is-hidden')) return;
+
+          const first = firstRects.get(item);
+          if (first) {
+            const last = item.getBoundingClientRect();
+            const dx = first.left - last.left;
+            const dy = first.top - last.top;
+
+            if (dx !== 0 || dy !== 0) {
+              item.style.transition = 'none';
+              item.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+            }
+          }
+        });
+
+        // 새로 나타나는 아이템도 투명도 변화 없이 살짝 아래에서 슬라이드하며 합류
+        newlyShownItems.forEach(item => {
+          item.style.transition = 'none';
+          item.style.transform = 'translate3d(0, 35px, 0) scale(0.95)';
+        });
+
+        // 5단계: 브라우저 리플로우 강제 실행 후 CSS var(--motion)으로 슬라이드 이동 (Play)
+        void grid.offsetHeight;
+
+        workItems.forEach(item => {
+          if (item.classList.contains('is-hidden')) return;
+          item.style.transition = '';
+          item.style.transform = '';
+        });
+      }, delay);
+    };
+
+    // 탭 버튼 클릭
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filter = btn.dataset.filter || 'all';
+        const keyword = searchInput ? searchInput.value : '';
+        runFilter(filter, keyword);
+      });
+    });
+
+    // 검색어 입력
+    let debounceTimer;
+    if (searchInput) {
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') e.preventDefault();
+      });
+
+      searchInput.addEventListener('input', (e) => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          const activeBtn = document.querySelector('.filter-btn.active');
+          const filter = activeBtn ? activeBtn.dataset.filter : 'all';
+          runFilter(filter, e.target.value);
+        }, 300);
+      });
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', initWorksFilter);
+  document.addEventListener('astro:page-load', initWorksFilter);
+}
+</script>
+
+<!-- 데이터 카테고리 딱지 -->
+<script is:inline>
+if (typeof document !== 'undefined') {
+  const initCategoryBadges = () => {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const workItems = document.querySelectorAll('.work-item');
+
+    if (!filterBtns.length || !workItems.length) return;
+
+    // 1. 영어-한글 매핑
+    const categoryMap = {};
+    filterBtns.forEach(btn => {
+      const filterKey = btn.dataset.filter;
+      const srText = btn.querySelector('.sr-only');
+      if (filterKey && srText) {
+        categoryMap[filterKey] = srText.textContent.trim();
+      }
+    });
+
+    // 현재 언어 상태 확인
+    const isEng = localStorage.getItem('isEnglish') === 'true';
+
+    // 2. 딱지 생성 및 번역 속성 부여 로직
+    workItems.forEach(item => {
+      const categories = (item.dataset.category || '').split(' ').filter(Boolean);
+      if (categories.length === 0) return;
+
+      let tagContainer = item.querySelector('.item-tags');
+      if (!tagContainer) {
+        tagContainer = document.createElement('div');
+        tagContainer.className = 'item-tags';
+        item.appendChild(tagContainer);
+      }
+
+      categories.forEach(cat => {
+        let badge = tagContainer.querySelector(`.auto-tag[data-cat="${cat}"]`);
+        
+        if (!badge) {
+          badge = document.createElement('span');
+          // 💡 핵심: 번역 스크립트가 인식하도록 'translate' 클래스를 꼭 넣어줍니다!
+          badge.className = 'tag-badge auto-tag translate';
+          badge.dataset.cat = cat;
+
+          // 딱지 클릭 시 상단 필터 연동
+          badge.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            e.stopPropagation(); 
+            const targetBtn = document.querySelector(`.filter-btn[data-filter="${cat}"]`);
+            if (targetBtn) targetBtn.click();
+          });
+          
+          tagContainer.appendChild(badge);
+        }
+
+        // 💡 핵심: 번역 스크립트가 읽어갈 data-en과 data-ko 세팅
+        const engText = cat;
+        const korText = categoryMap[cat] || cat;
+        
+        badge.setAttribute('data-en', engText);
+        badge.setAttribute('data-ko', korText);
+
+        // 현재 언어 상태에 맞춰 초기 텍스트 지정
+        badge.textContent = isEng ? engText : korText;
+      });
+    });
+
+    // 3. 필터 딱지 색상(포인트 컬러) 변경 이벤트
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const activeFilter = btn.dataset.filter;
+        
+        workItems.forEach(item => {
+          const autoTags = item.querySelectorAll('.auto-tag');
+          autoTags.forEach(tag => {
+            if (activeFilter !== 'all' && tag.dataset.cat === activeFilter) {
+              tag.classList.add('point-bg');
+            } else {
+              tag.classList.remove('point-bg');
+            }
+          });
+        });
+      });
+    });
+  };
+
+  document.addEventListener('DOMContentLoaded', initCategoryBadges);
+  document.addEventListener('astro:page-load', initCategoryBadges);
+}
+</script>

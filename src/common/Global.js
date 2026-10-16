@@ -8,45 +8,47 @@ if (typeof window !== 'undefined') {
 
     let isEnglish = localStorage.getItem('isEnglish') === 'true'; 
 
-    // 💡 1. [버튼 전용] 스크램블 함수 (롤링 span 구조 유지)
+    // 1. [버튼/네비게이션 전용] 스크램블 함수
     const scrambleBtnText = (el, finalTxt) => {
       const chars = 'abcdefghijklmnopqrstuvwxyz'; 
       let count = 0;
       const astroAttr = Array.from(el.attributes).find(attr => attr.name.startsWith('data-astro-cid'))?.name || '';
       
       const interval = setInterval(() => {
-        el.textContent = finalTxt.split('').map(() => chars[Math.floor(Math.random() * chars.length)]).join('');
+        // 띄어쓰기는 스크램블 시 문자열 길이 유지를 위해 공백 유지
+        el.textContent = finalTxt.split('').map(char => 
+          char === ' ' ? ' ' : chars[Math.floor(Math.random() * chars.length)]
+        ).join('');
+        
         if (++count > 5) { 
           clearInterval(interval);
-          el.innerHTML = finalTxt.split('').map((c, i) => 
-            `<span class="char" data-char="${c}" style="--i: ${i+1};" aria-hidden="true" ${astroAttr}>${c}</span>`
-          ).join('');
+          el.innerHTML = finalTxt.split('').map((c, i) => {
+            const charContent = c === ' ' ? '&nbsp;' : c;
+            return `<span class="char" data-char="${charContent}" style="--i: ${i+1};" aria-hidden="true" ${astroAttr}>${charContent}</span>`;
+          }).join('');
         }
       }, 50);
     };
 
-    // 💡 2. [본문 전용] 스크램블 함수 추가!
+    // 2. [본문 전용] 스크램블 함수
     const scrambleBodyText = (el, finalHTML) => {
       const chars = 'abcdefghijklmnopqrstuvwxyz'; 
       let count = 0;
       
-      // 본문 안에 있는 <br> 같은 HTML 태그가 텍스트로 노출되지 않도록 순수 텍스트만 추출
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = finalHTML;
       const plainText = tempDiv.textContent || '';
       
       const interval = setInterval(() => {
-        // 띄어쓰기(공백)는 그대로 둬서 레이아웃이 무너지는 걸 방지하고, 글자만 스크램블
         el.textContent = plainText.split('').map(char => 
           char.trim() === '' ? char : chars[Math.floor(Math.random() * chars.length)]
         ).join('');
         
         if (++count > 5) { 
           clearInterval(interval);
-          // 스크램블이 끝나면 원래의 줄바꿈(<br>) 등을 포함한 완전한 HTML로 렌더링
           el.innerHTML = finalHTML; 
         }
-      }, 50); // 버튼과 똑같이 0.05초 간격으로 돌아감
+      }, 50); 
     };
 
     // 3. 통합 적용 함수 
@@ -62,23 +64,30 @@ if (typeof window !== 'undefined') {
           
           if (targetHTML) {
             if (isInitialLoad) {
-              // 처음 접속 시에는 애니메이션 없이 텍스트 즉시 표시
               el.innerHTML = targetHTML; 
             } else {
-              // ★ 버튼을 클릭해서 언어를 바꿀 때는 본문도 스크램블 효과 실행!
               scrambleBodyText(el, targetHTML); 
+            }
+
+            const innerInput = el.querySelector('input');
+            if (innerInput) {
+              innerInput.placeholder = targetHTML;
+              innerInput.setAttribute('aria-label', targetHTML);
             }
           }
         });
       }
 
-      // [버튼 업데이트]
+      // ==========================================
+      // 💡 1. [ENG/KOR 토글 버튼 고유 업데이트]
+      // ==========================================
       toggleBtns.forEach(btn => {
         btn.classList.toggle('active', isEnglish);
-        
         const langText = btn.querySelector('.lang-text');
+        
         if (langText) {
-          const targetTxt = isEnglish ? 'eng' : 'kor';
+          // 한국어 모드일 때 'kor' 대신 '한글'로 표시되게 수정
+          const targetTxt = isEnglish ? 'eng' : '한글';
           
           if (isInitialLoad) {
             const astroAttr = Array.from(langText.attributes).find(attr => attr.name.startsWith('data-astro-cid'))?.name || '';
@@ -88,6 +97,68 @@ if (typeof window !== 'undefined') {
           } else {
             scrambleBtnText(langText, targetTxt);
           }
+        }
+      });
+
+      // ==========================================
+      // 💡 [검색창 스크램블 연동] 기존 버튼용 스크램블 원리 적용
+      // ==========================================
+      const searchInput = document.getElementById('work-search');
+      if (searchInput) {
+        const targetPlaceholder = isEnglish ? 'search' : '검색';
+
+        if (isInitialLoad) {
+          searchInput.placeholder = targetPlaceholder;
+          searchInput.setAttribute('aria-label', targetPlaceholder);
+        } else {
+          // 버튼들에서 쓰던 scrambleBtnText와 완전히 똑같은 원리의 스크램블 효과!
+          const chars = 'abcdefghijklmnopqrstuvwxyz'; 
+          let count = 0;
+          
+          const interval = setInterval(() => {
+            searchInput.placeholder = targetPlaceholder.split('').map(() => 
+              chars[Math.floor(Math.random() * chars.length)]
+            ).join('');
+            
+            if (++count > 5) { 
+              clearInterval(interval);
+              searchInput.placeholder = targetPlaceholder;
+              searchInput.setAttribute('aria-label', targetPlaceholder);
+            }
+          }, 50);
+        }
+      }
+
+      // ==========================================
+      // [필터, 연/월, PC/모바일 메뉴 통합 업데이트]
+      // ==========================================
+      const uiElements = document.querySelectorAll('.filter-btn, .timeline_filter_btn, .nav-links a:not(.logo-link), .mobile-nav a');
+
+      uiElements.forEach(el => {
+        const srText = el.querySelector('.sr-only');
+        const rollingText = el.querySelector('.rolling-text');
+        
+        if (!srText || !rollingText) return;
+
+        if (!el.dataset.eng) {
+          const engChars = Array.from(rollingText.querySelectorAll('.char'))
+            .map(c => c.getAttribute('data-char'))
+            .join('');
+          el.dataset.eng = engChars || el.dataset.filter || '';
+        }
+
+        const korStr = srText.textContent.trim();
+        const engStr = el.dataset.eng;
+        const targetStr = isEnglish ? engStr : korStr;
+        
+        if (isInitialLoad) {
+          const astroAttr = Array.from(rollingText.attributes).find(attr => attr.name.startsWith('data-astro-cid'))?.name || '';
+          rollingText.innerHTML = targetStr.split('').map((char, index) => {
+            const charContent = char === ' ' ? '&nbsp;' : char;
+            return `<span class="char" data-char="${charContent}" style="--i: ${index + 1};" aria-hidden="true" ${astroAttr}>${charContent}</span>`;
+          }).join('');
+        } else {
+          scrambleBtnText(rollingText, targetStr);
         }
       });
     };
@@ -147,44 +218,6 @@ document.addEventListener('astro:page-load', initLenis);
 document.querySelectorAll('img').forEach(img => img.setAttribute('draggable', 'false'));
 
 
-if (typeof document !== 'undefined') {
-  const initAutoSmoothMedia = () => {
-    // 1. 페이지 내의 모든 img, video 태그를 알아서 찾음
-    const medias = document.querySelectorAll('img, video');
-    
-    medias.forEach(media => {
-      // (선택) 이미지인 경우 브라우저 자체 지연 로딩(lazy) 속성 자동 부여
-      if (media.tagName.toLowerCase() === 'img' && !media.hasAttribute('loading')) {
-        media.setAttribute('loading', 'lazy');
-      }
 
-      // 2. 이미지 처리 (WebP, GIF, JPG 등)
-      if (media.tagName.toLowerCase() === 'img') {
-        // 이미 로딩이 끝난 상태라면 즉시 표시
-        if (media.complete) {
-          media.classList.add('is-loaded');
-        } else {
-          // 로딩이 완료되면 클래스 추가
-          media.addEventListener('load', () => media.classList.add('is-loaded'));
-          // 혹시 엑스박스가 뜨는 등 에러가 나도 화면에 아예 안 보이는 현상 방지
-          media.addEventListener('error', () => media.classList.add('is-loaded'));
-        }
-      } 
-      // 3. 비디오 처리 (MP4 등)
-      else if (media.tagName.toLowerCase() === 'video') {
-        // 비디오 데이터가 재생 가능할 만큼 로드되었는지 확인 (readyState 3 이상)
-        if (media.readyState >= 3) {
-          media.classList.add('is-loaded');
-        } else {
-          media.addEventListener('loadeddata', () => media.classList.add('is-loaded'));
-          media.addEventListener('error', () => media.classList.add('is-loaded'));
-        }
-      }
-    });
-  };
 
-  // Astro 렌더링 생명주기에 맞춰 알아서 실행
-  document.addEventListener('DOMContentLoaded', initAutoSmoothMedia);
-  document.addEventListener('astro:page-load', initAutoSmoothMedia);
-}
 
