@@ -13,6 +13,11 @@
 /* 키보드 접근성 유지 + 마우스 포커스 아웃라인 제거 */
 *:focus:not(:focus-visible) { outline: none; }
 
+/* 포인트 컬러 클래스 ----------------------------------------- */
+/* 배경색 */ .point-bg { background-color: rgba(var(--dynamic-point-r), 1); }
+/* 글자색 */ .point-txt { color: rgba(var(--dynamic-point-r), 1); }
+/* SVG */ .point-svg { fill: rgba(var(--dynamic-point-r), 1); }
+
 
 /* font */
 @font-face {
@@ -67,10 +72,15 @@ img {
 @media print {
   html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
-
+ /* var */
 :root {
+  font-family: 'Geist Mono', 'Asta Sans', sans-serif;
+  line-height: 1;
+
   --pad: 1.5vh;
   --rad: 1vh;
+
+  --motion: cubic-bezier(0.5, 0, 0, 1);
 
   --bg-color: #fff;
   --txt-color: #000;
@@ -78,10 +88,9 @@ img {
   --bg-color-r: 255, 255, 255;
   --txt-color-r: 0, 0, 0;
 
-  --motion: cubic-bezier(0.5, 0, 0, 1);
+  --dynamic-point-r: 44, 205, 242;
 
-  font-family: 'Geist Mono', 'Asta Sans', sans-serif;
-  line-height: 1;
+
 }
 
 html body {
@@ -129,4 +138,18 @@ a, button, input, textarea {
   color: inherit;
 
   transition: all 0.5s var(--motion);
+}
+
+
+/* 사이트 내 모든 이미지와 비디오에 기본 적용 */
+img, video {
+  opacity: 0;
+  filter: blur(10px);
+  transition: opacity 0.6s ease-out, filter 0.6s ease-out;
+}
+
+/* 로딩 완료 후 스크립트가 클래스를 붙여주면 선명해짐 */
+img.is-loaded, video.is-loaded {
+  opacity: 1;
+  filter: blur(0);
 }

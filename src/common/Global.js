@@ -147,6 +147,44 @@ document.addEventListener('astro:page-load', initLenis);
 document.querySelectorAll('img').forEach(img => img.setAttribute('draggable', 'false'));
 
 
+if (typeof document !== 'undefined') {
+  const initAutoSmoothMedia = () => {
+    // 1. 페이지 내의 모든 img, video 태그를 알아서 찾음
+    const medias = document.querySelectorAll('img, video');
+    
+    medias.forEach(media => {
+      // (선택) 이미지인 경우 브라우저 자체 지연 로딩(lazy) 속성 자동 부여
+      if (media.tagName.toLowerCase() === 'img' && !media.hasAttribute('loading')) {
+        media.setAttribute('loading', 'lazy');
+      }
 
+      // 2. 이미지 처리 (WebP, GIF, JPG 등)
+      if (media.tagName.toLowerCase() === 'img') {
+        // 이미 로딩이 끝난 상태라면 즉시 표시
+        if (media.complete) {
+          media.classList.add('is-loaded');
+        } else {
+          // 로딩이 완료되면 클래스 추가
+          media.addEventListener('load', () => media.classList.add('is-loaded'));
+          // 혹시 엑스박스가 뜨는 등 에러가 나도 화면에 아예 안 보이는 현상 방지
+          media.addEventListener('error', () => media.classList.add('is-loaded'));
+        }
+      } 
+      // 3. 비디오 처리 (MP4 등)
+      else if (media.tagName.toLowerCase() === 'video') {
+        // 비디오 데이터가 재생 가능할 만큼 로드되었는지 확인 (readyState 3 이상)
+        if (media.readyState >= 3) {
+          media.classList.add('is-loaded');
+        } else {
+          media.addEventListener('loadeddata', () => media.classList.add('is-loaded'));
+          media.addEventListener('error', () => media.classList.add('is-loaded'));
+        }
+      }
+    });
+  };
 
+  // Astro 렌더링 생명주기에 맞춰 알아서 실행
+  document.addEventListener('DOMContentLoaded', initAutoSmoothMedia);
+  document.addEventListener('astro:page-load', initAutoSmoothMedia);
+}
 

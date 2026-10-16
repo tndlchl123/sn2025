@@ -688,6 +688,70 @@ if (typeof document !== 'undefined') {
 }
 </script>
 
+<!-- point color -->
+<script is:inline>
+if (typeof document !== 'undefined') {
+  const initDynamicPointColor = () => {
+    // 1번(라이트-100), 2번(중간-50), 3번(다크-0) RGB 배열
+    const c1 = [0, 120, 255];
+    const c2 = [255, 80, 195];
+    const c3 = [199, 226, 45];
+
+    const updatePointColor = (val) => {
+      let r, g, b;
+
+      // 슬라이더 값이 50 ~ 100 사이 (2번 ➔ 1번으로 변환)
+      if (val >= 50) {
+        const p = (val - 50) / 50; // 0 ~ 1 비율
+        r = Math.round(c2[0] + (c1[0] - c2[0]) * p);
+        g = Math.round(c2[1] + (c1[1] - c2[1]) * p);
+        b = Math.round(c2[2] + (c1[2] - c2[2]) * p);
+      } 
+      // 슬라이더 값이 0 ~ 50 사이 (3번 ➔ 2번으로 변환)
+      else {
+        const p = val / 50; // 0 ~ 1 비율
+        r = Math.round(c3[0] + (c2[0] - c3[0]) * p);
+        g = Math.round(c3[1] + (c2[1] - c3[1]) * p);
+        b = Math.round(c3[2] + (c2[2] - c3[2]) * p);
+      }
+
+      // rgba로 쉽게 쓸 수 있도록 RGB 숫자만 변수로 저장
+      document.documentElement.style.setProperty('--dynamic-point-r', `${r}, ${g}, ${b}`);
+    };
+
+    // 현재 슬라이더 값을 가져와 즉시 실행
+    const slider = document.getElementById('home-slider');
+    if (slider) {
+      updatePointColor(parseFloat(slider.value));
+    } else {
+      // /works 등 슬라이더가 없는 페이지 대응
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      updatePointColor(isDark ? 0 : 100);
+    }
+
+    // ★ 핵심: 기존 스크립트가 <html> 태그의 style을 바꿀 때마다 함께 작동하도록 감지기 부착
+    // (기존 코드 수정 없이, 성능 저하 없이 완벽하게 애니메이션 싱크를 맞춤)
+    if (!window.__pointColorObserver) {
+      window.__pointColorObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+            const currentSlider = document.getElementById('home-slider');
+            if (currentSlider) {
+              updatePointColor(parseFloat(currentSlider.value));
+            }
+          }
+        });
+      });
+      window.__pointColorObserver.observe(document.documentElement, { attributes: true });
+    }
+  };
+
+  // Astro 렌더링 사이클에 등록
+  document.addEventListener('DOMContentLoaded', initDynamicPointColor);
+  document.addEventListener('astro:page-load', initDynamicPointColor);
+}
+</script>
+
 <!-- pc/mob: area hidden/label: for menu -->
 <script>
   const initMenuAccessibility = () => {
