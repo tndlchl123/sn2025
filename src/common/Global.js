@@ -2,7 +2,6 @@
 if (typeof window !== 'undefined') {
   const initLanguageToggle = () => {
     const toggleBtns = document.querySelectorAll('.lang-toggle-btn');
-    const targetElements = document.querySelectorAll('.translate');
     
     if (toggleBtns.length === 0) return;
 
@@ -53,6 +52,8 @@ if (typeof window !== 'undefined') {
 
     // 3. 통합 적용 함수 
     const applyLanguageState = (isInitialLoad = false) => {
+
+      const targetElements = document.querySelectorAll('.translate');
       
       // [본문 업데이트]
       if (targetElements.length > 0) {
@@ -163,6 +164,8 @@ if (typeof window !== 'undefined') {
       });
     };
 
+    window.applyLanguageState = applyLanguageState;
+
     applyLanguageState(true);
 
     toggleBtns.forEach(btn => {
@@ -177,6 +180,9 @@ if (typeof window !== 'undefined') {
   document.addEventListener('DOMContentLoaded', initLanguageToggle);
   document.addEventListener('astro:page-load', initLanguageToggle);
 }
+
+
+
 
 // 스크롤
 import Lenis from 'lenis';
@@ -205,7 +211,7 @@ const initLenis = () => {
   // 애니메이션 프레임에 Lenis 업데이트 연동
   const raf = (time) => {
     lenis.raf(time);
-    rafId = requestAnimationFrame(raf); // 💡 아이디를 저장하면서 반복
+    rafId = requestAnimationFrame(raf); 
   };
 
   rafId = requestAnimationFrame(raf); // 최초 실행

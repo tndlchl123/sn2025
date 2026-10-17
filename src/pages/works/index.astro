@@ -86,15 +86,17 @@ import Layout from '@common/Layout.astro';
 
   <!-- 2. 그리드 영역 -->
   <div class="works-grid" id="works-grid">
+
     <a href="/works/IWOO" class="work-item" data-category="works web" data-title="iwoo 이우 브랜드">
       <img src="/test/1-1.webp" alt="테스트 이미지 1-1">
+      <!-- 수동 딱지 -->
       <div class="item-tags">
-        <span class="tag-badge translate" 
+        <span class="tag-badge translate"
         data-en="eng" data-ko="kor"></span>
       </div>
     </a>
 
-    <a href="/works/project-2" class="work-item" data-category="lab editorial" data-title="project 2 실험작">
+    <a href="/works/test-2" class="work-item open-modal" data-category="lab editorial" data-title="project 2 실험작">
       <img src="/test/3-4.webp" alt="테스트 이미지 3-4">
     </a>
 
@@ -113,8 +115,14 @@ import Layout from '@common/Layout.astro';
     <a href="/works/project-3" class="work-item" data-category="lab brand" data-title="project 3">
       <img src="/test/4-3.webp" alt="테스트 이미지 4-3">
     </a>
+
   </div>
-  
+
+  <!-- 모달 빈 껍데기 -->
+  <div id="content_modal" class="works-modal-overlay">
+    <div class="works-modal-box"><div id="modal_content_area"></div></div>
+  </div>
+
 </Layout>
 
 <!-- 필터 / 검색창 -->
@@ -215,6 +223,14 @@ import Layout from '@common/Layout.astro';
     flex-direction: column;
     align-items: flex-start;
   }
+
+  /* 필터 탭들을 가로가 아닌 세로로 일렬 배치 */
+  .filter-tabs {
+    flex-direction: column; 
+    align-items: flex-start;
+    gap: 0; 
+  }
+
   .search-input {
     width: 100%;
   }
@@ -312,6 +328,78 @@ import Layout from '@common/Layout.astro';
 }
 
 </style>
+
+<!-- 모달창 -->
+<style>
+/* 모달 배경 */
+.works-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  background-color: rgba(var(--txt-color-r), 0.5); 
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+
+  z-index: 10;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* 스르륵 나타나기 위한 세팅 (숨김 상태) */
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.5s var(--motion), visibility 0.5s var(--motion);
+}
+
+/* JS로 .show 클래스가 붙었을 때 (스르륵 나타남) */
+.works-modal-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+/* 모달 내용 박스 */
+.works-modal-box {
+  background-color: var(--bg-color);
+  width: 90%;
+  max-width: 80vw;
+  max-height: 80vh;
+
+  padding: var(--pad);
+
+  border-radius: var(--pad);
+  position: relative;
+
+  overflow-y: auto; 
+  -ms-overflow-style: none;
+  scrollbar-width: none; 
+  overscroll-behavior: contain;
+
+  /* 박스가 아래에서 위로 살짝 올라오며 나타나는 효과 */
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.5s var(--motion), transform 0.5s var(--motion);
+}
+
+/* 배경이 나타날 때 내용 박스도 제자리로 올라옴 */
+.works-modal-overlay.show .works-modal-box {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+
+
+
+
+
+
+
+
 
 <!-- 이미지 이동 -->
 <script is:inline>
@@ -564,4 +652,113 @@ if (typeof document !== 'undefined') {
   document.addEventListener('DOMContentLoaded', initCategoryBadges);
   document.addEventListener('astro:page-load', initCategoryBadges);
 }
+</script>
+
+<!-- 모달창 스크립트 -->
+<script is:inline>
+// 모달창 안에서 돌아갈 전용 레니스와 프레임 변수
+let modalLenis;
+let modalRafId;
+
+function initWorksModal() {
+    const triggers = document.querySelectorAll('.open-modal');
+    const modal = document.getElementById('content_modal');
+    const modalBox = document.querySelector('.works-modal-box');
+    const contentArea = document.getElementById('modal_content_area');
+
+    if (!modal || !contentArea) return;
+
+    // 🔥 핵심 1: 메인 페이지의 레니스가 모달창 휠을 인식하지 못하게 차단 (뒷배경 스크롤 완벽 방지)
+    modal.setAttribute('data-lenis-prevent', 'true');
+
+    triggers.forEach(trigger => {
+        trigger.onclick = async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden'; 
+            
+            try {
+                const response = await fetch(this.href);
+                if (!response.ok) throw new Error("페이지를 찾을 수 없습니다.");
+                
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                const innerData = doc.querySelector('.modal-inner-data');
+                if (!innerData) {
+                    contentArea.innerHTML = "<p>불러온 페이지에서 .modal-inner-data 를 찾을 수 없습니다.</p>";
+                    return;
+                }
+
+                contentArea.innerHTML = '';
+
+                // 스타일 & HTML & 스크립트 주입
+                const styles = doc.querySelectorAll('style');
+                styles.forEach(style => {
+                    contentArea.appendChild(style.cloneNode(true));
+                });
+
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = innerData.innerHTML;
+                contentArea.appendChild(wrapper);
+
+                const scripts = doc.querySelectorAll('script');
+                scripts.forEach(script => {
+                    const newScript = document.createElement('script');
+                    if (script.src) {
+                        newScript.src = script.src;
+                    } else {
+                        newScript.textContent = script.textContent;
+                    }
+                    contentArea.appendChild(newScript);
+                });
+
+                // 🔥 핵심 2: 내용물 주입이 끝난 직후, 모달 전용 레니스 가동!
+                if (typeof Lenis !== 'undefined') {
+                    modalLenis = new Lenis({
+                        wrapper: modalBox,    // 스크롤이 발생하는 껍데기 박스
+                        content: contentArea, // 실제 길어지는 안쪽 내용물
+                        lerp: 1,            // 부드러움 정도 (메인 페이지랑 똑같이 맞추세요)
+                    });
+
+                    function raf(time) {
+                        modalLenis.raf(time);
+                        modalRafId = requestAnimationFrame(raf);
+                    }
+                    modalRafId = requestAnimationFrame(raf);
+                }
+
+            } catch (error) {
+                console.error("모달 데이터 로드 실패:", error);
+                contentArea.innerHTML = "<p>에러가 발생했습니다. 경로를 확인해 주세요.</p>";
+            }
+        };
+    });
+
+    const closeModal = () => {
+        modal.classList.remove('show');
+        document.body.style.overflow = ''; 
+        
+        // 🔥 핵심 3: 모달 닫을 때 전용 레니스도 같이 파괴해서 메모리 누수 방지
+        if (modalLenis) {
+            modalLenis.destroy();
+            cancelAnimationFrame(modalRafId);
+            modalLenis = null;
+        }
+
+        setTimeout(() => {
+            contentArea.innerHTML = ''; 
+        }, 500); 
+    };
+
+    modal.onclick = function(e) {
+        if (e.target === modal) closeModal();
+    };
+}
+
+document.addEventListener('astro:page-load', initWorksModal);
+document.addEventListener('DOMContentLoaded', initWorksModal);
 </script>
