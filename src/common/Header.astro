@@ -39,7 +39,7 @@
           <span class="char" data-char="r" style="--i: 8;" aria-hidden="true">r</span>
         </span>
       </a>
-      <a href="mailto:contact@sn2025.co.kr">
+      <a href="/contact">
         <span class="sr-only">문의</span>
         <span class="rolling-text" aria-hidden="true">
           <span class="char" data-char="c" style="--i: 1;" aria-hidden="true">c</span>
@@ -256,7 +256,7 @@
 
 
 
-/* 모바일 오버레창(메뉴창) */
+/* 모바일 오버레이창(메뉴창) */
 .mobile-menu-overlay {
   display: none;
 }
@@ -285,6 +285,8 @@
 
   border: none;
   cursor: pointer;
+
+  z-index: 100;
 
 }
 @media (hover: none) and (pointer: coarse) {
@@ -346,7 +348,7 @@
   
   align-items: center;
   justify-content: flex-start;
-  z-index: 1;
+  z-index: 99;
 }
 
 .mobile-menu-overlay.show {

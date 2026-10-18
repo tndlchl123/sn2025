@@ -78,7 +78,7 @@ img {
   line-height: 1;
 
   --pad: 1.5vh;
-  --rad: 1vh;
+  --rad: 0.5vh;
 
   --motion: cubic-bezier(0.5, 0, 0, 1);
 

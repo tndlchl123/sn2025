@@ -3,24 +3,60 @@ import Layout from '@common/Layout.astro';
 ---
 
 <Layout>    
-    <section>
-        
+<div class="hero-wrapper">
+    <section class="typo">
         <div class="main-typo translate col-start-4 span-3"
-        data-en="sn looks at the world with a new perspectives of design, bringing forth new shapes grounded in true essence.">
-
-            sn은 디자인을 통해 세상을 새롭게 바라보고, 본질을 바탕으로 새로운 형태를 제안합니다. 
+            data-en="sn looks at the world with a new perspectives of design, bringing forth new shapes grounded in true essence.">
+            sn은 디자인을 통해 세상을 새롭게 바라보고, 본질을 바탕으로 새로운 형태를 제안합니다.
         </div>
-        
-        
-
     </section>
-    <div class="test span-6 point-bg">박스 영역</div>
+
+    <section class="motion-gallery-section">
+        <div id="camera-container">
+            <a href="/works/test-2" class="work-item"><img src="/test/3-4.webp" alt=""></a>
+            <a href="/works/project-3" class="work-item"><img src="/test/4-5.webp" alt=""></a>
+            <a href="/works/project-3" class="work-item"><img src="/test/9-16.webp" alt=""></a>
+            <a href="/works/project-3" class="work-item"><img src="/test/4-3.webp" alt=""></a>
+            <a href="/works/project-3" class="work-item"><img src="/test/4-3.webp" alt=""></a>
+            <a href="/works/project-3" class="work-item"><img src="/test/1-1.webp" alt=""></a>
+        </div>
+    </section>
+</div>
+
+
 
 </Layout>
 
+
+<style is:global>
+    /* 스크롤바 숨기기 */
+    html body.default-body { margin: 0; padding: 0; overflow: hidden; }
+
+
+    .global-header .header-container {
+        padding-inline: var(--pad);
+        padding-top: var(--pad);
+        padding-bottom: 0;
+    }
+
+    .hero-wrapper {
+        width: 100%;
+        height: calc(100svh - 6.5svh);
+        
+        display: flex;
+        flex-direction: column;
+        
+        justify-content: center;
+        gap: 10vh;
+        
+        position: relative;
+        box-sizing: border-box;
+    }
+</style>
+
 <!-- grid col -->
 <style>
-    section {
+    .typo {
         width: 100%;
 
         display: grid;
@@ -29,7 +65,7 @@ import Layout from '@common/Layout.astro';
         gap: var(--pad);
     }
 
-    section > * {
+    .typo > * {
         min-width: 0;
     }
 
@@ -52,7 +88,7 @@ import Layout from '@common/Layout.astro';
 
 </style>
 
-<!-- main typo -->
+<!-- typo -->
 <style>
     /* 기본: 한글 */
     .main-typo {
@@ -81,18 +117,422 @@ import Layout from '@common/Layout.astro';
     @media (max-width: 768px) {
         .main-typo {
             font-size: 6vw;
+            grid-column-start: 3;
+            grid-column-end: span 4;
         }
+
+
     }
 
 </style>
 
-
+<!-- works img -->
 <style>
-.test {
-    width: 100%;
-    height: 100vh;
-    display: block;
-    color: var(--bg-color);
-}
+    .motion-gallery-section {
+        width: 100%;
+        height: 50svh;
+        background-color: transparent;
+        position: relative;
+        
+        overflow-x: clip; 
+        overflow-y: visible;
+
+        touch-action: none;
+
+        perspective: 800px;
+    }
+    .motion-gallery-section:active {
+    }
+
+    #camera-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .work-item:nth-child(1) { --i: 0; }
+    .work-item:nth-child(2) { --i: 1; }
+    .work-item:nth-child(3) { --i: 2; }
+    .work-item:nth-child(4) { --i: 3; }
+    .work-item:nth-child(5) { --i: 4; }
+    .work-item:nth-child(6) { --i: 5; }
+
+    .work-item {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        z-index: 10;
+        pointer-events: none;
+        /* 💡 모든 시간과 가속도는 작성자님의 var(--motion)에 일임합니다 */
+        transition: transform 1s var(--motion);
+        transition-delay: calc(var(--i) * 0.04s);
+
+        transform: 
+            translateX(-50%) 
+            translateY(-50%) 
+            rotate(calc(var(--i) * 60deg)) 
+            translateY(0vh) 
+            rotate(calc(var(--i) * -60deg)) 
+            rotate(calc((var(--i) - 2.5) * 5deg))
+            scale(0.7); 
+    }
+
+    .work-item img {
+        height: 40vh;
+        width: auto;
+        border-radius: var(--rad);
+        display: block;
+        user-select: none;
+        -webkit-user-drag: none; 
+    }
+
+    .motion-gallery-section.is-circle .work-item {
+        transform: 
+            translateX(-50%) translateY(-50%) 
+            rotate(calc(var(--i) * 60deg)) translateY(-32vh) rotate(calc(var(--i) * -60deg)) rotate(0deg) scale(0.7); 
+    }
+
+    .motion-gallery-section.is-orbit .work-item {
+        transform: 
+            translateX(-50%) translateY(-50%) 
+            rotate(calc(var(--i) * 60deg + 360deg)) translateY(-32vh) rotate(calc(var(--i) * -60deg - 360deg)) rotate(0deg) scale(0.7);
+
+        transition-delay: 0s;
+        transition-duration: 1.2s; 
+    }
+
+    /* 💡 가로 일렬 펴질 때: 시간을 늘려잡지 않고 통일성 있게 깔끔하게 맞춤 */
+    .motion-gallery-section.is-line .work-item {
+        transform: 
+            translateX(calc(-50% + var(--target-x))) translateY(-50%) 
+            rotate(calc(var(--i) * 60deg + 360deg)) translateY(0vh) rotate(calc(var(--i) * -60deg - 360deg)) rotate(0deg) scale(1);
+        
+        transition-delay: calc(var(--i) * 0.03s);
+        transition-duration: 1.0s; /* 1.0초로 통일감 부여 */
+    }
+
+    .work-item.active {
+        pointer-events: auto;
+        cursor: pointer;
+    }
+    .work-item.active:active {
+        transform: scale(0.98); 
+    }
+
+
+
+    .work-item img {
+        width: auto; 
+        height: 40vh;  
+        display: block;
+        box-shadow: none;
+    }
+
+    /* 💡 모바일 화면(폭 768px 이하)에서 사진 세로폭을 30vh로 축소 */
+    @media (max-width: 768px) {
+        /* 사진 높이 */
+        .work-item img { height: 30vh; }
+
+        /* 모바일 사진 원형 반지름 */
+        .motion-gallery-section.is-circle .work-item {
+            transform: 
+                translateX(-50%) translateY(-50%) 
+                rotate(calc(var(--i) * 60deg)) translateY(-20vh) rotate(calc(var(--i) * -60deg)) rotate(0deg) scale(0.7); 
+        }
+
+        .motion-gallery-section.is-orbit .work-item {
+            transform: 
+                translateX(-50%) translateY(-50%) 
+                rotate(calc(var(--i) * 60deg + 360deg)) translateY(-20vh) rotate(calc(var(--i) * -60deg - 360deg)) rotate(0deg) scale(0.7);
+        }
+    }
 </style>
 
+
+
+
+<script is:inline>
+document.addEventListener('astro:page-load', initCSSMotionGallery);
+document.addEventListener('DOMContentLoaded', initCSSMotionGallery);
+
+function initCSSMotionGallery() {
+    const section = document.querySelector('.motion-gallery-section');
+    const items = document.querySelectorAll('.work-item');
+    if (!section || items.length === 0) return;
+
+    const imgs = Array.from(document.querySelectorAll('.work-item img'));
+    Promise.all(imgs.map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise(resolve => { img.onload = img.onerror = resolve; });
+    })).then(() => {
+        startGallerySequence(section, items);
+    });
+}
+
+function startGallerySequence(section, items) {
+    if (window.loopReq) cancelAnimationFrame(window.loopReq);
+
+    const padDiv = document.createElement('div');
+    padDiv.style.width = 'var(--pad)';
+    padDiv.style.position = 'absolute';
+    section.appendChild(padDiv);
+    const padPx = padDiv.getBoundingClientRect().width || 30; 
+    padDiv.remove();
+
+    let currentX = 0;
+    const targets = [];
+    items.forEach(item => {
+        const img = item.querySelector('img');
+        const w = img.offsetWidth; 
+        item.originalWidth = w; 
+        targets.push(currentX + (w / 2)); 
+        currentX += w + padPx; 
+    });
+    
+    const totalWidth = currentX; 
+    let offsetX = -totalWidth / 2;
+
+    let minGap = Infinity;
+    let correction = 0;
+    targets.forEach(t => {
+        let x = offsetX + t;
+        if (Math.abs(x) < minGap) {
+            minGap = Math.abs(x);
+            correction = -x;
+        }
+    });
+    offsetX += correction; // 찾아낸 오차만큼 전체 사진을 이동시켜서 중앙 딱 맞춤!
+
+    // 타겟 x 좌표를 CSS로 넘겨주는 부분
+    items.forEach((item, i) => {
+        const finalX = offsetX + targets[i];
+        item.style.setProperty('--target-x', `${finalX}px`);
+        item.baseX = finalX; 
+    });
+
+    // 💡 CSS 클래스 스위치 타이밍 (시간 꼬임 방지를 위해 간격을 넉넉하고 정확하게 배치)
+    setTimeout(() => { section.classList.add('is-circle'); }, 100);
+    setTimeout(() => { section.classList.replace('is-circle', 'is-orbit'); }, 1100);
+    setTimeout(() => { section.classList.replace('is-orbit', 'is-line'); }, 2400);
+
+    // 💡 모든 CSS 모션이 완전히 끝나는 시점(3600ms)에 정확히 무한 스크롤 인계
+    setTimeout(() => {
+        items.forEach(item => {
+            item.style.transition = 'none'; 
+            item.classList.add('active');
+            item.currentScale = 1.0; 
+        });
+        startInfiniteDrag(section, items, totalWidth, padPx);
+    }, 3600); 
+}
+
+function startInfiniteDrag(section, items, totalWidth, padPx) {
+    let scrollX = 0;
+    let targetScrollX = 0;
+    let isDragging = false;
+    let startX = 0;
+    let initialScrollX = 0;
+    let snapTimeout; // 스냅 타이머
+
+    // 💡 핵심: 멈췄을 때 가장 가까운 사진을 찾아 정중앙으로 딱! 맞춰주는 함수
+    function snapToNearest() {
+        let minDist = Infinity;
+        let bestSnapX = targetScrollX;
+
+        items.forEach((item) => {
+            let x = item.baseX + targetScrollX;
+            // 끝없이 이어지는 갤러리 좌표계 정규화
+            let wrappedX = ((x + totalWidth / 2) % totalWidth + totalWidth) % totalWidth - totalWidth / 2;
+            
+            if (Math.abs(wrappedX) < minDist) {
+                minDist = Math.abs(wrappedX);
+                // 중앙에 맞추기 위해 빗나간 오차(wrappedX)만큼 목표값 보정
+                bestSnapX = targetScrollX - wrappedX;
+            }
+        });
+        targetScrollX = bestSnapX;
+    }
+
+    // 1. 마우스 휠 스크롤
+    section.addEventListener('wheel', (e) => {
+        e.preventDefault(); 
+        targetScrollX -= (e.deltaY * 0.8 + e.deltaX * 0.8);
+        
+        // 휠을 굴리다 멈추면(0.15초 뒤) 가장 가까운 사진으로 스냅
+        clearTimeout(snapTimeout);
+        snapTimeout = setTimeout(snapToNearest, 150);
+    }, { passive: false });
+
+    // 2. PC 마우스 드래그
+    section.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.pageX;
+        initialScrollX = targetScrollX;
+        clearTimeout(snapTimeout); 
+    });
+    window.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            snapToNearest(); // 드래그에서 마우스를 떼는 순간 찰칵!
+        }
+    });
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        targetScrollX = initialScrollX + (e.pageX - startX) * 1.5;
+    });
+
+    // 3. 모바일 터치 스와이프
+    section.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        startX = e.touches[0].pageX;
+        initialScrollX = targetScrollX;
+        clearTimeout(snapTimeout);
+    }, { passive: true });
+    window.addEventListener('touchend', () => {
+        if (isDragging) {
+            isDragging = false;
+            snapToNearest(); // 터치 떼는 순간 찰칵!
+        }
+    });
+    window.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        targetScrollX = initialScrollX + (e.touches[0].pageX - startX) * 1.5;
+    }, { passive: true });
+
+    function render() {
+        // 스냅될 때 부드럽게 쫓아가도록 보간 적용
+        scrollX += (targetScrollX - scrollX) * 0.08; 
+
+        let itemsData = [];
+        items.forEach((item) => {
+            let x = item.baseX + scrollX;
+            x = ((x + totalWidth / 2) % totalWidth + totalWidth) % totalWidth - totalWidth / 2;
+            itemsData.push({ item, x: x, w: item.originalWidth });
+        });
+
+        itemsData.sort((a, b) => a.x - b.x);
+
+        let range = window.innerWidth * 0.35; 
+
+        itemsData.forEach((data) => {
+            let dist = Math.abs(data.x);
+            let bulge = Math.max(0, 1 - (dist / range)); 
+            
+            let targetScale = 1.0 + (bulge * 0.15); 
+            
+            if (data.item.currentScale === undefined) data.item.currentScale = 1.0;
+            data.item.currentScale += (targetScale - data.item.currentScale) * 0.12; 
+            
+            data.scaledW = data.w * data.item.currentScale; 
+            data.bulge = bulge;
+        });
+
+        let rightIdx = itemsData.findIndex(d => d.x > 0);
+        if (rightIdx === -1) rightIdx = itemsData.length - 1;
+        let leftIdx = rightIdx === 0 ? itemsData.length - 1 : rightIdx - 1;
+
+        let L = itemsData[leftIdx];
+        let R = itemsData[rightIdx];
+
+        let totalDist = Math.abs(R.x - L.x); 
+        let t = 0.5;
+        if (totalDist > 0) {
+            t = Math.abs(L.x) / totalDist;
+        }
+
+        let physicalGap = (L.scaledW / 2) + padPx + (R.scaledW / 2);
+
+        L.pushedX = -physicalGap * t;
+        R.pushedX = physicalGap * (1 - t);
+
+        for (let i = leftIdx - 1; i >= 0; i--) {
+            let next = itemsData[i + 1];
+            let curr = itemsData[i];
+            curr.pushedX = next.pushedX - (next.scaledW / 2) - padPx - (curr.scaledW / 2);
+        }
+
+        for (let i = rightIdx + 1; i < itemsData.length; i++) {
+            let prev = itemsData[i - 1];
+            let curr = itemsData[i];
+            curr.pushedX = prev.pushedX + (prev.scaledW / 2) + padPx + (curr.scaledW / 2);
+        }
+
+        itemsData.forEach(data => {
+            data.item.style.zIndex = Math.round(10 + data.bulge * 10);
+            data.item.style.transform = `translate3d(calc(-50% + ${data.pushedX}px), -50%, 0) scale(${data.item.currentScale})`;
+        });
+
+        window.loopReq = requestAnimationFrame(render);
+    }
+    render();
+}
+</script>
+
+<script is:inline>
+// 🎥 [독립 모듈] 카메라 컨테이너 스크롤 곡면(Fisheye) 왜곡 효과
+document.addEventListener('astro:page-load', initCameraBulge);
+document.addEventListener('DOMContentLoaded', initCameraBulge);
+
+function initCameraBulge() {
+    const section = document.querySelector('.motion-gallery-section');
+    const camera = document.getElementById('camera-container');
+    if (!section || !camera) return;
+
+    let velocity = 0;
+    let currentBulge = 1.0;
+    let isDragging = false;
+    let lastX = 0;
+
+    // 1. 마우스 휠 스피드 감지
+    section.addEventListener('wheel', (e) => {
+        velocity = Math.abs(e.deltaX + e.deltaY) * 0.5;
+    }, { passive: true });
+
+    // 2. PC 드래그 스피드 감지
+    section.addEventListener('mousedown', (e) => { isDragging = true; lastX = e.pageX; });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        velocity = Math.abs(e.pageX - lastX) * 2.0;
+        lastX = e.pageX;
+    });
+
+    // 3. 모바일 터치 스피드 감지
+    section.addEventListener('touchstart', (e) => { isDragging = true; lastX = e.touches[0].pageX; }, { passive: true });
+    window.addEventListener('touchend', () => { isDragging = false; });
+    window.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        velocity = Math.abs(e.touches[0].pageX - lastX) * 2.0;
+        lastX = e.touches[0].pageX;
+    }, { passive: true });
+
+    // 4. 애니메이션 렌더링 (독립 루프)
+    function renderCameraBulge() {
+        velocity *= 0.9;
+        if (velocity < 0.1) velocity = 0;
+
+        // 💡 1. 튀어나오는 강도 (0 ~ 1 사이로 정규화)
+        let intensity = Math.min(velocity * 0.02, 1.0);
+
+        // 💡 2. 복귀 애니메이션 보간
+        currentBulge += (intensity - currentBulge) * 0.15;
+
+        // 💡 [여기서 조절!]
+        // maxDepth: 화면 정중앙이 앞으로 튀어나오는 깊이 (px) - 높일수록 볼록함이 선명해짐
+        const maxDepth = 60; 
+        const pushZ = currentBulge * maxDepth;
+
+        // scaleY를 약간 눌러주고 z축을 당겨 볼록 렌즈 곡면 형태를 연출
+        const scaleX = 1.0 + (currentBulge * 0.12);
+        const scaleY = 1.0 - (currentBulge * 0.08);
+
+        camera.style.transformOrigin = 'center center';
+        camera.style.transform = `translateZ(${pushZ}px) scale(${scaleX}, ${scaleY})`;
+        
+        requestAnimationFrame(renderCameraBulge);
+    }
+    renderCameraBulge();
+}
+</script>
