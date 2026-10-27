@@ -14,7 +14,6 @@ if (typeof window !== 'undefined') {
       const astroAttr = Array.from(el.attributes).find(attr => attr.name.startsWith('data-astro-cid'))?.name || '';
       
       const interval = setInterval(() => {
-        // 띄어쓰기는 스크램블 시 문자열 길이 유지를 위해 공백 유지
         el.textContent = finalTxt.split('').map(char => 
           char === ' ' ? ' ' : chars[Math.floor(Math.random() * chars.length)]
         ).join('');
@@ -46,6 +45,8 @@ if (typeof window !== 'undefined') {
         if (++count > 5) { 
           clearInterval(interval);
           el.innerHTML = finalHTML; 
+
+          window.dispatchEvent(new Event('resize'));
         }
       }, 50); 
     };
@@ -55,7 +56,9 @@ if (typeof window !== 'undefined') {
 
       const targetElements = document.querySelectorAll('.translate');
       
-      // [본문 업데이트]
+      // ==========================================
+      // 💡 [본문 업데이트 및 폼 플레이스홀더 스크램블]
+      // ==========================================
       if (targetElements.length > 0) {
         targetElements.forEach(el => {
           if (!el.hasAttribute('data-ko')) {
@@ -64,30 +67,48 @@ if (typeof window !== 'undefined') {
           const targetHTML = isEnglish ? el.getAttribute('data-en') : el.getAttribute('data-ko');
           
           if (targetHTML) {
-            if (isInitialLoad) {
-              el.innerHTML = targetHTML; 
-            } else {
-              scrambleBodyText(el, targetHTML); 
-            }
-
-            const innerInput = el.querySelector('input');
-            if (innerInput) {
-              innerInput.placeholder = targetHTML;
-              innerInput.setAttribute('aria-label', targetHTML);
+            // 1. 현재 요소가 INPUT이거나 TEXTAREA인 경우 (플레이스홀더 스크램블 적용)
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+              if (isInitialLoad) {
+                el.placeholder = targetHTML;
+                el.setAttribute('aria-label', targetHTML);
+              } else {
+                const chars = 'abcdefghijklmnopqrstuvwxyz'; 
+                let count = 0;
+                
+                const interval = setInterval(() => {
+                  el.placeholder = targetHTML.split('').map(char => 
+                    char === ' ' ? ' ' : chars[Math.floor(Math.random() * chars.length)]
+                  ).join('');
+                  
+                  if (++count > 5) { 
+                    clearInterval(interval);
+                    el.placeholder = targetHTML;
+                    el.setAttribute('aria-label', targetHTML);
+                  }
+                }, 50);
+              }
+            } 
+            // 2. 그 외 일반 태그(버튼, span 등)인 경우 (기존 텍스트 교체/스크램블 로직 유지)
+            else {
+              if (isInitialLoad) {
+                el.innerHTML = targetHTML; 
+              } else {
+                scrambleBodyText(el, targetHTML); 
+              }
             }
           }
         });
       }
 
       // ==========================================
-      // 💡 1. [ENG/KOR 토글 버튼 고유 업데이트]
+      // [ENG/KOR 토글 버튼 고유 업데이트]
       // ==========================================
       toggleBtns.forEach(btn => {
         btn.classList.toggle('active', isEnglish);
         const langText = btn.querySelector('.lang-text');
         
         if (langText) {
-          // 한국어 모드일 때 'kor' 대신 '한글'로 표시되게 수정
           const targetTxt = isEnglish ? 'eng' : '한글';
           
           if (isInitialLoad) {
@@ -102,7 +123,7 @@ if (typeof window !== 'undefined') {
       });
 
       // ==========================================
-      // 💡 [검색창 스크램블 연동] 기존 버튼용 스크램블 원리 적용
+      // [검색창 스크램블 연동]
       // ==========================================
       const searchInput = document.getElementById('work-search');
       if (searchInput) {
@@ -112,7 +133,6 @@ if (typeof window !== 'undefined') {
           searchInput.placeholder = targetPlaceholder;
           searchInput.setAttribute('aria-label', targetPlaceholder);
         } else {
-          // 버튼들에서 쓰던 scrambleBtnText와 완전히 똑같은 원리의 스크램블 효과!
           const chars = 'abcdefghijklmnopqrstuvwxyz'; 
           let count = 0;
           
@@ -222,8 +242,5 @@ document.addEventListener('astro:page-load', initLenis);
 
 // 이미지 draggable="false"
 document.querySelectorAll('img').forEach(img => img.setAttribute('draggable', 'false'));
-
-
-
 
 

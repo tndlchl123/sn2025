@@ -1,0 +1,1433 @@
+---
+import Layout from '@common/Design-Layout.astro';
+import GalleryItems from './GallaryItems.astro';
+---
+
+<Layout title="IWOO">
+<div class="content-wrapper">
+    <!-- 1. 독립된 헤더 영역 -->
+    <header class="main-header">
+        <!-- 1. 부모 <a> 태그에 aria-label="이우" 지정 -->
+        <a href="/works/IWOO/web" class="header-logo menu-item" aria-label="이우">
+            <!-- 내부는 시각적 효과만 담당하므로 스크린 리더는 완전히 무시하게 됨 -->
+            <span class="word kr" aria-hidden="true">
+                <span class="char">이</span><span class="char">우</span>
+            </span>
+            <span class="word en" aria-hidden="true">
+                <span class="char">i</span><span class="char">w</span><span class="char">o</span><span class="char">o</span>
+            </span>
+        </a>
+        
+        <nav class="header-menu">
+            <!-- 2. 컬렉션 -->
+            <a href="/works/IWOO/web2" class="menu-item" aria-label="컬렉션">
+                <span class="word kr" aria-hidden="true"><span class="char">컬</span><span class="char">렉</span><span class="char">션</span></span>
+                <span class="word en" aria-hidden="true"><span class="char">c</span><span class="char">o</span><span class="char">l</span><span class="char">l</span><span class="char">e</span><span class="char">c</span><span class="char">t</span><span class="char">i</span><span class="char">o</span><span class="char">n</span></span>
+            </a>
+
+            <!-- 3. 문의 -->
+            <div class="contact-menu-group" id="contactGroup">
+                <a href="#contact" class="menu-item" id="openContact" aria-expanded="false" role="button" aria-controls="contactPopup" aria-label="문의">
+                    <span class="word kr" aria-hidden="true"><span class="char">문</span><span class="char">의</span></span>
+                    <span class="word en" aria-hidden="true"><span class="char">c</span><span class="char">o</span><span class="char">n</span><span class="char">t</span><span class="char">a</span><span class="char">c</span><span class="char">t</span></span>
+                </a>
+
+                <div class="contact-dropdown" id="contactPopup">
+                    <div class="contact-dropdown-inner">
+                        <div class="popup-info">
+                            <a href="tel:010-0000-0000" class="contact-link">010-0000-0000</a>
+                            <a href="mailto:hello@iwoo.ceramic" class="contact-link">hello@iwoo.ceramic</a>
+                            <a href="#" class="contact-link">@iwoo.official</a>
+                        </div>
+                        <div class="map-placeholder" onclick="copyAddress(this)" role="button" tabindex="0">
+                            <span class="map-msg" data-ko="복사되었습니다" data-en="Copied">복사되었습니다</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 테마 변경 -->
+            <a href="#theme" class="menu-item" id="themeToggle" role="button" aria-label="테마 변경">
+                <span class="word kr" aria-hidden="true">
+                    <span class="char">테</span><span class="char">마</span>
+                </span>
+                <span class="word en" aria-hidden="true">
+                    <span class="char">t</span><span class="char">h</span><span class="char">e</span><span class="char">m</span><span class="char">e</span>
+                </span>
+            </a>
+            
+            <!-- 5. 언어 전환 -->
+            <a href="#lang" class="menu-item" id="langToggle" role="button" aria-label="언어 전환">
+                <span class="word kr" aria-hidden="true">
+                    <span class="char">한</span><span class="char">글</span>
+                </span>
+                <span class="word en" aria-hidden="true">
+                    <span class="char">e</span><span class="char">n</span><span class="char">g</span>
+                </span>
+            </a>
+        </nav>
+    </header>
+
+    <!-- 2. 캡션 전용 영역 (사진 바로 위, 메뉴와 시작점 일치) -->
+    <section class="caption-layout">
+        <!-- 왼쪽 빈 공간 -->
+        <div class="empty-spacer"></div>
+        <!-- 캡션 텍스트가 들어가는 영역 -->
+        <div class="gallery-caption" id="galleryCaption"></div>
+    </section>
+
+    <!-- 3. 갤러리 영역 (제자리에서 1장씩 교체되는 방식) -->
+    <main class="main-content">
+        <section class="single-gallery">
+            <div class="gallery-stage" id="stage">
+                <GalleryItems />
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- 4. 리빌 푸터 영역 (스크롤 시 INTERSECTION WORKS OF OBJECT에서 I, W, O, O가 대형 로고로 합쳐짐) -->
+<footer class="reveal-footer" id="revealFooter">
+    <div class="footer-inner">
+        <div class="footer-content">
+            <div class="footer-copy">
+                <p>&copy; 2026</p>
+            </div>
+            <div class="footer-right-group">
+                <!-- 
+                <div class="footer-links">
+                    <a href="#terms" data-ko="이용약관" data-en="Terms of Use" aria-label="이용약관">이용약관</a>
+                    <a href="#privacy" data-ko="개인정보처리방침" data-en="Privacy Policy" aria-label="개인정보처리방침">개인정보처리방침</a>
+                </div>
+                -->
+                <div class="footer-info">
+                    <!-- 단순 텍스트 단락에도 aria-label을 부여해 통째로 읽히게 함 -->
+                    <p data-ko="대표 홍길동" data-en="CEO Hong Gildong" aria-label="대표 홍길동">대표 홍길동</p>
+                    <p data-ko="사업자등록번호 123-45-67890" data-en="Business License 123-45-67890" aria-label="사업자등록번호 123-45-67890">사업자등록번호 123-45-67890</p>
+                </div>
+                <div class="footer-contact">
+                    <p><a href="mailto:info@iwoo.kr">info@iwoo.kr</a></p>
+                    <p><a href="https://instagram.com/iwoo.official" target="_blank" rel="noopener noreferrer" aria-label="이우 공식 인스타그램">@iwoo.official</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 핵심: 모핑 SVG가 스크린 리더에 수많은 좌표로 낭독되지 않도록 완전히 숨김 -->
+        <svg class="footer-morph-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 728.73 230.4" aria-hidden="true" focusable="false">
+            <g transform="translate(0, 192.35)">
+                <!-- 1. INTERSECTION 중 첫 글자 'I' (합쳐질 때 대형 I로 확대) -->
+                <polygon class="footer-logo iwoo-char iwoo-i" points="0 1.49 .41 19.3 0 37.12 3.79 37.12 3.38 19.31 3.79 1.49 0 1.49"/>
+
+                <!-- INTERSECTION 나머지 글자 (N T E R S E C T I O N) -->
+                <path class="footer-logo rest-char" d="M8.28,36.42l.15-24.95-.15-9.98h2.75l.1,9.98.24,12.47.15,12.48H8.28ZM32.38,36.42l-4.24-6.49L13.62,9.97l-3.99-6.28V1.49h2.49l3.1,4.59,14.62,20.41,4.74,6.34v3.59H32.38ZM32.83,36.42l-.35-10.48-.1-14.47-.1-9.98h2.99l-.15,22.45.15,12.48H32.83Z"/>
+                <path class="footer-logo rest-char" d="M50.79,1.49v2.7l-3.89.15-9.48.4V1.49H50.79ZM53.73,36.42h-3.69l.2-22.45-.2-12.48h3.69l-.25,12.48L53.73,36.42ZM52.99,1.49h13.37v3.25l-9.48-.4-3.89-.15V1.49Z"/>
+                <path class="footer-logo rest-char" d="M68.5,1.49h3.69l-.2,22.45.2,12.48h-3.69l.2-24.95L68.5,1.49ZM85.17,19.9l-8.49-.25h-5.09v-2.44h5.09l8.49-.25V19.9ZM71.79,1.49h18.86v3.3l-14.66-.45-4.2-.15V1.49ZM71.79,36.42v-2.7l4.2-.15,16.16-.45v3.3H71.79Z"/>
+                <path class="footer-logo rest-char" d="M94.99,36.42l.5-19.11,3.05,2.64.65,16.47H94.99ZM95.39,22.45l-.2-20.96h10.03q3.79,0,6.21.97t3.8,2.53,1.92,3.29.55,3.29q0,2.5-1,4.49-1,2-2.77,3.42-1.77,1.42-4.24,2.19-2.47.78-5.42.78H95.39ZM104.27,19.9q2,.05,3.72-.32,1.72-.38,3.05-1.3,1.32-.92,2.07-2.42.74-1.49.74-3.69,0-1.95-.62-3.47-.62-1.52-1.82-2.57-1.2-1.05-2.92-1.59-1.72-.55-3.87-.5l-5.73.1-.15,15.61L104.27,19.9ZM114.1,36.42l-7.48-15.62,3.64.1,8.23,15.52H114.1Z"/>
+                <path class="footer-logo rest-char" d="M122.14,29.38q2.24,2.4,4.94,3.55t5.23,1.14q2.2,0,4.02-.82,1.82-.82,2.92-2.4,1.1-1.57,1.1-3.76,0-2-1-3.3-1-1.29-2.69-2.19-1.7-.9-3.7-1.57-1.99-.68-4.01-1.37-2.02-.7-3.7-1.68-1.67-.97-2.69-2.44-1.02-1.47-1.02-3.67,0-2.24,1-4.09.99-1.84,2.69-3.12,1.7-1.27,3.84-1.97,2.15-.7,4.49-.7,2.2,0,4.44.75,2.25.75,4.24,2.35l-1.99,2.79q-2.1-1.54-4.29-2.24-2.2-.7-4.22-.68-2.02.03-3.64.73-1.62.69-2.57,1.97-.95,1.27-.95,3.06,0,1.7,1.05,2.82,1.05,1.13,2.74,1.92,1.7.8,3.74,1.48,2.05.67,4.07,1.44,2.02.78,3.74,1.9,1.72,1.12,2.75,2.74,1.02,1.62,1.02,4.07,0,3.04-1.6,5.39-1.59,2.34-4.24,3.74-2.64,1.4-5.81,1.65-3.17.25-6.41-.8-3.25-1.05-5.94-3.64L122.14,29.38Z"/>
+                <path class="footer-logo rest-char" d="M147.08,1.49h3.7l-.2,22.45.2,12.48h-3.7l.2-24.95L147.08,1.49ZM163.75,19.9l-8.48-.25h-5.09v-2.44h5.09l8.48-.25V19.9ZM150.38,1.49h18.86v3.3l-14.67-.45-4.19-.15V1.49ZM150.38,36.42v-2.7l4.19-.15,16.16-.45v3.3H150.38Z"/>
+                <path class="footer-logo rest-char" d="M198.17,7.53q-2.39-1.6-4.99-2.37t-5.09-.77q-2.69,0-5.13.92-2.45.92-4.32,2.69-1.87,1.77-2.94,4.44-1.08,2.67-1.08,6.12,0,3.69,1.18,6.51,1.17,2.82,3.21,4.71,2.05,1.9,4.62,2.9,2.57.99,5.36.99,2.55,0,5.19-.94,2.65-.95,5.24-2.6l1.1,1.7q-3.05,2.59-6.36,3.84-3.32,1.25-6.56,1.25-3.05,0-6.02-1.23-2.97-1.22-5.36-3.46-2.39-2.25-3.84-5.39-1.45-3.14-1.45-7.09,0-3.49,1.1-6.41,1.1-2.92,2.97-5.19,1.87-2.27,4.26-3.86,2.4-1.6,5.04-2.42,2.65-.83,5.19-.83,2.2,0,4.49.58,2.3.57,5.04,2.07L198.17,7.53Z"/>
+                <path class="footer-logo rest-char" d="M213.64,1.49v2.7l-3.89.15-9.48.4V1.49H213.64ZM216.59,36.42h-3.7l.2-22.45-.2-12.48h3.7l-.25,12.48L216.59,36.42ZM215.84,1.49h13.37v3.25l-9.48-.4-3.89-.15V1.49Z"/>
+                <polygon class="footer-logo rest-char" points="231.3 1.14 231.72 18.95 231.3 36.77 235.09 36.77 234.68 18.96 235.09 1.14 231.3 1.14"/>
+                <path class="footer-logo rest-char" d="M270.97,6.93c-1.01-2.03-2.55-3.7-4.58-4.97-1.86-1.16-3.9-1.81-6.06-1.93-.3-.02-.6-.03-.9-.03-1.88,0-3.8.34-5.69,1.01-2.2.78-4.29,1.95-6.21,3.47-1.91,1.53-3.55,3.37-4.87,5.48-1.29,2.06-2.27,4.36-2.92,6.84-.65,2.47-.91,4.98-.77,7.46.14,2.46.72,4.74,1.74,6.79,1,2.02,2.52,3.68,4.53,4.94,1.88,1.17,3.93,1.86,6.09,2.02,2.17.16,4.37-.12,6.53-.85,2.17-.74,4.24-1.89,6.16-3.42,1.93-1.54,3.62-3.46,5.02-5.71,1.31-2.09,2.29-4.39,2.93-6.85.64-2.46.9-4.97.76-7.44C272.59,11.28,272,8.99,270.97,6.93ZM268.67,19.01c-.09,1.86-.48,3.79-1.15,5.72-.66,1.94-1.62,3.76-2.85,5.42-1.24,1.68-2.76,3.04-4.53,4.02-1.6.89-3.44,1.34-5.45,1.34-.23,0-.47,0-.7-.02-2.1-.1-3.9-.68-5.36-1.73-1.45-1.02-2.62-2.38-3.47-4.01-.85-1.6-1.44-3.37-1.77-5.24-.33-1.85-.45-3.69-.36-5.46.1-1.98.49-4,1.16-5.99.67-2.01,1.63-3.83,2.85-5.44,1.24-1.62,2.76-2.91,4.53-3.86,1.79-.95,3.85-1.37,6.14-1.26,2.1.11,3.9.7,5.36,1.76,1.45,1.05,2.61,2.4,3.47,4.01.85,1.59,1.44,3.34,1.77,5.21C268.64,15.33,268.76,17.19,268.67,19.01Z"/>
+                <path class="footer-logo rest-char" d="M276.61,36.42l.15-24.95-.15-9.98h2.74l.1,9.98.25,12.47.15,12.48H276.61ZM300.7,36.42l-4.24-6.49-14.52-19.96-3.99-6.28V1.49h2.5l3.09,4.59,14.62,20.41,4.74,6.34v3.59H300.7ZM301.15,36.42l-.35-10.48-.1-14.47-.1-9.98h3l-.15,22.45.15,12.48H301.15Z"/>
+
+                <!-- 2. WORKS 중 첫 글자 'W' (합쳐질 때 대형 W로 확대) -->
+                <polygon class="footer-logo iwoo-char iwoo-w" points="363.75 1.13 351.51 32.65 345.18 1.13 342.36 1.13 326.04 33 325.68 1.13 321.47 1.13 323.92 36.92 326.7 36.92 342.05 8.1 349.01 36.92 351.82 36.92 367.5 1.13 363.75 1.13"/>
+
+                <!-- WORKS 나머지 글자 (O R K S) -->
+                <path class="footer-logo rest-char" d="M396.7,6.93c-1.01-2.03-2.55-3.7-4.59-4.97-1.85-1.16-3.89-1.81-6.05-1.93-.3-.02-.6-.03-.9-.03-1.88,0-3.8.34-5.69,1.01-2.2.78-4.29,1.95-6.21,3.47-1.91,1.53-3.55,3.37-4.87,5.48-1.29,2.06-2.27,4.36-2.92,6.84-.65,2.47-.91,4.98-.77,7.46.14,2.46.72,4.74,1.74,6.79,1,2.02,2.52,3.68,4.53,4.94,1.88,1.17,3.93,1.86,6.09,2.02,2.17.16,4.37-.12,6.53-.85,2.17-.74,4.24-1.89,6.16-3.42,1.93-1.54,3.62-3.46,5.02-5.71,1.31-2.09,2.29-4.39,2.93-6.85.64-2.46.9-4.97.76-7.44C398.32,11.28,397.73,8.99,396.7,6.93ZM394.4,19.01c-.09,1.86-.48,3.79-1.15,5.72-.66,1.94-1.62,3.76-2.85,5.42-1.24,1.68-2.76,3.04-4.53,4.02-1.6.89-3.44,1.34-5.45,1.34-.23,0-.47,0-.7-.02-2.1-.1-3.9-.68-5.36-1.73-1.45-1.02-2.62-2.38-3.47-4.01-.85-1.6-1.44-3.37-1.78-5.24-.32-1.85-.44-3.69-.35-5.46.1-1.98.49-4,1.15-5.99.68-2.01,1.64-3.83,2.86-5.44,1.24-1.62,2.76-2.91,4.53-3.86,1.79-.95,3.85-1.37,6.14-1.26,2.1.11,3.9.7,5.36,1.76,1.45,1.05,2.61,2.4,3.47,4.01.85,1.59,1.44,3.34,1.77,5.21C394.37,15.33,394.49,17.19,394.4,19.01Z"/>
+                <path class="footer-logo rest-char" d="M402.58,36.42l.5-19.11,3.05,2.64.65,16.47H402.58ZM402.98,22.45l-.2-20.96h10.03q3.79,0,6.21.97t3.8,2.53,1.92,3.29.55,3.29q0,2.5-1,4.49-1,2-2.77,3.42-1.77,1.42-4.24,2.19-2.47.78-5.42.78H402.98ZM411.86,19.9q2,.05,3.72-.32,1.72-.38,3.05-1.3,1.32-.92,2.07-2.42.74-1.49.74-3.69,0-1.95-.62-3.47-.62-1.52-1.82-2.57-1.2-1.05-2.92-1.59-1.72-.55-3.87-.5l-5.73.1-.15,15.61L411.86,19.9ZM421.69,36.42l-7.48-15.62,3.64.1,8.23,15.52H421.69Z"/>
+                <path class="footer-logo rest-char" d="M429.18,1.49h3.69l-.2,22.45.2,12.48h-3.69l.2-24.95L429.18,1.49ZM432.37,22.35l-.05-2.85,15.87-18.01h5.19L432.37,22.35ZM438.41,15.46l15.02,20.96h-4.49l-12.63-18.61L438.41,15.46Z"/>
+                <path class="footer-logo rest-char" d="M456.32,29.38q2.24,2.4,4.94,3.55t5.24,1.14q2.19,0,4.01-.82,1.82-.82,2.92-2.4,1.1-1.57,1.1-3.76,0-2-1-3.3-1-1.29-2.69-2.19-1.7-.9-3.69-1.57-2-.68-4.02-1.37-2.02-.7-3.69-1.68-1.67-.97-2.7-2.44-1.02-1.47-1.02-3.67,0-2.24,1-4.09,1-1.84,2.69-3.12,1.7-1.27,3.84-1.97,2.15-.7,4.49-.7,2.2,0,4.45.75,2.24.75,4.24,2.35l-2,2.79q-2.1-1.54-4.29-2.24-2.2-.7-4.22-.68-2.02.03-3.64.73-1.62.69-2.57,1.97-.95,1.27-.95,3.06,0,1.7,1.05,2.82,1.05,1.13,2.75,1.92,1.69.8,3.74,1.48,2.04.67,4.06,1.44,2.02.78,3.75,1.9,1.72,1.12,2.74,2.74,1.02,1.62,1.02,4.07,0,3.04-1.59,5.39-1.6,2.34-4.24,3.74-2.65,1.4-5.82,1.65-3.17.25-6.41-.8-3.24-1.05-5.94-3.64L456.32,29.38Z"/>
+
+                <!-- 3. OF 중 첫 글자 'O' (합쳐질 때 첫 번째 대형 O로 확대) -->
+                <path class="footer-logo iwoo-char iwoo-o1" d="M528.32,6.93c-1.02-2.03-2.56-3.7-4.59-4.97-1.86-1.16-3.89-1.81-6.06-1.93-.29-.02-.6-.03-.89-.03-1.89,0-3.81.34-5.69,1.01-2.21.78-4.3,1.95-6.21,3.47-1.92,1.53-3.56,3.37-4.88,5.48-1.28,2.06-2.27,4.36-2.92,6.84-.65,2.47-.91,4.98-.77,7.46.14,2.46.72,4.74,1.74,6.79,1,2.02,2.52,3.68,4.53,4.94,1.89,1.17,3.94,1.86,6.09,2.02,2.17.16,4.37-.12,6.53-.85,2.17-.74,4.24-1.89,6.17-3.42,1.92-1.54,3.61-3.46,5.01-5.71,1.31-2.09,2.29-4.39,2.94-6.85.64-2.46.89-4.97.75-7.44C529.93,11.28,529.34,8.99,528.32,6.93ZM526.01,19.01c-.09,1.86-.48,3.79-1.14,5.72-.67,1.94-1.63,3.76-2.86,5.42-1.24,1.68-2.76,3.04-4.53,4.02-1.6.89-3.43,1.34-5.45,1.34-.23,0-.46,0-.7-.02-2.09-.1-3.9-.68-5.36-1.73-1.44-1.02-2.61-2.38-3.47-4.01-.85-1.6-1.44-3.37-1.77-5.24-.33-1.85-.45-3.69-.36-5.46.1-1.98.49-4,1.16-5.99.67-2.01,1.63-3.83,2.86-5.44,1.23-1.62,2.76-2.91,4.52-3.86,1.79-.95,3.86-1.37,6.14-1.26,2.1.11,3.91.7,5.37,1.76,1.44,1.05,2.6,2.4,3.46,4.01.85,1.59,1.45,3.34,1.78,5.21C525.98,15.33,526.1,17.19,526.01,19.01Z"/>
+
+                <!-- OF 나머지 글자 (F) -->
+                <path class="footer-logo rest-char" d="M534.15,1.54h3.69l-.2,22.45.4,12.48h-3.84l.2-24.95L534.15,1.54ZM551.86,20.45l-9.48-.25h-5.09v-2.44h5.09l9.48-.25V20.45ZM537.49,1.54h17.86v3.29l-13.67-.44-4.19-.15V1.54Z"/>
+
+                <!-- 4. OBJECT 중 첫 글자 'O' (합쳐질 때 두 번째 대형 O로 확대) -->
+                <path class="footer-logo iwoo-char iwoo-o2" d="M602.87,13.74c-.14-2.46-.73-4.75-1.76-6.81-1.02-2.03-2.56-3.7-4.59-4.97-1.85-1.16-3.89-1.81-6.05-1.93-.3-.02-.6-.03-.9-.03-1.89,0-3.8.34-5.69,1.01-2.21.78-4.3,1.95-6.21,3.47-1.91,1.53-3.55,3.37-4.88,5.48-1.28,2.06-2.26,4.36-2.91,6.84-.65,2.47-.91,4.98-.78,7.46.14,2.46.73,4.74,1.74,6.79,1,2.02,2.53,3.68,4.53,4.94,1.89,1.17,3.94,1.86,6.09,2.02,2.18.16,4.37-.12,6.53-.85,2.17-.73,4.25-1.89,6.17-3.42,1.93-1.54,3.61-3.46,5.02-5.71,1.3-2.09,2.29-4.39,2.93-6.85C602.75,18.72,603,16.21,602.87,13.74ZM598.81,19.01c-.1,1.86-.48,3.79-1.15,5.72-.67,1.94-1.63,3.76-2.85,5.42-1.24,1.68-2.77,3.03-4.53,4.02-1.61.89-3.44,1.34-5.45,1.34-.23,0-.47,0-.71-.02-2.09-.1-3.89-.68-5.36-1.73-1.44-1.03-2.61-2.38-3.47-4.01-.84-1.61-1.44-3.37-1.77-5.24-.33-1.85-.45-3.69-.36-5.46.1-1.99.49-4,1.16-5.99.67-2.01,1.64-3.83,2.86-5.44,1.24-1.62,2.76-2.91,4.53-3.86,1.78-.95,3.85-1.37,6.14-1.26,2.09.11,3.9.7,5.36,1.76,1.44,1.05,2.61,2.4,3.47,4.01.84,1.59,1.44,3.34,1.77,5.21C598.78,15.33,598.9,17.19,598.81,19.01Z"/>
+
+                <!-- OBJECT 나머지 글자 (B J E C T) -->
+                <path class="footer-logo rest-char" d="M606.99,36.47l.2-18.36-.2-16.57h10.28q3.54,0,5.76.83t3.39,2.12,1.63,2.76.44,2.72q0,2.45-1.19,4.52-1.2,2.07-3.6,3.12,3.55,1.3,5.17,3.72,1.62,2.42,1.62,5.21,0,2.39-1.45,4.69-1.44,2.29-4.36,3.77-2.92,1.47-7.36,1.47H606.99ZM618.22,16.96q1.44.05,2.96-.6,1.53-.65,2.6-2.04,1.07-1.4,1.07-3.6,0-1.79-.77-3.34-.78-1.55-2.6-2.5-1.82-.94-4.96-.84l-5.84.1-.15,12.62L618.22,16.96ZM610.53,19.35l.15,14.52,6.94.1q3.04.05,5.06-.92,2.02-.97,3-2.64.97-1.67.97-3.77,0-2.4-1.07-4.07-1.08-1.67-3.02-2.52-1.95-.85-4.44-.8L610.53,19.35Z"/>
+                <path class="footer-logo rest-char" d="M637.77,1.54h3.75v11.98l.45,12.77q.1,2.5-.8,4.59t-2.5,3.59-3.64,2.17-4.24.23l.05-3.4q2.19.4,3.72.23,1.52-.18,2.44-1.02.92-.85,1.32-2.32.4-1.48.3-3.72L637.77,1.54Z"/>
+                <path class="footer-logo rest-char" d="M646.61,1.54h3.69l-.2,22.45.2,12.48h-3.69l.2-24.95L646.61,1.54ZM663.27,19.95l-8.48-.25h-5.09v-2.44h5.09l8.48-.25V19.95ZM649.9,1.54h18.86v3.29l-14.67-.44-4.19-.15V1.54ZM649.9,36.47v-2.7l4.19-.15,16.17-.45v3.3H649.9Z"/>
+                <path class="footer-logo rest-char" d="M697.7,7.58q-2.4-1.6-4.99-2.37t-5.09-.77q-2.7,0-5.14.92-2.45.92-4.32,2.69-1.87,1.77-2.94,4.44-1.07,2.67-1.07,6.12,0,3.69,1.17,6.51,1.17,2.82,3.22,4.71,2.04,1.9,4.61,2.9,2.57.99,5.37.99,2.54,0,5.18-.94,2.65-.95,5.24-2.6l1.1,1.7q-3.04,2.59-6.36,3.84-3.32,1.25-6.56,1.25-3.05,0-6.01-1.23-2.97-1.22-5.37-3.46-2.39-2.25-3.84-5.39-1.45-3.14-1.45-7.09,0-3.49,1.1-6.41,1.1-2.92,2.97-5.19,1.87-2.27,4.27-3.86,2.39-1.6,5.04-2.42,2.64-.83,5.18-.83,2.2,0,4.5.58,2.29.57,5.03,2.07L697.7,7.58Z"/>
+                <path class="footer-logo rest-char" d="M713.16,1.54v2.7l-3.89.15-9.48.4V1.54H713.16ZM716.11,36.47h-3.69l.19-22.45-.19-12.48h3.69l-.25,12.48L716.11,36.47ZM715.36,1.54h13.37v3.25l-9.48-.4-3.89-.15V1.54Z"/>
+            </g>
+        </svg>
+    </div>
+</footer>
+
+<!-- 갤러리 전환용 십자가 블러 SVG 필터 -->
+<svg xmlns="http://www.w3.org/2000/svg" class="sr-only">
+    <filter id="cross-blur" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+        <!-- 1. 가로(X)축으로 길게 번짐 -->
+        <feGaussianBlur in="SourceGraphic" stdDeviation="80 0" result="blurX" />
+        <!-- 2. 세로(Y)축으로 길게 번짐 -->
+        <feGaussianBlur in="SourceGraphic" stdDeviation="0 80" result="blurY" />
+        <!-- 3. 두 블러를 십자가 형태로 반반 합성 -->
+        <feComposite in="blurX" in2="blurY" operator="arithmetic" k1="0" k2="0.5" k3="0.5" k4="0" result="cross" />
+        <!-- 4. 십자가의 날카로운 경계를 일반 블러로 부드럽게 처리 -->
+        <feGaussianBlur in="cross" stdDeviation="6" result="softCross" />
+        <!-- 5. 블러 처리된 결과물에 채도 강조 -->
+        <feColorMatrix in="softCross" type="saturate" values="2" />
+    </filter>
+</svg>
+</Layout>
+
+<!-- 초기 로드 시 테마 및 언어 깜빡임 방지 스크립트 -->
+<script is:inline>
+    (function() {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark-mode');
+        } else {
+            document.documentElement.classList.remove('dark-mode');
+        }
+
+        const savedLang = localStorage.getItem('lang') || 'ko';
+        document.documentElement.classList.toggle('lang-en', savedLang === 'en');
+    })();
+</script>
+
+<!-- 외부 폰트 불러오기 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilex:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+
+<style>
+    @font-face {
+    font-family: 'HakgyoansimBareondotumR';
+    src: url('https://cdn.jsdelivr.net/gh/tndlchl123/iwoo@main/HakgyoansimBareondotumR.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+</style>
+
+<!-- 공통 변수 및 다크모드 설정 CSS -->
+<style>
+    :root {
+        --pad: 1vw;
+        --gap: 1vh;
+        --align-point: 35vw;
+
+        /* 기본 라이트 모드 색상 변수 */
+        --bg-color: rgba(245, 245, 245, 1);
+        --hd-color: rgba(0, 0, 0, 1);
+        --bg-color-r: 245, 245, 245;
+
+        /* 모션 및 타이포그래피 변수 */
+        --motion: cubic-bezier(0.5, 0, 0, 1);
+        --gallery-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+        --main-font-size: 1rem;
+        --hd-line-height: 1.3;
+        --hd-letter-spacing: -0.02em;
+
+        /* 갤러리 블러 해제 속도 (이 변수만 바꾸면 사진과 캡션 전환 속도가 함께 변경됨) */
+        --gallery-speed: 3s;
+
+        /* 푸터 호버 밑줄 두께 및 간격 통합 제어 변수 */
+        --underline-thickness: 1px;
+        --underline-offset: -2px;
+
+        /* 리빌 푸터 상단 경계 그라디언트 높이 */
+        --footer-fade: 15vh;
+    }
+
+    /* 모바일 환경에서 여백이 너무 얇아지지 않도록 패딩과 간격 조정 */
+    @media (max-width: 768px) {
+        :root {
+            --pad: 4vw;
+            --gap: 1.2vh;
+        }
+    }
+
+    img {
+        -webkit-touch-callout: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-user-drag: none;
+        pointer-events: none;
+    }
+
+    /* 다크 모드 활성화 시 색상 변수 덮어쓰기 */
+    html.dark-mode {
+        --bg-color: rgba(18, 18, 18, 1);
+        --hd-color: rgba(245, 245, 245, 1);
+        --bg-color-r: 18, 18, 18;
+    }
+
+    /* 모바일 브라우저가 임의로 텍스트 크기를 확대하지 않도록 고정 */
+    html,
+    body {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+
+    /* 스크린 리더 전용 숨김 처리 */
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+    }
+
+    /* 주요 영역 배경색 및 테마 전환 트랜지션 */
+    html,
+    body,
+    .main-header,
+    main,
+    .reveal-footer {
+        background-color: var(--bg-color);
+        transition: background-color 0.8s cubic-bezier(0.25, 1, 0.5, 1), color 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* 텍스트 컬러 공통 적용 */
+    .header-logo,
+    .header-menu,
+    .word.en,
+    .word.kr,
+    .gallery-caption,
+    .footer-copy,
+    .footer-links,
+    .footer-info,
+    .footer-contact {
+        color: var(--hd-color);
+        transition: color 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* 푸터 SVG 로고 색상 적용 */
+    .footer-logo {
+        fill: var(--hd-color);
+        transition: fill 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+</style>
+
+<!-- 상단 영역 CSS (Header + Inline Contact Dropdown + Caption) -->
+<style>
+    /* 전체 래퍼가 화면 높이를 최소 100vh 이상 차지하여 하단 고정 푸터를 덮도록 설정 */
+    .content-wrapper {
+        position: relative;
+        z-index: 10;
+        background-color: var(--bg-color);
+        min-height: 100vh;
+        transition: background-color 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* 메인 컨텐츠 하단 여백 확보 및 리빌 푸터 경계선을 흐릿하게 만드는 하단 그라디언트 */
+    .main-content {
+        position: relative;
+        width: 100%;
+        padding-bottom: 12vh;
+    }
+
+    .content-wrapper::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: calc(var(--footer-fade) * -1);
+        width: 100%;
+        height: var(--footer-fade);
+        background: linear-gradient(
+            to bottom,
+            rgba(var(--bg-color-r), 1) 0%,
+            rgba(var(--bg-color-r), 0.65) 45%,
+            rgba(var(--bg-color-r), 0) 100%
+        );
+        pointer-events: none;
+        z-index: 11;
+    }
+
+    /* 헤더 레이아웃 */
+    .main-header {
+        display: flex;
+        align-items: flex-start;
+        padding: var(--pad);
+        width: 100%;
+        box-sizing: border-box;
+        z-index: 10;
+        position: relative;
+    }
+
+    /* 로고 가로폭을 align-point(35vw)로 고정하여 메뉴 시작 위치 정렬 */
+    .header-logo {
+        width: var(--align-point);
+        flex-shrink: 0;
+        font-family: 'Lilex', 'HakgyoansimBareondotumR', sans-serif;
+        color: var(--hd-color);
+        font-size: var(--main-font-size);
+        line-height: var(--hd-line-height);
+    }
+
+    .header-menu {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.15rem;
+        font-family: 'Lilex', 'HakgyoansimBareondotumR', sans-serif;
+        color: var(--hd-color);
+    }
+
+    /* 메뉴 아이템: inline-grid로 한글과 영문을 같은 셀(1/1)에 겹쳐 더 긴 단어(영문) 폭에 맞춰 가로폭이 자동 확보되게 설정 */
+    .menu-item {
+        position: relative;
+        display: inline-grid;
+        align-items: start;
+        justify-items: start;
+        overflow: hidden;
+        text-decoration: none;
+        cursor: pointer;
+        height: 1.4rem;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .word {
+        grid-area: 1 / 1;
+        display: flex;
+        justify-content: flex-start;
+        white-space: nowrap;
+        font-family: 'Lilex', 'HakgyoansimBareondotumR', sans-serif;
+        font-size: var(--main-font-size);
+        line-height: var(--hd-line-height);
+        letter-spacing: var(--hd-letter-spacing);
+        color: var(--hd-color);
+    }
+
+    /* 기본 상태에서는 한글(.word.kr)이 위에 보이고 영문(.word.en)이 2rem 아래에 대기 */
+    .word.kr {
+        position: relative;
+        top: 0;
+    }
+
+    .word.en {
+        position: relative;
+        top: 2rem;
+    }
+
+    .char {
+        display: block;
+        transition: transform 0.5s var(--motion);
+    }
+
+    /* 한글 상태에서 호버하면 위로 롤링되어 영문이 잘림 없이 나타남 */
+    .menu-item:hover .word.kr .char,
+    .menu-item:hover .word.en .char {
+        transform: translateY(-2rem);
+    }
+
+    /* 언어 전환(eng) 활성화 시 영문이 기본으로 보이고 호버하면 한글이 나타남 */
+    html.lang-en .menu-item .word.kr .char,
+    html.lang-en .menu-item .word.en .char,
+    .header-logo.menu-item:hover .word.en .char, 
+    .header-logo.menu-item:hover .word.kr .char {
+        transform: translateY(-2rem);
+    }
+
+    html.lang-en .menu-item:hover .word.kr .char,
+    html.lang-en .menu-item:hover .word.en .char,
+    .header-logo .char {
+        transform: translateY(0);
+    }
+
+    .menu-item .char:nth-child(1) { transition-delay: 0.00s; }
+    .menu-item .char:nth-child(2) { transition-delay: 0.03s; }
+    .menu-item .char:nth-child(3) { transition-delay: 0.06s; }
+    .menu-item .char:nth-child(4) { transition-delay: 0.09s; }
+    .menu-item .char:nth-child(5) { transition-delay: 0.12s; }
+    .menu-item .char:nth-child(6) { transition-delay: 0.15s; }
+    .menu-item .char:nth-child(7) { transition-delay: 0.18s; }
+    .menu-item .char:nth-child(8) { transition-delay: 0.21s; }
+    .menu-item .char:nth-child(9) { transition-delay: 0.24s; }
+    .menu-item .char:nth-child(10) { transition-delay: 0.27s; }
+
+    /* 문의 메뉴 래퍼 */
+    .contact-menu-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* 문의 메뉴 바로 밑에 높이 0으로 숨겨져 있다가 클릭 시 늘어나는 아코디언 영역 */
+    .contact-dropdown {
+        display: grid;
+        grid-template-rows: 0fr;
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        margin-top: 0;
+        margin-bottom: 0;
+        transition:
+            grid-template-rows 0.5s var(--motion),
+            max-height 0.5s var(--motion),
+            opacity 0.5s var(--motion),
+            margin 0.5s var(--motion);
+    }
+
+    /* 문의 클릭 시 높이가 늘어나며 펼쳐진 상태 */
+    .contact-dropdown.is-active {
+        grid-template-rows: 1fr;
+        max-height: 360px;
+        opacity: 1;
+        margin-top: 0.8vh;
+        margin-bottom: 1.2vh;
+    }
+
+    .contact-dropdown-inner {
+        min-height: 0;
+        overflow: hidden;
+        width: min(320px, calc(100vw - var(--align-point) - (var(--pad) * 2)));
+        box-sizing: border-box;
+        font-family: 'Lilex', 'HakgyoansimBareondotumR', sans-serif;
+        color: var(--hd-color);
+    }
+
+    /* 연락처 링크 리스트 영역 */
+    .popup-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: calc(var(--gap) * 0.8);
+        margin-bottom: var(--gap);
+    }
+
+    .contact-link {
+        position: relative;
+        display: inline-block;
+        width: fit-content;
+        font-family: 'Lilex', 'HakgyoansimBareondotumR', sans-serif;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        color: var(--hd-color);
+        text-decoration: none;
+        transition: color 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .contact-link::after {
+        content: '';
+        position: absolute;
+        bottom: var(--underline-offset);
+        left: 0;
+        width: 0;
+        height: var(--underline-thickness);
+        background-color: currentColor;
+        transform: translateZ(0);
+        transition: width 0.5s var(--motion);
+    }
+
+    .contact-link:hover::after {
+        width: 100%;
+    }
+
+    .map-placeholder {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+        background: url('/iwoo/etc/1.webp') center/cover no-repeat;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        user-select: none;
+    }
+
+    /* 평소엔 아예 안 보이게 숨김 */
+    .map-msg {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        mix-blend-mode: difference;
+        font-size: 0.85rem;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(8px);
+        transition: opacity 0.3s var(--motion), transform 0.3s var(--motion), visibility 0.3s;
+        pointer-events: none;
+    }
+
+    /* 클릭 시(.is-copied 붙을 때) 등장 */
+    .map-placeholder.is-copied .map-msg {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    /* 캡션 레이아웃: 헤더와 동일하게 35vw 지점부터 시작하며 우측 넘침 방지를 위해 minmax(0, 1fr) 적용 */
+    .caption-layout {
+        display: grid;
+        grid-template-columns: var(--align-point) minmax(0, 1fr);
+        padding: 0 var(--pad);
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* 고정 height 대신 min-height와 height: auto를 사용하여 줄바꿈이 많아져도 위로 잘리지 않게 설정 */
+    .gallery-caption {
+        grid-column: 2 / 3;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-start;
+        min-height: 20vh;
+        height: auto;
+        min-width: 0;
+        padding-top: 2vh;
+        padding-bottom: var(--pad);
+        box-sizing: border-box;
+        font-family: 'Lilex', 'HakgyoansimBareondotumR', sans-serif;
+        font-size: var(--main-font-size);
+        text-align: left;
+        color: var(--hd-color);
+        letter-spacing: var(--hd-letter-spacing);
+        line-height: var(--hd-line-height);
+        word-break: keep-all;
+        overflow-wrap: break-word;
+        opacity: 1;
+        transform: translateY(0);
+        transition:
+            opacity calc(var(--gallery-speed) * 0.6) var(--gallery-ease),
+            transform calc(var(--gallery-speed) * 0.6) var(--gallery-ease);
+    }
+
+    .gallery-caption.is-hidden {
+        opacity: 0;
+        transform: translateY(1vh);
+        transition: none;
+    }
+
+    /* 모바일 헤더 및 캡션 반응형 처리: 헤더 글씨 크기 1rem 고정 및 메뉴 줄간격 확대 */
+    @media (max-width: 768px) {
+        .header-logo,
+        .header-menu,
+        .word,
+        .word.kr,
+        .word.en {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .header-menu {
+            gap: 0.45rem;
+        }
+
+        .menu-item {
+            height: 1.5rem;
+        }
+
+        .gallery-caption {
+            min-height: 16vh;
+            height: auto;
+            font-size: 1rem;
+            padding-top: 4vh;
+            padding-bottom: 1.5vh;
+        }
+    }
+</style>
+
+<!-- 갤러리 이미지 CSS -->
+<style is:global>
+    .single-gallery {
+        width: 100%;
+        margin: 0 auto;
+        padding-bottom: var(--pad);
+        height: calc(50vh + var(--pad));
+        box-sizing: border-box;
+        position: relative;
+        overflow: hidden;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        cursor: pointer;
+    }
+
+    /* 홈 화면에서는 그리드용 캡션 박스와 이미지 박스 래퍼 무효화 */
+    .single-gallery .item-caption {
+        display: none !important;
+    }
+    .single-gallery .image-box {
+        display: contents;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .single-gallery::before,
+        .single-gallery::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            z-index: 20;
+        }
+
+        .single-gallery::before {
+            left: 0;
+            cursor: w-resize;
+        }
+
+        .single-gallery::after {
+            right: 0;
+            cursor: e-resize;
+        }
+    }
+
+    .single-gallery .gallery-stage {
+        position: absolute;
+        left: calc(var(--align-point) + var(--pad));
+        top: 0;
+        width: calc(100% - var(--align-point) - (var(--pad) * 2));
+        height: 50vh;
+    }
+
+    .single-gallery .gallery-item {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: fit-content;
+        max-width: 100%;
+        height: auto;
+        max-height: 100%;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 1;
+        overflow: hidden;
+    }
+
+    .single-gallery .gallery-item img {
+        display: block;
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 50vh;
+        object-fit: contain;
+        -webkit-user-drag: none;
+    }
+
+    .single-gallery .gallery-item::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        -webkit-backdrop-filter: blur(50px) saturate(2);
+        backdrop-filter: url(#cross-blur);
+        background-color: rgba(var(--bg-color-r), 0.1);
+        opacity: 0;
+        transition: opacity var(--gallery-speed) var(--gallery-ease);
+        will-change: opacity;
+        pointer-events: none;
+    }
+
+    .single-gallery .gallery-item.is-blurring::after {
+        opacity: 1;
+        transition: none;
+    }
+
+    .single-gallery .gallery-item.is-active {
+        opacity: 1;
+        z-index: 5;
+    }
+
+    @media (max-width: 768px) {
+        .single-gallery {
+            height: calc(42vh + var(--pad));
+        }
+
+        .single-gallery .gallery-stage {
+            left: calc(var(--align-point) + var(--pad));
+            top: 0;
+            width: calc(100% - var(--align-point) - (var(--pad) * 2));
+            height: 42vh;
+        }
+
+        .single-gallery .gallery-item img {
+            max-width: 100%;
+            max-height: 42vh;
+        }
+    }
+</style>
+
+<!-- 푸터 CSS -->
+<style>
+    /* 하단 고정형 리빌 푸터 기본 설정: 영문/숫자는 Lilex, 한글은 학교안심 바른돋움으로 자동 매칭 */
+    .reveal-footer {
+        --ft-font: 'Lilex', 'HakgyoansimBareondotumR', sans-serif;
+        --ft-size: 0.8rem;
+        --ft-line-gap: 4px;
+        --ft-color: var(--hd-color);
+        --ft-letter-spacing: 0em;
+
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: var(--bg-color);
+        z-index: 1;
+        overflow: hidden;
+        font-family: var(--ft-font);
+        font-size: var(--ft-size);
+        font-weight: 400;
+        color: var(--ft-color);
+        letter-spacing: var(--ft-letter-spacing);
+    }
+
+    /* 푸터 내부 컨테이너: 상단 그라디언트 높이(--footer-fade)만큼 상단 패딩을 추가해 카피라이트와 푸터 인포가 가려지지 않도록 여유 공간 확보 */
+    .footer-inner {
+        width: 100%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: calc(var(--pad) + var(--footer-fade) + 2vh) var(--pad) var(--pad);
+        box-sizing: border-box;
+    }
+
+    /* 푸터 상단 텍스트 정보 영역 배치 */
+    .footer-content {
+        width: 100%;
+        margin-bottom: 3vh;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    /* 푸터 우측 정보 그룹 묶음 */
+    .footer-right-group {
+        display: flex;
+        gap: 6vw;
+        align-items: flex-end;
+    }
+
+    /* 저작권 문구 및 우측 텍스트 스타일 */
+    .footer-copy,
+    .footer-copy p,
+    .footer-links span,
+    .footer-info p,
+    .footer-contact p {
+        margin: 0;
+        font-family: var(--ft-font);
+        font-size: var(--ft-size);
+        font-weight: 400;
+        color: var(--ft-color);
+        letter-spacing: var(--ft-letter-spacing);
+    }
+
+    /* 링크, 사업자 정보, 연락처 세로 정렬 및 글자 길이에 맞춰 폭 고정 */
+    .footer-links,
+    .footer-info,
+    .footer-contact {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--ft-line-gap);
+        text-align: left;
+    }
+
+    /* 호버 언더라인 효과를 위한 상대 위치 및 글자 폭 맞춤 지정 */
+    .footer-links span,
+    .footer-contact p {
+        position: relative;
+        display: inline-block;
+        width: fit-content;
+        cursor: pointer;
+    }
+
+    /* 호버 시 나타나는 하단 밑줄 기본 상태 (:root의 --underline-thickness 변수로 두께 통일) */
+    .footer-links span::after,
+    .footer-contact p::after {
+        content: '';
+        position: absolute;
+        bottom: var(--underline-offset);
+        left: 0;
+        width: 0;
+        height: var(--underline-thickness);
+        background-color: currentColor;
+        transform: translateZ(0);
+        transition: width 0.5s var(--motion);
+    }
+
+    /* 호버 시 모든 항목 동일하게 글자 폭 100%만큼 밑줄 생성 */
+    .footer-links span:hover::after,
+    .footer-contact p:hover::after {
+        width: 100%;
+    }
+
+    /* 푸터 하단 모핑 SVG 크기 설정 */
+    .reveal-footer svg.footer-morph-svg {
+        display: block;
+        width: 100%;
+        margin: 0 auto;
+        height: auto;
+        overflow: visible;
+    }
+
+    /* 푸터 로고 패스 색상 지정 */
+    .footer-logo {
+        fill: var(--hd-color);
+        stroke: none;
+    }
+
+    /* INTERSECTION WORKS OF OBJECT 중 I, W, O, O를 제외한 나머지 글자 트랜지션 */
+    .rest-char {
+        opacity: 1;
+        transition: opacity 0.65s var(--motion);
+    }
+
+    /* I, W, O, O 네 글자 기본 상태 (원래 문장 내 위치 및 크기) */
+    .iwoo-char {
+        transform-origin: 0px 0px;
+        transform: translate(0px, 0px) scale(1);
+        transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: transform;
+    }
+
+    /* 푸터가 일정 비율 이상 노출되어 .is-merged가 붙었을 때 나머지 글자는 사라지고 I, W, O, O가 기존 대형 로고 크기로 합쳐짐 */
+    .reveal-footer.is-merged .rest-char {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .reveal-footer.is-merged .iwoo-i {
+        transform: translate(3.3px, -187.4px) scale(5.986);
+    }
+
+    .reveal-footer.is-merged .iwoo-w {
+        transform: translate(-1869.7px, -185.3px) scale(5.96);
+    }
+
+    .reveal-footer.is-merged .iwoo-o1 {
+        transform: translate(-2656.5px, -188.7px) scale(5.96);
+    }
+
+    .reveal-footer.is-merged .iwoo-o2 {
+        transform: translate(-2878.2px, -188.7px) scale(5.96);
+    }
+
+    /* 모바일 환경에서 푸터의 모든 그룹을 세로(column)로 차례대로 쌓이도록 정렬 */
+    @media (max-width: 768px) {
+        .footer-content {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2vh;
+        }
+
+        .footer-right-group {
+            width: 100%;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2vh;
+        }
+    }
+</style>
+
+<!-- 다국어 번역 스크립트 -->
+<script is:inline>
+    // 1. 다국어 제어 함수 (갤러리 스크립트에서도 함께 사용함)
+    function getCurrentLang() {
+        return document.documentElement.classList.contains('lang-en') ? 'en' : 'ko';
+    }
+
+    function getCaptionText(img) {
+        if (!img) return '';
+        const lang = getCurrentLang();
+        return lang === 'en' ? (img.dataset.en || img.dataset.ko || '') : (img.dataset.ko || img.dataset.en || '');
+    }
+
+    function updatePageTranslations() {
+        // 현재 설정된 언어('en' 또는 'ko')를 가져옴
+        const lang = getCurrentLang();
+
+        // 페이지 내 번역이 필요한 모든 요소를 순회함
+        const translatableElements = document.querySelectorAll('[data-ko][data-en]');
+        translatableElements.forEach((el) => {
+            // 이미지는 번역 대상이 아니므로 제외함
+            if (el.tagName === 'IMG') return;
+
+            // 헤더나 필터 영역은 수작업으로 관리되므로 일반 텍스트로 교체함
+            if (el.closest('.main-header') || el.closest('.filter-container')) {
+                const text = lang === 'en' ? el.dataset.en : el.dataset.ko;
+                if (text !== undefined) {
+                    el.innerHTML = text;
+                }
+                return;
+            }
+
+
+            // 만약 아직 롤링 껍데기가 씌워지지 않은 최초 상태라면 롤링 HTML 구조를 생성하여 삽입함
+            const ko = el.getAttribute('data-ko') || '';
+            const en = el.getAttribute('data-en') || '';
+            if (typeof window.buildRollingHTML === 'function' && (ko || en)) {
+                el.innerHTML = window.buildRollingHTML(ko, en);
+            }
+        });
+
+        // 현재 활성화된 갤러리 캡션을 롤링 구조로 즉시 업데이트함
+        const activeImg = document.querySelector('.gallery-item.is-active img');
+        const captionEl = document.getElementById('galleryCaption');
+        if (captionEl && activeImg) {
+            const ko = activeImg.getAttribute('data-ko') || '';
+            const en = activeImg.getAttribute('data-en') || '';
+            
+            if (typeof window.buildRollingHTML === 'function') {
+                captionEl.innerHTML = window.buildRollingHTML(ko, en);
+            } else {
+                captionEl.innerHTML = getCaptionText(activeImg);
+            }
+        }
+    }
+
+    // 2. 다국어 초기화 및 토글 이벤트
+    function initTranslation() {
+        const savedLang = localStorage.getItem('lang') || 'ko';
+        document.documentElement.classList.toggle('lang-en', savedLang === 'en');
+        updatePageTranslations();
+
+        const langBtn = document.getElementById('langToggle');
+        if (langBtn && langBtn.dataset.initLang !== 'true') {
+            langBtn.dataset.initLang = 'true';
+            langBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const isEn = document.documentElement.classList.toggle('lang-en');
+                localStorage.setItem('lang', isEn ? 'en' : 'ko');
+                updatePageTranslations();
+            });
+        }
+    }
+
+    document.addEventListener('astro:page-load', initTranslation);
+    document.addEventListener('DOMContentLoaded', initTranslation);
+</script>
+
+<!-- 갤러리 -->
+<style is:global>
+/* 1. 캡션 박스 자체가 통째로 Y축으로 움직이거나 투명해지는 기존 효과 무력화 */
+    #galleryCaption,
+    #galleryCaption.is-hidden {
+        transform: none;
+        opacity: 1;
+        transition: none;
+    }
+
+    /* 2. 사진이 바뀌는 순간(is-hidden), 현재 언어의 글자들만 트랜지션 없이 바닥(110%)에 대기 */
+    #galleryCaption.is-hidden .r-mask .r-word.kr .r-char,
+    html.lang-en #galleryCaption.is-hidden .r-mask .r-word.en .r-char {
+        transform: translateY(110%);
+        transition: none;
+    }
+
+    /* 3. 영문 모드에서 사진이 바뀔 때 한글은 기존 숨김 위치(-110%)에 그대로 고정 */
+    html.lang-en #galleryCaption.is-hidden .r-mask .r-word.kr .r-char {
+        transform: translateY(-110%);
+        transition: none;
+    }
+</style>
+
+<!-- 갤러리 -->
+<script is:inline>
+    function initGallery() {
+        const container = document.querySelector('.single-gallery');
+        const stage = document.getElementById('stage');
+        const captionEl = document.getElementById('galleryCaption');
+
+        if (!stage || !container || stage.dataset.init === 'true') return;
+        stage.dataset.init = 'true';
+
+        const items = Array.from(stage.querySelectorAll('.gallery-item'));
+        const totalCount = items.length;
+        let activeIdx = 0;
+        let unblurRaf1 = null;
+        let unblurRaf2 = null;
+
+        // 초기 첫 번째 이미지 캡션 설정 (번역 스크립트의 getCaptionText 활용)
+        if (captionEl && items[0]) {
+            const firstImg = items[0].querySelector('img');
+            if (typeof getCaptionText === 'function') {
+                captionEl.innerHTML = getCaptionText(firstImg);
+            }
+        }
+
+        function move(step) {
+            if (totalCount === 0) return;
+
+            const currentItem = items[activeIdx];
+            const nextIdx = (activeIdx + step + totalCount) % totalCount;
+            if (nextIdx === activeIdx) return;
+
+            const nextItem = items[nextIdx];
+
+            if (unblurRaf1) cancelAnimationFrame(unblurRaf1);
+            if (unblurRaf2) cancelAnimationFrame(unblurRaf2);
+
+            currentItem.classList.remove('is-active', 'is-blurring');
+            nextItem.classList.add('is-blurring', 'is-active');
+
+            void window.getComputedStyle(nextItem, '::after').opacity;
+
+            if (captionEl) {
+                const img = nextItem.querySelector('img');
+                captionEl.classList.add('is-hidden');
+                if (typeof getCaptionText === 'function') {
+                    captionEl.innerHTML = getCaptionText(img);
+                }
+                void window.getComputedStyle(captionEl).opacity;
+            }
+
+            unblurRaf1 = requestAnimationFrame(() => {
+                unblurRaf2 = requestAnimationFrame(() => {
+                    nextItem.classList.remove('is-blurring');
+                    if (captionEl) {
+                        captionEl.classList.remove('is-hidden');
+                    }
+                });
+            });
+
+            activeIdx = nextIdx;
+        }
+
+        let didSwipe = false;
+
+        container.addEventListener('click', (e) => {
+        // 스와이프(밀기) 동작이 끝난 직후에 클릭이 중복 실행되는 걸 막음
+        if (didSwipe) {
+            didSwipe = false;
+            return;
+        }
+
+        // PC, 모바일 차별 없이 무조건 화면을 반으로 갈라버립니다!
+        const rect = container.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        
+        if (clickX < rect.width / 2) {
+            move(-1); // 왼쪽 터치/클릭 👉 이전 사진
+        } else {
+            move(1);  // 오른쪽 터치/클릭 👉 다음 사진
+        }
+    });
+
+        let startX = 0;
+        let startY = 0;
+
+        container.addEventListener('touchstart', (e) => {
+            didSwipe = false;
+            startX = e.touches[0].pageX;
+            startY = e.touches[0].pageY;
+        }, { passive: true });
+
+        container.addEventListener('touchend', (e) => {
+            const diffX = startX - e.changedTouches[0].pageX;
+            const diffY = startY - e.changedTouches[0].pageY;
+
+            if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
+                didSwipe = true;
+                move(diffX > 0 ? 1 : -1);
+            }
+        }, { passive: true });
+    }
+
+    document.addEventListener('astro:page-load', initGallery);
+    document.addEventListener('DOMContentLoaded', initGallery);
+</script>
+
+<!-- 헤더 메뉴 theme 버튼 기반 다크모드 토글 스크립트 -->
+<script is:inline>
+    document.addEventListener('DOMContentLoaded', initThemeToggle);
+    document.addEventListener('astro:page-load', initThemeToggle);
+
+    function applySavedOrSystemTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const shouldBeDark = savedTheme === 'dark' || (!savedTheme && systemPrefersDark);
+
+        document.documentElement.classList.toggle('dark-mode', shouldBeDark);
+    }
+
+    function initThemeToggle() {
+        applySavedOrSystemTheme();
+
+        const themeBtn = document.getElementById('themeToggle');
+        if (!themeBtn || themeBtn.dataset.initTheme === 'true') return;
+        themeBtn.dataset.initTheme = 'true';
+
+        // 헤더의 theme 메뉴 클릭 시 다크모드/라이트모드 전환 및 상태 저장
+        themeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const isDark = document.documentElement.classList.toggle('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+    }
+</script>
+
+<!-- 문의 메뉴 하단 아코디언 펼침 제어 스크립트 -->
+<script is:inline>
+    document.addEventListener('DOMContentLoaded', initContactDropdown);
+    document.addEventListener('astro:page-load', initContactDropdown);
+
+    function initContactDropdown() {
+        const openBtn = document.getElementById('openContact');
+        const dropdown = document.getElementById('contactPopup');
+        const contactGroup = document.getElementById('contactGroup');
+
+        if (!openBtn || !dropdown || openBtn.dataset.initPopup === 'true') return;
+        openBtn.dataset.initPopup = 'true';
+
+        // 문의 메뉴 클릭 시 바로 아래 숨겨진 문의 영역을 부드럽게 펼치거나 접기
+        openBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const isOpen = dropdown.classList.toggle('is-active');
+            openBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+
+        // 문의 영역 바깥을 클릭하면 자동으로 접기
+        document.addEventListener('click', (e) => {
+            if (dropdown.classList.contains('is-active') && contactGroup && !contactGroup.contains(e.target)) {
+                dropdown.classList.remove('is-active');
+                openBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // ESC 키 입력 시 접기
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && dropdown.classList.contains('is-active')) {
+                dropdown.classList.remove('is-active');
+                openBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+</script>
+
+<!-- 리빌 푸터 스크롤 연동 스크립트 -->
+<script is:inline>
+    function syncFooterAndScroll() {
+        const footer = document.querySelector('.reveal-footer');
+        const wrapper = document.querySelector('.content-wrapper');
+        const footerInner = document.querySelector('.footer-inner');
+
+        if (!footer || !wrapper || !footerInner) return;
+
+        const footerHeight = footer.offsetHeight;
+        wrapper.style.marginBottom = footerHeight + 'px';
+
+        const wrapperRect = wrapper.getBoundingClientRect();
+        const revealedPx = window.innerHeight - wrapperRect.bottom;
+        const paddingTop = parseFloat(window.getComputedStyle(footerInner).paddingTop) || 0;
+        
+        const actualContentHeight = footerHeight - paddingTop;
+        const actualRevealedPx = Math.max(0, revealedPx - paddingTop);
+
+        // 스크롤 비율 (0: 안 보임 ~ 1: 다 보임)
+        let revealRatio = actualContentHeight > 0 ? actualRevealedPx / actualContentHeight : 0;
+        revealRatio = Math.max(0, Math.min(1, revealRatio));
+
+        /* ====================================================
+           💡 대표님이 CSS에 적어둔 수치를 그대로 가져와서 스크롤에 곱해줍니다.
+           (CSS 파일은 건드릴 필요가 전혀 없습니다!)
+           ==================================================== */
+        
+        const iwooI = footer.querySelector('.iwoo-i');
+        const iwooW = footer.querySelector('.iwoo-w');
+        const iwooO1 = footer.querySelector('.iwoo-o1');
+        const iwooO2 = footer.querySelector('.iwoo-o2');
+        const restChars = footer.querySelectorAll('.rest-char');
+
+        if (iwooI && iwooW && iwooO1 && iwooO2) {
+            // 마우스 휠에 즉각적으로(렉 없이) 반응하게 CSS transition 끄기
+            iwooI.style.transition = 'none';
+            iwooW.style.transition = 'none';
+            iwooO1.style.transition = 'none';
+            iwooO2.style.transition = 'none';
+            
+            // 대표님의 완벽한 수치에 revealRatio(스크롤 퍼센트)를 곱해서 위치를 실시간 조작
+            iwooI.style.transform = `translate(${3.3 * revealRatio}px, ${-187.4 * revealRatio}px) scale(${1 + (4.986 * revealRatio)})`;
+            iwooW.style.transform = `translate(${-1869.7 * revealRatio}px, ${-185.3 * revealRatio}px) scale(${1 + (4.96 * revealRatio)})`;
+            iwooO1.style.transform = `translate(${-2656.5 * revealRatio}px, ${-188.7 * revealRatio}px) scale(${1 + (4.96 * revealRatio)})`;
+            iwooO2.style.transform = `translate(${-2878.2 * revealRatio}px, ${-188.7 * revealRatio}px) scale(${1 + (4.96 * revealRatio)})`;
+        }
+
+        // 안 쓰는 글자들(rest-char)도 스크롤 내릴수록 서서히 사라지게 조작
+        restChars.forEach(char => {
+            char.style.transition = 'none';
+            char.style.opacity = 1 - revealRatio;
+            char.style.pointerEvents = revealRatio > 0.5 ? 'none' : 'auto';
+        });
+    }
+
+    function initFooterReveal() {
+        syncFooterAndScroll();
+        const footer = document.querySelector('.reveal-footer');
+        if (footer && 'ResizeObserver' in window && footer.dataset.observed !== 'true') {
+            footer.dataset.observed = 'true';
+            const observer = new ResizeObserver(() => syncFooterAndScroll());
+            observer.observe(footer);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', initFooterReveal);
+    document.addEventListener('astro:page-load', initFooterReveal);
+    window.addEventListener('resize', syncFooterAndScroll);
+    window.addEventListener('scroll', syncFooterAndScroll, { passive: true });
+</script>
+
+<!-- 지도 복사 -->
+<script is:inline>
+    function copyAddress(el) {
+        if (el.classList.contains('is-copied')) return;
+
+        const address = "경기도 이천시 신둔면 도자예술로 99번길";
+        
+        const showMessage = () => {
+            el.classList.add('is-copied');
+            setTimeout(() => el.classList.remove('is-copied'), 3000);
+        };
+
+        // 1. 최신 브라우저 & HTTPS 환경일 때
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(address)
+                .then(showMessage)
+                .catch(err => console.error('복사 실패:', err));
+        } 
+        // 2. HTTP 환경이나 로컬 테스트(IP 접속) 중일 때 우회 처리
+        else {
+            const textArea = document.createElement("textarea");
+            textArea.value = address;
+            textArea.style.position = "absolute";
+            textArea.style.opacity = "0";
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showMessage();
+            } catch (err) {
+                console.error('우회 복사 실패:', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+    }
+</script>
+
+<!-- 번역: 롤링 애니메이션: 스타일 -->
+<style is:global>
+    /* 오버플로우 마스킹 (껍데기 밖으로 나가면 잘림) */
+    .r-mask {
+        display: inline-block;
+        position: relative;
+        overflow: hidden; 
+        vertical-align: bottom;
+    }
+    .r-mask .r-word {
+        display: inline-block;
+        white-space: nowrap;
+    }
+    .r-mask .r-char {
+        display: inline-block;
+        transition: transform 0.5s var(--motion);
+    }
+    .r-space {
+        display: inline-block;
+        white-space: pre; 
+    }
+
+    
+    /* [기본 상태: 한글] 영문은 110% 아래에 대기 */
+    .r-mask .r-word.kr { position: relative; }
+    .r-mask .r-word.en { position: absolute; left: 0; top: 0; pointer-events: none; }
+    .r-mask .r-word.kr .r-char { transform: translateY(0); }
+    .r-mask .r-word.en .r-char { transform: translateY(110%); }
+    
+    /* [전환 상태: 영문] 한글은 -110% 위로 밀려남 */
+    html.lang-en .r-mask .r-word.kr { position: absolute; left: 0; top: 0; pointer-events: none; }
+    html.lang-en .r-mask .r-word.en { position: relative; left: auto; top: auto; pointer-events: auto; }
+    html.lang-en .r-mask .r-word.kr .r-char { transform: translateY(-110%); }
+    html.lang-en .r-mask .r-word.en .r-char { transform: translateY(0); }
+
+    /* 영문 모드일 때: 영문 글자(.en .r-char)가 하나도 없는 줄은 강제 삭제 */
+    html:not(.lang-en) .r-line:not(:has(.kr .r-char)) { display: none !important; }
+    html.lang-en .r-line:not(:has(.en .r-char)) { display: none !important; }
+</style>
+
+<!-- 번역: 롤링 애니메이션 -->
+<script is:inline>
+    // 1. 단어/띄어쓰기 단위로 쪼개서 마스킹 껍데기를 씌우는 함수 (완전 깔끔하게 개선된 버전 ✨)
+    window.buildRollingHTML = function(koStr, enStr) {
+        // <br> 태그 쪼개는 복잡한 로직 삭제! 그냥 띄어쓰기 기준으로만 단어를 쪼갭니다.
+        const kWords = (koStr || '').split(' ');
+        const eWords = (enStr || '').split(' ');
+        const maxWords = Math.max(kWords.length, eWords.length);
+
+        let lineHtml = [];
+        for (let j = 0; j < maxWords; j++) {
+            const wrapChars = (word) => {
+                let charIdx = 0;
+                return Array.from(word).map(c => {
+                    const delay = (charIdx * 0.02).toFixed(3);
+                    charIdx++;
+                    const safeChar = c.replace(/"/g, '&quot;');
+                    return `<span class="r-char" style="transition-delay: ${delay}s">${safeChar}</span>`;
+                }).join('');
+            };
+
+            const kW = wrapChars(kWords[j] || '');
+            const eW = wrapChars(eWords[j] || '');
+
+            // 단어들을 감싸는 마스크
+            lineHtml.push(`<span class="r-mask"><span class="r-word kr">${kW}</span><span class="r-word en">${eW}</span></span>`);
+        }
+
+        // 🔥 여기가 핵심! flex-wrap: wrap;을 주면 공간이 좁을 때 알아서 다음 줄로 단어가 넘어갑니다!
+        // column-gap으로 띄어쓰기 간격을 주고, row-gap으로 줄바꿈 시 위아래 간격을 맞춰줍니다.
+        return `<span class="r-lines-container" style="display: flex; flex-wrap: wrap; column-gap: 0.25em; row-gap: 0.1em; width: 100%;">${lineHtml.join('')}</span>`;
+    };
+
+    // 2. 기존 갤러리 스크립트 가로채기
+    window.getCaptionText = function(img) {
+        if (!img) return '';
+        const ko = img.getAttribute('data-ko') || '';
+        const en = img.getAttribute('data-en') || '';
+        return window.buildRollingHTML(ko, en);
+    };
+
+    // 3. 기존 번역 스크립트 가로채기
+    window.updatePageTranslations = function() {
+        const lang = document.documentElement.classList.contains('lang-en') ? 'en' : 'ko';
+
+        document.querySelectorAll('[data-ko][data-en]').forEach(el => {
+            if (el.tagName === 'IMG') return;
+
+            if (el.closest('.main-header') || el.closest('.filter-container')) {
+                el.innerHTML = lang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-ko');
+                return;
+            }
+
+            if (!el.dataset.rolled) {
+                el.innerHTML = window.buildRollingHTML(el.getAttribute('data-ko'), el.getAttribute('data-en'));
+                el.dataset.rolled = 'true';
+            }
+        });
+
+        // 갤러리 캡션 최초 생성 
+        const activeItem = document.querySelector('.gallery-item.is-active');
+        const activeImg = activeItem ? activeItem.querySelector('img') : null;
+        const captionEl = activeItem ? activeItem.querySelector('#galleryCaption') : null;
+        if (captionEl && activeImg) {
+            captionEl.innerHTML = window.getCaptionText(activeImg);
+        }
+    };
+
+    function initAll() {
+        const savedLang = localStorage.getItem('lang') || 'ko';
+        const isEn = savedLang === 'en';
+        document.documentElement.classList.toggle('lang-en', isEn);
+
+        if (typeof window.updatePageTranslations === 'function') {
+            window.updatePageTranslations();
+        }
+    }
+
+    document.addEventListener('astro:page-load', initAll);
+    document.addEventListener('DOMContentLoaded', initAll);
+</script>

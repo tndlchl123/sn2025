@@ -18,7 +18,6 @@
 /* 글자색 */ .point-txt { color: rgba(var(--dynamic-point-r), 1); }
 /* SVG */ .point-svg { fill: rgba(var(--dynamic-point-r), 1); }
 
-
 /* font */
 @font-face {
   font-family: 'Geist';
@@ -45,17 +44,16 @@
 }
 
 body, main, p, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6, button, input, textarea, select { 
-  margin: 0; padding: 0; max-width: none;
+  margin: 0; padding: 0; 
 }
 
 main { width: 100%;}
 
 *, *::before, *::after {
   box-sizing: border-box;
-  letter-spacing: -0.07em;
+  letter-spacing: -0.05em;
   word-break: keep-all;
   overflow-wrap: break-word;
-
 }
 
 img {
@@ -65,6 +63,11 @@ img {
   -webkit-user-drag: none;
   pointer-events: auto;
 }
+
+video::-webkit-media-controls { display: none; }
+video::-webkit-media-controls-enclosure { display: none; }
+video::-webkit-media-controls-panel { display: none; }
+
 /* text selection */
 ::selection { background-color: rgba(var(--txt-color-r), 0.9); color: var(--bg-color); }
 ::-moz-selection { background-color: rgba(var(--txt-color-r), 0.9); color: var(--bg-color); }
@@ -74,7 +77,6 @@ img {
 }
  /* var */
 :root {
-  font-family: 'Geist Mono', 'Asta Sans', sans-serif;
   line-height: 1;
 
   --pad: 1.5vh;
@@ -90,7 +92,9 @@ img {
 
   --dynamic-point-r: 44, 205, 242;
 
-
+  --font-mono: 'Geist Mono', monospace;
+  --font-geist: 'Geist', sans-serif;
+  --font-asta: 'Asta Sans', sans-serif;
 }
 
 html body {
@@ -115,9 +119,10 @@ html body {
   -ms-user-select: none;     /* 인터넷 익스플로러/엣지 */
   user-select: none;         /* 표준 */
 
-  margin: 0; padding: 0;
+  margin: 0; padding: 0; max-width: none;
 }
 
+/* 바디 패딩 */
 html body.default-body {
   padding: var(--pad);
 }

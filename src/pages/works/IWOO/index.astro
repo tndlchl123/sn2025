@@ -2,7 +2,9 @@
 import Layout from '@common/Design-Layout.astro';
 ---
 
-<Layout title="IWOO">
+<Layout title="IWOO"
+keywords="이우, iwoo, 도자기브랜드, 테이블웨어, 백자, 매트포슬린, 온기, 도자예술로, 이천도자기, 현대도자, 세라믹스튜디오, 공예디자인"
+>
 
 <div class="gradient-box">
 
@@ -172,10 +174,6 @@ import Layout from '@common/Design-Layout.astro';
         <img src="/iwoo/1/12.webp" alt="물레 위 백토">
     
     </div>
-
-
-
-
 
 </section>
 
@@ -701,7 +699,7 @@ import Layout from '@common/Design-Layout.astro';
 
 </section>
 
-
+<!-- 
 <section class="iw-keyvisual">
 
   <div class="keyvisual-text">
@@ -724,12 +722,9 @@ import Layout from '@common/Design-Layout.astro';
     <img src="/iwoo/keyvisual/4.webp?=v2" alt="색상 그라디언트 그래픽 4">
   </div>
 
-  <!-- 그라디언트 모듈 시스템 본체 -->
   <div class="gradient-module" id="gradient-module" data-lenis-prevent>
     <canvas id="gradient-canvas" data-lenis-prevent></canvas>
 
-    <!-- 상단: 그라디언트 유형 선택 -->
-    <!-- aria-label을 추가해 스크린 리더가 "1번 그라디언트 모드 버튼"이라고 똑똑하게 읽도록 수정 -->
     <div class="top-ui" role="group" aria-label="그라디언트 유형 선택">
       <button class="mode-btn active" data-mode="1" aria-label="1번 그라디언트 모드">1</button>
       <button class="mode-btn" data-mode="2" aria-label="2번 그라디언트 모드">2</button>
@@ -737,18 +732,14 @@ import Layout from '@common/Design-Layout.astro';
       <button class="mode-btn" data-mode="4" aria-label="4번 그라디언트 모드">4</button>
     </div>
 
-    <!-- 하단: 컨트롤 패널 -->
     <div class="bottom-ui">
       
-      <!-- 1번 박스: 색상 -->
-      <!-- 스크린 리더가 아예 무시하도록 aria-hidden="true" 부여 -->
       <div class="bottom-box color-wrapper" id="color-panel" aria-hidden="true">
         <div class="color-header" id="color-toggle">
           <span>color</span>
         </div>
         <div class="color-content">
           <div class="color-grid">
-            <!-- tabindex="-1"을 달아서 탭(Tab) 키로도 접근하지 못하게 원천 차단 ("회색 색상 저장소" 음성 제거) -->
             <div class="color-item"><input type="color" id="val-bg" tabindex="-1"></div>
             <div class="color-item"><input type="color" id="val-c1" tabindex="-1"></div>
             <div class="color-item"><input type="color" id="val-c2" tabindex="-1"></div>
@@ -762,15 +753,11 @@ import Layout from '@common/Design-Layout.astro';
         </div>
       </div>
 
-      <!-- 2번 박스: 슬라이더 1 -->
-      <!-- 슬라이더에 이름을 지어줘서 "첫 번째 속성 조절 슬라이더, 60%" 식으로 읽게 함 -->
       <div class="bottom-box slider-track-box" id="cg-p1">
         <input type="range" id="val-p1" step="0.1" aria-label="첫 번째 속성 조절">
-        <!-- output은 눈에만 보이고 스크린리더는 중복해서 읽지 않도록 aria-hidden 처리 -->
         <output class="range-tooltip" id="tip-p1" aria-hidden="true">0%</output>
       </div>
 
-      <!-- 3번 박스: 슬라이더 2 -->
       <div class="bottom-box slider-track-box" id="cg-p2">
         <input type="range" id="val-p2" step="0.1" aria-label="두 번째 속성 조절">
         <output class="range-tooltip" id="tip-p2" aria-hidden="true">0%</output>
@@ -781,7 +768,31 @@ import Layout from '@common/Design-Layout.astro';
 
 
 </section>
+-->
 
+<section class="iw-keyvisual">
+
+  <div class="keyvisual-text">
+    <p class="scroll-animate-text">brand key visual</p>
+    <p class="sub-title">
+      이우의 핵심 그래픽은 실용과 예술의 교차에서 시작하여 색채의 유연한 흐름으로 구현되었으며,
+      부드러운 색상의 전환을 통해 브랜드가 추구하는 방향성을 시각화합니다.
+    </p>
+  </div>
+
+  <div class="box">
+    <img src="/iwoo/keyvisual/1.webp?=v2" alt="그라디언트 그래픽 1">
+
+    <img src="/iwoo/keyvisual/2.webp?=v2" alt="그라디언트 그래픽 2">
+  </div>
+
+  <div class="box-2">
+    <img src="/iwoo/keyvisual/3.webp?=v2" alt="그라디언트 그래픽 3">
+
+    <img src="/iwoo/keyvisual/4.webp?=v2" alt="그라디언트 그래픽 4">
+  </div>
+
+</section>
 
 <section class="iw-grid">
   <div class="txt">
@@ -817,7 +828,8 @@ import Layout from '@common/Design-Layout.astro';
       
       <div class="slider-dots">
         <div class="dot"><div class="progress"></div></div>
-        <div class="dot"><div class="progress"></div></div>
+        <div class="dot"><div class="progress"></div></div><img src="/iwoo/grid/3.webp" alt="펼쳐진 책 페이지 1">
+        <img src="/iwoo/grid/3-2.webp" alt="펼쳐진 책 페이지 2">
       </div>
     </div>
   </div>
@@ -870,17 +882,7 @@ import Layout from '@common/Design-Layout.astro';
     <img src="/iwoo/applications/3.webp" alt="명함 앞면과 뒷면">
   </div>
 
-
-
-
-  
-
-
-
-
   <video src="/iwoo/applications/4.mp4" autoplay muted loop playsinline aria-label="패키지 박스 전개도"></video>
-  
-  
 
   <div class="box">
     <img src="/iwoo/applications/5.webp" alt="보자기 매듭 확대">
@@ -888,9 +890,6 @@ import Layout from '@common/Design-Layout.astro';
   </div>
 
   <img class="applications-img-package" src="/iwoo/applications/7.webp" alt="박스 위 보자기">
-
-  
-
 
 </section>
 
@@ -4265,7 +4264,7 @@ document.addEventListener("astro:page-load", function() {
 </script>
 
 
-<!-- key visual -->
+<!-- key visual 
 <script>
 document.addEventListener("astro:page-load", () => {
 const container = document.getElementById('gradient-module');
@@ -4845,7 +4844,7 @@ function updateTooltip(inputId, tipId) {
 
 });
 </script>
-
+-->
 
 
 <!--

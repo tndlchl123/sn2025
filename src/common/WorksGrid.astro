@@ -1,0 +1,96 @@
+<!-- 수동 딱지, 이미지 태그 아래
+  <div class="item-tags">
+    <span class="tag-badge translate"
+    data-en="eng" data-ko="kor"></span>
+  </div>
+-->
+
+<!--
+  비디오 태그
+<video 
+  src="/iwoo/1/4.mp4" 
+  muted 
+  loop 
+  playsinline 
+  preload="metadata"
+  draggable="false"
+  disablePictureInPicture
+  oncontextmenu="return false;"
+></video>
+
+
+a태그, 모달창
+<a href="/works/test" class="work-item open-modal" data-category="lab etc" data-title="">
+-->
+
+
+
+
+<div class="works-grid" id="works-grid">
+
+
+  <a href="/works/IWOO" class="work-item" data-category="works brand" data-title="IWOO">
+    <img src="/thumbnail/IWOO.webp" alt="이우 브랜딩">
+  </a>
+
+  <a href="/works/IWOO/web" class="work-item" data-category="works web" data-title="IWOO">
+    <img src="/thumbnail/IWOO-web.webp" alt="이우 웹">
+  </a>
+
+  <a href="/works/test-3" class="work-item" data-category="works brand" data-title="project 3">
+    <img src="/test/test-3.webp" alt="테스트 이미지 4-3">
+  </a>
+
+  <a href="/works/test-4" class="work-item" data-category="lab web" data-title="project 3">
+    <img src="/test/test-4.webp" alt="테스트 이미지 4-3">
+  </a>
+
+  <a href="/works/test-3" class="work-item open-modal" data-category="works etc" data-title="project 3">
+    <img src="/test/test-5.webp" alt="테스트 이미지 4-3">
+  </a>
+
+  <a href="/works/test-2" class="work-item open-modal" data-category="lab brand" data-title="project 3">
+    <img src="/test/test-6.webp" alt="테스트 이미지 4-3">
+  </a>
+
+</div>
+
+
+
+<!-- 그리드 아이템 -->
+<style is:global>
+.works-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* gap: calc(var(--pad) / 10); */
+  gap: var(--pad);
+  align-items: start; /* 각 아이템이 딱지 공간만큼 알아서 차지하게 함 */
+}
+
+.work-item {
+  display: block;
+  text-decoration: none;
+  overflow: hidden;
+  opacity: 1;
+
+  transform: translate3d(0, 0, 0) scale(1);
+  transition: all 0.5s var(--motion);
+  will-change: transform, opacity;
+}
+
+.work-item img,
+.work-item video {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+
+  border-radius: var(--rad);
+}
+
+@media (max-width: 768px) {
+  .works-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+

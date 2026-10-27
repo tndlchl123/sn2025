@@ -1,0 +1,193 @@
+<!-- 1. 모달 빈 껍데기 (이게 있어야 자바스크립트가 찾아서 화면에 띄움!) -->
+<div id="content_modal" class="works-modal-overlay">
+  <div class="works-modal-box">
+    <div id="modal_content_area"></div>
+  </div>
+</div>
+
+<!-- 모달창 -->
+<style>
+html {
+    overflow-y: scroll;
+}
+
+/* 모달 배경 */
+.works-modal-overlay {
+    scrollbar-gutter: stable;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  background-color: rgba(var(--txt-color-r), 0.5); 
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+
+  z-index: 10;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* 스르륵 나타나기 위한 세팅 (숨김 상태) */
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.5s var(--motion), visibility 0.5s var(--motion);
+}
+
+/* JS로 .show 클래스가 붙었을 때 (스르륵 나타남) */
+.works-modal-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+/* 모달 내용 박스 */
+.works-modal-box {
+
+  background-color: var(--bg-color);
+
+  /* border-radius: var(--pad); */
+  position: relative;
+
+  overflow-y: auto; 
+  -ms-overflow-style: none;
+  scrollbar-width: none; 
+  overscroll-behavior: contain;
+
+  /* 박스가 아래에서 위로 살짝 올라오며 나타나는 효과 */
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.5s var(--motion), transform 0.5s var(--motion);
+}
+
+/* 배경이 나타날 때 내용 박스도 제자리로 올라옴 */
+.works-modal-overlay.show .works-modal-box {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+</style>
+
+<!-- 모달창 스크립트 -->
+<script is:inline>
+let modalLenis;
+let modalRafId;
+
+window.openWorksModal = async function(url) {
+    const modal = document.getElementById('content_modal');
+    const modalBox = document.querySelector('.works-modal-box');
+    const contentArea = document.getElementById('modal_content_area');
+
+    if (!modal || !contentArea || !url) return;
+
+    modal.setAttribute('data-lenis-prevent', 'true');
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("페이지를 찾을 수 없습니다.");
+
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        const innerData = doc.querySelector('.modal-inner-data');
+        if (!innerData) {
+            contentArea.innerHTML = "<p>불러온 페이지에서 .modal-inner-data 를 찾을 수 없습니다.</p>";
+            return;
+        }
+
+        contentArea.innerHTML = '';
+
+        // 스타일 & HTML & 스크립트 주입
+        const styles = doc.querySelectorAll('style');
+        styles.forEach(style => {
+            contentArea.appendChild(style.cloneNode(true));
+        });
+
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = innerData.innerHTML;
+        contentArea.appendChild(wrapper);
+
+        const scripts = doc.querySelectorAll('script');
+        scripts.forEach(script => {
+            const newScript = document.createElement('script');
+            if (script.src) {
+                newScript.src = script.src;
+            } else {
+                newScript.textContent = script.textContent;
+            }
+            contentArea.appendChild(newScript);
+        });
+
+        // 기존 모달 레니스가 남아있다면 정리 후 새로 가동
+        if (modalLenis) {
+            modalLenis.destroy();
+            cancelAnimationFrame(modalRafId);
+        }
+
+        if (typeof Lenis !== 'undefined') {
+            modalLenis = new Lenis({
+                wrapper: modalBox,
+                content: contentArea,
+                lerp: 1,
+            });
+
+            function raf(time) {
+                modalLenis.raf(time);
+                modalRafId = requestAnimationFrame(raf);
+            }
+            modalRafId = requestAnimationFrame(raf);
+        }
+
+    } catch (error) {
+        console.error("모달 데이터 로드 실패:", error);
+        contentArea.innerHTML = "<p>에러가 발생했습니다. 경로를 확인해 주세요.</p>";
+    }
+};
+
+function initWorksModal() {
+    const triggers = document.querySelectorAll('.open-modal');
+    const modal = document.getElementById('content_modal');
+    const contentArea = document.getElementById('modal_content_area');
+
+    if (!modal || !contentArea) return;
+
+    modal.setAttribute('data-lenis-prevent', 'true');
+
+    // 일반 HTML 버튼으로 .open-modal을 눌렀을 때도 동일하게 작동
+    triggers.forEach(trigger => {
+        trigger.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.openWorksModal(this.getAttribute('href'));
+        };
+    });
+
+    const closeModal = () => {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+
+        if (modalLenis) {
+            modalLenis.destroy();
+            cancelAnimationFrame(modalRafId);
+            modalLenis = null;
+        }
+
+        setTimeout(() => {
+            contentArea.innerHTML = '';
+        }, 500);
+    };
+
+    modal.onclick = function(e) {
+        if (e.target === modal) closeModal();
+    };
+}
+
+document.addEventListener('astro:page-load', initWorksModal);
+document.addEventListener('DOMContentLoaded', initWorksModal);
+</script>

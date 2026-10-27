@@ -1,37 +1,52 @@
 ---
 import Layout from '@common/Layout.astro';
+import WorksModal from '@common/WorksModal.astro';
+import WorksGrid from '@common/WorksGrid.astro';
 ---
 
-<Layout>    
+<Layout>
+<div id="global-loader">
+    <span class="loading-text">0%</span>
+</div>
+
 <div class="hero-wrapper">
     <section class="typo">
-        <div class="main-typo translate col-start-4 span-3"
-            data-en="sn looks at the world with a new perspectives of design, bringing forth new shapes grounded in true essence.">
-            sn은 디자인을 통해 세상을 새롭게 바라보고, 본질을 바탕으로 새로운 형태를 제안합니다.
+        <div
+            class="main-typo translate col-start-4 span-3"
+            data-en="shape new, sn<br>sn looks at the world with a new perspectives of design, bringing forth new shapes grounded in true essence."
+        >
+            shape new, sn<br>sn은 디자인을 통해 세상을 새롭게 바라보고 본질을 바탕으로 새로운 형태를 제안합니다.
         </div>
     </section>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
     <section class="motion-gallery-section">
-        <div id="camera-container">
-            <a href="/works/test-2" class="work-item"><img src="/test/3-4.webp" alt=""></a>
-            <a href="/works/project-3" class="work-item"><img src="/test/4-5.webp" alt=""></a>
-            <a href="/works/project-3" class="work-item"><img src="/test/9-16.webp" alt=""></a>
-            <a href="/works/project-3" class="work-item"><img src="/test/4-3.webp" alt=""></a>
-            <a href="/works/project-3" class="work-item"><img src="/test/4-3.webp" alt=""></a>
-            <a href="/works/project-3" class="work-item"><img src="/test/1-1.webp" alt=""></a>
+        <canvas id="webgl-canvas"></canvas>
+        <div class="works-data" style="display: none;">
+            <WorksGrid />
         </div>
     </section>
 </div>
 
-
-
+<WorksModal />
 </Layout>
 
-
 <style is:global>
-    /* 스크롤바 숨기기 */
-    html body.default-body { margin: 0; padding: 0; overflow: hidden; }
-
+    /* 스크롤바 숨기기 및 mix-blend-mode: difference 동작을 위한 배경색 명시 */
+    html.lenis,
+    html.lenis body.default-body,
+    html body.default-body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .site-footer {
+        padding-inline: var(--pad);
+    }
 
     .global-header .header-container {
         padding-inline: var(--pad);
@@ -39,30 +54,97 @@ import Layout from '@common/Layout.astro';
         padding-bottom: 0;
     }
 
+    /* PC 히어로 영역: 텍스트와 갤러리 간격을 확보하고 사진을 살짝 아래로 배치 */
     .hero-wrapper {
         width: 100%;
-        height: calc(100svh - 6.5svh);
-        
+        height: calc(100dvh - 8dvh - (var(--pad, 16px) * 2));
         display: flex;
         flex-direction: column;
-        
         justify-content: center;
-        gap: 10vh;
-        
+        gap: clamp(1.5rem, 4vh, 3.5rem);
         position: relative;
         box-sizing: border-box;
     }
+
+    /* 모바일 히어로 및 푸터 영역 */
+    @media (max-width: 768px) {
+        .hero-wrapper {
+            width: 100%;
+            height: calc(100vh - 8vh - (var(--pad, 16px) * 2));
+            height: calc((var(--vh, 1vh) * 100) - 8vh - (var(--pad, 16px) * 2));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: clamp(1.25rem, 3.5vh, 2.5rem);
+            position: relative;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .site-footer {
+            min-height: 3vh;
+            padding: var(--pad);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            box-sizing: border-box;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 99;
+        }
+    }
 </style>
 
-<!-- grid col -->
+<!-- 로딩 화면 -->
+<style>
+    /* 전체 화면을 덮는 글로벌 로딩 화면 (#global-loader) */
+    #global-loader {
+        position: fixed; /* 화면에 찰싹 붙어서 전체를 덮음 */
+        top: 0; 
+        left: 0; 
+        width: 100vw; 
+        height: 100dvh; /* 모바일 사파리 하단바까지 덮도록 dvh 사용 */
+        background: var(--bg-color);
+        z-index: 9999;
+
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-end;
+
+        padding: var(--pad);
+
+        transition: opacity 1s var(--motion), visibility 1s var(--motion);
+    }
+    
+    /* 로딩 끝나면 투명해지면서 클릭도 통과하게 만듦 */
+    #global-loader.is-hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    /* 💡 [글자 크기 및 폰트 관리] .loading-text 스타일 */
+    .loading-text {
+        font-family: var(--font-geist); /* 요구하신 Geist 폰트 적용 */
+        font-size: 6rem;                 /* 폰트 크기 관리 (원하시는 크기로 변경 가능) */
+    }
+</style>
+
+<!-- 그리드 컬럼 스타일 -->
 <style>
     .typo {
         width: 100%;
-
+        padding-inline: var(--pad);
+        box-sizing: border-box;
         display: grid;
         grid-template-columns: repeat(6, minmax(0, 1fr));
-        
         gap: var(--pad);
+        position: relative;
+        z-index: 5;
+        mix-blend-mode: difference;
+        color: #ffffff;
+        pointer-events: none;
     }
 
     .typo > * {
@@ -84,455 +166,679 @@ import Layout from '@common/Layout.astro';
     .span-4 { grid-column-end: span 4; }
     .span-5 { grid-column-end: span 5; }
     .span-6 { grid-column: 1 / 7; }
-
-
 </style>
 
-<!-- typo -->
+<!-- 타이포그래피 스타일 -->
 <style>
     /* 기본: 한글 */
     .main-typo {
-        font-family: 'Asta Sans', sans-serif;
-
-        font-size: 3.5vw;
+        font-family: var(--font-asta);
+        font-size: 1.5rem;
         font-weight: 600;
         line-height: 1.2;
-        
+        word-break: keep-all;
     }
 
     /* 번역: 영어 */
     :global(html:has(.lang-toggle-btn.active)) .main-typo.translate {
-        font-family: 'Geist', sans-serif;
+        font-family: var(--font-geist);
         line-height: 1;
     }
 
-    /* pc */
-    @media (min-width: 769px) {
-        .main-typo {
-            
-        }
-    }
-
-    /* mob */
+    /* 모바일 타이포그래피 */
     @media (max-width: 768px) {
         .main-typo {
             font-size: 6vw;
             grid-column-start: 3;
             grid-column-end: span 4;
         }
-
-
     }
-
 </style>
 
-<!-- works img -->
+<!-- 갤러리 스타일 -->
 <style>
     .motion-gallery-section {
         width: 100%;
         height: 50svh;
-        background-color: transparent;
+        margin-top: 1.5vh;
         position: relative;
-        
-        overflow-x: clip; 
-        overflow-y: visible;
-
-        touch-action: none;
-
-        perspective: 800px;
-    }
-    .motion-gallery-section:active {
-    }
-
-    #camera-container {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-    }
-
-    .work-item:nth-child(1) { --i: 0; }
-    .work-item:nth-child(2) { --i: 1; }
-    .work-item:nth-child(3) { --i: 2; }
-    .work-item:nth-child(4) { --i: 3; }
-    .work-item:nth-child(5) { --i: 4; }
-    .work-item:nth-child(6) { --i: 5; }
-
-    .work-item {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        z-index: 10;
-        pointer-events: none;
-        /* 💡 모든 시간과 가속도는 작성자님의 var(--motion)에 일임합니다 */
-        transition: transform 1s var(--motion);
-        transition-delay: calc(var(--i) * 0.04s);
-
-        transform: 
-            translateX(-50%) 
-            translateY(-50%) 
-            rotate(calc(var(--i) * 60deg)) 
-            translateY(0vh) 
-            rotate(calc(var(--i) * -60deg)) 
-            rotate(calc((var(--i) - 2.5) * 5deg))
-            scale(0.7); 
-    }
-
-    .work-item img {
-        height: 40vh;
-        width: auto;
-        border-radius: var(--rad);
-        display: block;
+        overflow: visible;
+        touch-action: pan-y;
+        background: transparent;
+        z-index: 1;
+        cursor: grab;
         user-select: none;
-        -webkit-user-drag: none; 
+        -webkit-user-select: none;
     }
 
-    .motion-gallery-section.is-circle .work-item {
-        transform: 
-            translateX(-50%) translateY(-50%) 
-            rotate(calc(var(--i) * 60deg)) translateY(-32vh) rotate(calc(var(--i) * -60deg)) rotate(0deg) scale(0.7); 
-    }
-
-    .motion-gallery-section.is-orbit .work-item {
-        transform: 
-            translateX(-50%) translateY(-50%) 
-            rotate(calc(var(--i) * 60deg + 360deg)) translateY(-32vh) rotate(calc(var(--i) * -60deg - 360deg)) rotate(0deg) scale(0.7);
-
-        transition-delay: 0s;
-        transition-duration: 1.2s; 
-    }
-
-    /* 💡 가로 일렬 펴질 때: 시간을 늘려잡지 않고 통일성 있게 깔끔하게 맞춤 */
-    .motion-gallery-section.is-line .work-item {
-        transform: 
-            translateX(calc(-50% + var(--target-x))) translateY(-50%) 
-            rotate(calc(var(--i) * 60deg + 360deg)) translateY(0vh) rotate(calc(var(--i) * -60deg - 360deg)) rotate(0deg) scale(1);
-        
-        transition-delay: calc(var(--i) * 0.03s);
-        transition-duration: 1.0s; /* 1.0초로 통일감 부여 */
-    }
-
-    .work-item.active {
-        pointer-events: auto;
-        cursor: pointer;
-    }
-    .work-item.active:active {
-        transform: scale(0.98); 
-    }
-
-
-
-    .work-item img {
-        width: auto; 
-        height: 40vh;  
+    #webgl-canvas {
+        position: absolute;
+        top: 52%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 150%;
         display: block;
-        box-shadow: none;
-    }
-
-    /* 💡 모바일 화면(폭 768px 이하)에서 사진 세로폭을 30vh로 축소 */
-    @media (max-width: 768px) {
-        /* 사진 높이 */
-        .work-item img { height: 30vh; }
-
-        /* 모바일 사진 원형 반지름 */
-        .motion-gallery-section.is-circle .work-item {
-            transform: 
-                translateX(-50%) translateY(-50%) 
-                rotate(calc(var(--i) * 60deg)) translateY(-20vh) rotate(calc(var(--i) * -60deg)) rotate(0deg) scale(0.7); 
-        }
-
-        .motion-gallery-section.is-orbit .work-item {
-            transform: 
-                translateX(-50%) translateY(-50%) 
-                rotate(calc(var(--i) * 60deg + 360deg)) translateY(-20vh) rotate(calc(var(--i) * -60deg - 360deg)) rotate(0deg) scale(0.7);
-        }
+        pointer-events: none;
     }
 </style>
 
-
-
-
+<!-- 갤러리 -->
 <script is:inline>
-document.addEventListener('astro:page-load', initCSSMotionGallery);
-document.addEventListener('DOMContentLoaded', initCSSMotionGallery);
+document.addEventListener('astro:page-load', initThreeJSGallery);
+document.addEventListener('DOMContentLoaded', initThreeJSGallery);
 
-function initCSSMotionGallery() {
+function initThreeJSGallery() {
     const section = document.querySelector('.motion-gallery-section');
-    const items = document.querySelectorAll('.work-item');
-    if (!section || items.length === 0) return;
+    const canvas = document.getElementById('webgl-canvas');
+    const imgElements = Array.from(document.querySelectorAll('.works-data img')).slice(0, 6);
+    if (!section || !canvas || imgElements.length === 0) return;
 
-    const imgs = Array.from(document.querySelectorAll('.work-item img'));
-    Promise.all(imgs.map(img => {
-        if (img.complete) return Promise.resolve();
-        return new Promise(resolve => { img.onload = img.onerror = resolve; });
-    })).then(() => {
-        startGallerySequence(section, items);
-    });
-}
+    if (canvas.dataset.init === 'true') return;
+    canvas.dataset.init = 'true';
 
-function startGallerySequence(section, items) {
-    if (window.loopReq) cancelAnimationFrame(window.loopReq);
-
-    const padDiv = document.createElement('div');
-    padDiv.style.width = 'var(--pad)';
-    padDiv.style.position = 'absolute';
-    section.appendChild(padDiv);
-    const padPx = padDiv.getBoundingClientRect().width || 30; 
-    padDiv.remove();
-
-    let currentX = 0;
-    const targets = [];
-    items.forEach(item => {
-        const img = item.querySelector('img');
-        const w = img.offsetWidth; 
-        item.originalWidth = w; 
-        targets.push(currentX + (w / 2)); 
-        currentX += w + padPx; 
-    });
-    
-    const totalWidth = currentX; 
-    let offsetX = -totalWidth / 2;
-
-    let minGap = Infinity;
-    let correction = 0;
-    targets.forEach(t => {
-        let x = offsetX + t;
-        if (Math.abs(x) < minGap) {
-            minGap = Math.abs(x);
-            correction = -x;
+    const CONFIG = {
+        pc: {
+            heightVh: 0.50,       // [화면 높이 비율] 높일수록 갤러리 이미지 크기가 커짐 (0.50 = 화면 높이의 50%)
+            planeBend: 1.0,       // [전체 휨 강도] 값을 높일수록 카드 전체가 원통형처럼 앞으로 훅 꺾이며 휘어짐
+            planeBendTiming: 5.0, // [휨 감쇠 지수] 값을 높일수록 중앙은 평평하게 유지되다가 '가장자리 쪽에서만' 급격하게 꺾임
+            uvBendTiming: 5.0,    // [텍스처 왜곡 타이밍] 이미지 자체(텍스처)가 휘어지는 곡률의 집중도를 조절함
+            uvBendX: 0,         // [가로 텍스처 왜곡] 값을 높일수록 이미지가 가로로 오목하게 찌그러지며 왜곡됨
+            uvBendY: 0,         // [세로 텍스처 왜곡] 값을 높일수록 이미지가 세로로 오목하게 찌그러지며 왜곡됨
+            stretchX: 0,      // [가로 탄성] 값을 높일수록 스크롤/드래그할 때 이미지가 가로로 쫙쫙 늘어남
+            stretchY: 0.09        // [세로 탄성] 값을 높일수록 스크롤/드래그할 때 이미지가 세로로 홀쭉하게 찌그러짐 (속도감 극대화)
+        },
+        mobile: {
+            heightVh: 0.42,       // [모바일 높이 비율] 모바일 화면 높이 대비 이미지 크기 (높일수록 커짐)
+            planeBend: 1.35,      // [모바일 전체 휨] 화면이 좁은 모바일에서 입체감을 더 주기 위한 휨 강도
+            planeBendTiming: 8.0, // [모바일 휨 감쇠] 모바일 가장자리 휨 곡률 조절
+            uvBendTiming: 5.0,    // [모바일 텍스처 휨] 텍스처 왜곡 타이밍
+            uvBendX: 0,         // [모바일 가로 텍스처 왜곡]
+            uvBendY: 0,         // [모바일 세로 텍스처 왜곡]
+            stretchX: 0,       // [모바일 가로 탄성] 스크롤 시 늘어나는 정도
+            stretchY: 0.09       // [모바일 세로 탄성] 스크롤 시 눌리는 정도
         }
+    };
+
+    function getCssPadInPx() {
+        const probe = document.createElement('div');
+        probe.style.cssText = 'position:fixed;top:0;left:0;visibility:hidden;pointer-events:none;width:var(--rad, 16px);';
+        document.body.appendChild(probe);
+        let px = probe.getBoundingClientRect().width;
+        document.body.removeChild(probe);
+        if (!px || px <= 0) {
+            const footer = document.querySelector('.site-footer');
+            if (footer) {
+                px = parseFloat(window.getComputedStyle(footer).paddingLeft) || 16;
+            } else {
+                px = 16;
+            }
+        }
+        return px;
+    }
+
+    const renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: 'high-performance'
     });
-    offsetX += correction; // 찾아낸 오차만큼 전체 사진을 이동시켜서 중앙 딱 맞춤!
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
-    // 타겟 x 좌표를 CSS로 넘겨주는 부분
-    items.forEach((item, i) => {
-        const finalX = offsetX + targets[i];
-        item.style.setProperty('--target-x', `${finalX}px`);
-        item.baseX = finalX; 
-    });
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 1, 10, 4000);
+    camera.position.z = 600;
 
-    // 💡 CSS 클래스 스위치 타이밍 (시간 꼬임 방지를 위해 간격을 넉넉하고 정확하게 배치)
-    setTimeout(() => { section.classList.add('is-circle'); }, 100);
-    setTimeout(() => { section.classList.replace('is-circle', 'is-orbit'); }, 1100);
-    setTimeout(() => { section.classList.replace('is-orbit', 'is-line'); }, 2400);
+    const vertexShader = `
+        varying vec2 vUv;
+        varying vec3 vWorldPos;
+        uniform float uPlaneBend;
+        uniform float uPlaneBendTiming;
+        uniform float uScreenWidth;
+        
+        void main() {
+            vUv = uv;
+            vec4 worldPos = modelMatrix * vec4(position, 1.0);
+            
+            float halfScreen = max(uScreenWidth * 0.5, 1.0);
+            float screenX = abs(worldPos.x) / halfScreen;
+            float edgeBend = pow(screenX, uPlaneBendTiming);
+            
+            worldPos.z += edgeBend * 250.0 * uPlaneBend;
+            
+            vWorldPos = worldPos.xyz;
+            gl_Position = projectionMatrix * viewMatrix * worldPos;
+        }
+    `;
 
-    // 💡 모든 CSS 모션이 완전히 끝나는 시점(3600ms)에 정확히 무한 스크롤 인계
-    setTimeout(() => {
-        items.forEach(item => {
-            item.style.transition = 'none'; 
-            item.classList.add('active');
-            item.currentScale = 1.0; 
-        });
-        startInfiniteDrag(section, items, totalWidth, padPx);
-    }, 3600); 
-}
+    const fragmentShader = `
+        uniform sampler2D uTexture;
+        uniform float uScreenWidth;
+        uniform float uBendTiming;
+        uniform float uBendX;
+        uniform float uBendY;
+        uniform vec2 uUvScale;
+        uniform vec2 uPlaneSize;
+        uniform float uBorderRadius;
+        
+        varying vec2 vUv;
+        varying vec3 vWorldPos;
+        
+        void main() {
+            vec2 baseUv = (vUv - 0.5) * uUvScale + 0.5;
+            
+            float halfScreen = max(uScreenWidth * 0.5, 1.0);
+            float screenX = vWorldPos.x / halfScreen;
+            float edgeDist = abs(screenX);
+            float edgeBend = pow(edgeDist, uBendTiming);
+            
+            baseUv.x = mix(baseUv.x, 0.5, edgeBend * uBendX);
+            
+            float yOffset = baseUv.y - 0.5;
+            baseUv.y -= yOffset * edgeBend * uBendY;
+            
+            baseUv = clamp(baseUv, 0.0, 1.0);
+            vec4 texColor = texture2D(uTexture, baseUv);
 
-function startInfiniteDrag(section, items, totalWidth, padPx) {
+            vec2 halfSize = uPlaneSize * 0.5;
+            float r = clamp(uBorderRadius, 0.0, min(halfSize.x, halfSize.y));
+            vec2 p = abs((vUv - 0.5) * uPlaneSize) - (halfSize - r);
+            float dist = length(max(p, 0.0)) + min(max(p.x, p.y), 0.0) - r;
+            float roundedMask = 1.0 - smoothstep(-1.0, 1.0, dist);
+
+            gl_FragColor = vec4(texColor.rgb, texColor.a * roundedMask);
+        }
+    `;
+
+    const sharedGeometry = new THREE.PlaneGeometry(1, 1, 20, 20);
+    const textureLoader = new THREE.TextureLoader();
+    const items = [];
+
+    let totalWidth = 0;
     let scrollX = 0;
     let targetScrollX = 0;
-    let isDragging = false;
-    let startX = 0;
-    let initialScrollX = 0;
-    let snapTimeout; // 스냅 타이머
+    let currentStretch = 0;
+    let hasUserInteracted = false;
+    let cachedCanvasWidth = 0;
+    let cachedCanvasHeight = 0;
 
-    // 💡 핵심: 멈췄을 때 가장 가까운 사진을 찾아 정중앙으로 딱! 맞춰주는 함수
-    function snapToNearest() {
+    function syncCanvasAndCamera() {
+        const w = canvas.clientWidth || window.innerWidth;
+        const h = canvas.clientHeight || (window.innerHeight * 0.75);
+        if (w === 0 || h === 0) return false;
+
+        if (w !== cachedCanvasWidth || h !== cachedCanvasHeight) {
+            cachedCanvasWidth = w;
+            cachedCanvasHeight = h;
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+            renderer.setSize(w, h, false);
+            camera.aspect = w / h;
+            camera.position.z = (h / 2) / Math.tan((camera.fov / 2) * Math.PI / 180);
+            camera.updateProjectionMatrix();
+            return true;
+        }
+        return false;
+    }
+
+    syncCanvasAndCamera();
+
+    const initialPadPx = getCssPadInPx();
+
+    imgElements.forEach((img, i) => {
+        const linkEl = img.closest('a');
+        const href = linkEl ? linkEl.getAttribute('href') : null;
+
+        const texture = textureLoader.load(img.src, (tex) => {
+            if (tex.image && tex.image.width > 0 && tex.image.height > 0) {
+                items[i].aspect = tex.image.width / tex.image.height;
+                updateResponsiveValues();
+            }
+        });
+        texture.generateMipmaps = true;
+        texture.minFilter = THREE.LinearMipmapLinearFilter;
+        texture.magFilter = THREE.LinearFilter;
+
+        const material = new THREE.ShaderMaterial({
+            vertexShader,
+            fragmentShader,
+            uniforms: {
+                uTexture: { value: texture },
+                uScreenWidth: { value: cachedCanvasWidth || window.innerWidth },
+                uPlaneBend: { value: 1.0 },
+                uPlaneBendTiming: { value: 5.0 },
+                uBendTiming: { value: 5.0 },
+                uBendX: { value: 0.8 },
+                uBendY: { value: 0.8 },
+                uUvScale: { value: new THREE.Vector2(1.0, 1.0) },
+                uPlaneSize: { value: new THREE.Vector2(300.0, 400.0) },
+                uBorderRadius: { value: initialPadPx }
+            },
+            transparent: true,
+            depthWrite: false,
+            side: THREE.FrontSide
+        });
+
+        const mesh = new THREE.Mesh(sharedGeometry, material);
+        mesh.frustumCulled = false;
+        scene.add(mesh);
+
+        items[i] = {
+            mesh,
+            linkEl,
+            href,
+            aspect: 3 / 4,
+            baseWidth: 0,
+            baseHeight: 0,
+            baseX: 0
+        };
+    });
+
+    function updateResponsiveValues() {
+        const isMobile = window.innerWidth <= 768;
+        const cfg = isMobile ? CONFIG.mobile : CONFIG.pc;
+
+        const targetHeight = window.innerHeight * cfg.heightVh;
+        const planeAspect = 3 / 4;
+        const targetWidth = targetHeight * planeAspect;
+        const borderRadiusPx = getCssPadInPx();
+        const screenW = cachedCanvasWidth || window.innerWidth;
+
+        items.forEach((item) => {
+            if (!item || !item.mesh) return;
+
+            item.baseWidth = targetWidth;
+            item.baseHeight = targetHeight;
+            item.mesh.scale.set(targetWidth, targetHeight, 1);
+
+            let scaleX = 1.0;
+            let scaleY = 1.0;
+            if (item.aspect > planeAspect) {
+                scaleX = planeAspect / item.aspect;
+            } else {
+                scaleY = item.aspect / planeAspect;
+            }
+
+            const uniforms = item.mesh.material.uniforms;
+            uniforms.uUvScale.value.set(scaleX, scaleY);
+            uniforms.uPlaneSize.value.set(targetWidth, targetHeight);
+            uniforms.uBorderRadius.value = borderRadiusPx;
+            uniforms.uPlaneBend.value = cfg.planeBend;
+            uniforms.uPlaneBendTiming.value = cfg.planeBendTiming;
+            uniforms.uBendTiming.value = cfg.uvBendTiming;
+            uniforms.uBendX.value = cfg.uvBendX;
+            uniforms.uBendY.value = cfg.uvBendY;
+            uniforms.uScreenWidth.value = screenW;
+        });
+
+        recalculatePositions();
+    }
+
+    function recalculatePositions() {
+        if (items.length === 0 || items[0].baseWidth === 0) return;
+
+        const gap = window.innerWidth * 0.005;
+        let x = 0;
+
+        items.forEach((item) => {
+            item.baseX = x;
+            x += item.baseWidth + gap;
+        });
+        totalWidth = x;
+
+        if (!hasUserInteracted) {
+            targetScrollX = 0;
+            scrollX = 0;
+        } else {
+            snapToNearest();
+        }
+    }
+
+    updateResponsiveValues();
+
+    window.addEventListener('resize', () => {
+        syncCanvasAndCamera();
+        updateResponsiveValues();
+    });
+
+    // 💡 현재 화면 정중앙에 위치한 아이템 찾기
+    function getCenterItem() {
+        if (items.length === 0 || totalWidth === 0) return null;
+        let centerItem = null;
         let minDist = Infinity;
+
+        items.forEach((item) => {
+            const dist = Math.abs(item.mesh.position.x);
+            if (dist < minDist) {
+                minDist = dist;
+                centerItem = item;
+            }
+        });
+
+        // 중앙에서 반폭(0.45) 이내에 들어와 있을 때만 중앙 이미지로 인정
+        if (centerItem && minDist < centerItem.baseWidth * 0.45) {
+            return centerItem;
+        }
+        return null;
+    }
+
+    // 💡 클릭/터치한 화면 좌표(clientX, clientY)가 중앙 이미지 내부인지 판별
+    function getHoveredCenterItem(clientX, clientY) {
+        const centerItem = getCenterItem();
+        if (!centerItem || !centerItem.mesh) return null;
+
+        const rect = canvas.getBoundingClientRect();
+        const canvasCenterX = rect.left + rect.width * 0.5;
+        const canvasCenterY = rect.top + rect.height * 0.5;
+
+        const localX = clientX - canvasCenterX;
+        const localY = canvasCenterY - clientY;
+
+        const halfW = (centerItem.mesh.scale.x || centerItem.baseWidth) * 0.5;
+        const halfH = (centerItem.mesh.scale.y || centerItem.baseHeight) * 0.5;
+
+        const isInside =
+            Math.abs(localX - centerItem.mesh.position.x) <= halfW &&
+            Math.abs(localY - centerItem.mesh.position.y) <= halfH;
+
+        return isInside ? centerItem : null;
+    }
+
+    let isDragging = false;
+    let wasDragged = false;
+    const DRAG_THRESHOLD = 6; // 6px 이상 움직이면 드래그로 판정
+
+    let startX = 0;
+    let startY = 0;
+    let lastPointerX = 0;
+    let pointerVelocity = 0;
+    let initialScrollX = 0;
+    let snapTimeout;
+
+    function snapToNearest() {
+        if (totalWidth === 0) return;
+        let minAbsDist = Infinity;
         let bestSnapX = targetScrollX;
 
         items.forEach((item) => {
-            let x = item.baseX + targetScrollX;
-            // 끝없이 이어지는 갤러리 좌표계 정규화
-            let wrappedX = ((x + totalWidth / 2) % totalWidth + totalWidth) % totalWidth - totalWidth / 2;
-            
-            if (Math.abs(wrappedX) < minDist) {
-                minDist = Math.abs(wrappedX);
-                // 중앙에 맞추기 위해 빗나간 오차(wrappedX)만큼 목표값 보정
+            const x = item.baseX + targetScrollX;
+            const wrappedX = ((x + totalWidth / 2) % totalWidth + totalWidth) % totalWidth - totalWidth / 2;
+
+            if (Math.abs(wrappedX) < minAbsDist) {
+                minAbsDist = Math.abs(wrappedX);
                 bestSnapX = targetScrollX - wrappedX;
             }
         });
         targetScrollX = bestSnapX;
     }
 
-    // 1. 마우스 휠 스크롤
     section.addEventListener('wheel', (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
+        hasUserInteracted = true;
         targetScrollX -= (e.deltaY * 0.8 + e.deltaX * 0.8);
-        
-        // 휠을 굴리다 멈추면(0.15초 뒤) 가장 가까운 사진으로 스냅
         clearTimeout(snapTimeout);
-        snapTimeout = setTimeout(snapToNearest, 150);
+        snapTimeout = setTimeout(snapToNearest, 90);
     }, { passive: false });
 
-    // 2. PC 마우스 드래그
+    // PC 마우스 이벤트
     section.addEventListener('mousedown', (e) => {
         isDragging = true;
-        startX = e.pageX;
+        wasDragged = false;
+        hasUserInteracted = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        lastPointerX = e.clientX;
+        pointerVelocity = 0;
         initialScrollX = targetScrollX;
-        clearTimeout(snapTimeout); 
-    });
-    window.addEventListener('mouseup', () => {
-        if (isDragging) {
-            isDragging = false;
-            snapToNearest(); // 드래그에서 마우스를 떼는 순간 찰칵!
-        }
-    });
-    window.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        targetScrollX = initialScrollX + (e.pageX - startX) * 1.5;
+        clearTimeout(snapTimeout);
     });
 
-    // 3. 모바일 터치 스와이프
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) {
+            // 드래그 중이 아닐 때: 중앙 이미지 위에 마우스가 있으면 pointer, 아니면 grab
+            const hitItem = getHoveredCenterItem(e.clientX, e.clientY);
+            section.style.cursor = (hitItem && hitItem.href) ? 'pointer' : 'grab';
+            return;
+        }
+
+        const dist = Math.hypot(e.clientX - startX, e.clientY - startY);
+        if (dist > DRAG_THRESHOLD) {
+            wasDragged = true;
+            section.style.cursor = 'grabbing';
+        }
+
+        if (wasDragged) {
+            pointerVelocity = e.clientX - lastPointerX;
+            lastPointerX = e.clientX;
+            targetScrollX = initialScrollX + (e.clientX - startX) * 1.4;
+        }
+    });
+
+    window.addEventListener('mouseup', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+
+        if (wasDragged) {
+            targetScrollX += pointerVelocity * 6.0;
+            snapToNearest();
+        }
+        const hitItem = getHoveredCenterItem(e.clientX, e.clientY);
+        section.style.cursor = (hitItem && hitItem.href) ? 'pointer' : 'grab';
+    });
+
+    // 모바일 터치 이벤트
     section.addEventListener('touchstart', (e) => {
         isDragging = true;
-        startX = e.touches[0].pageX;
+        wasDragged = false;
+        hasUserInteracted = true;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        lastPointerX = startX;
+        pointerVelocity = 0;
         initialScrollX = targetScrollX;
         clearTimeout(snapTimeout);
     }, { passive: true });
-    window.addEventListener('touchend', () => {
-        if (isDragging) {
-            isDragging = false;
-            snapToNearest(); // 터치 떼는 순간 찰칵!
-        }
-    });
+
     window.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
-        targetScrollX = initialScrollX + (e.touches[0].pageX - startX) * 1.5;
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+
+        if (Math.hypot(currentX - startX, currentY - startY) > DRAG_THRESHOLD) {
+            wasDragged = true;
+        }
+
+        if (wasDragged) {
+            pointerVelocity = currentX - lastPointerX;
+            lastPointerX = currentX;
+            targetScrollX = initialScrollX + (currentX - startX) * 1.4;
+        }
     }, { passive: true });
 
-    function render() {
-        // 스냅될 때 부드럽게 쫓아가도록 보간 적용
-        scrollX += (targetScrollX - scrollX) * 0.08; 
+    window.addEventListener('touchend', () => {
+        if (!isDragging) return;
+        isDragging = false;
 
-        let itemsData = [];
-        items.forEach((item) => {
-            let x = item.baseX + scrollX;
-            x = ((x + totalWidth / 2) % totalWidth + totalWidth) % totalWidth - totalWidth / 2;
-            itemsData.push({ item, x: x, w: item.originalWidth });
-        });
+        if (wasDragged) {
+            targetScrollX += pointerVelocity * 6.0;
+            snapToNearest();
+        }
+    });
 
-        itemsData.sort((a, b) => a.x - b.x);
-
-        let range = window.innerWidth * 0.35; 
-
-        itemsData.forEach((data) => {
-            let dist = Math.abs(data.x);
-            let bulge = Math.max(0, 1 - (dist / range)); 
-            
-            let targetScale = 1.0 + (bulge * 0.15); 
-            
-            if (data.item.currentScale === undefined) data.item.currentScale = 1.0;
-            data.item.currentScale += (targetScale - data.item.currentScale) * 0.12; 
-            
-            data.scaledW = data.w * data.item.currentScale; 
-            data.bulge = bulge;
-        });
-
-        let rightIdx = itemsData.findIndex(d => d.x > 0);
-        if (rightIdx === -1) rightIdx = itemsData.length - 1;
-        let leftIdx = rightIdx === 0 ? itemsData.length - 1 : rightIdx - 1;
-
-        let L = itemsData[leftIdx];
-        let R = itemsData[rightIdx];
-
-        let totalDist = Math.abs(R.x - L.x); 
-        let t = 0.5;
-        if (totalDist > 0) {
-            t = Math.abs(L.x) / totalDist;
+    section.addEventListener('click', (e) => {
+        if (wasDragged) {
+            e.preventDefault();
+            return;
         }
 
-        let physicalGap = (L.scaledW / 2) + padPx + (R.scaledW / 2);
+        const hitItem = getHoveredCenterItem(e.clientX, e.clientY);
+        if (hitItem && hitItem.linkEl) {
+            e.preventDefault(); // 기본 페이지 이동을 무조건 막고 시작!
 
-        L.pushedX = -physicalGap * t;
-        R.pushedX = physicalGap * (1 - t);
+            // 만약 링크 태그에 open-modal 클래스가 붙어있다면 무조건 모달 함수 실행!
+            if (hitItem.linkEl.classList.contains('open-modal') && typeof window.openWorksModal === 'function') {
+                window.openWorksModal(hitItem.href);
+            } else {
+                // open-modal이 없을 때만 일반 페이지로 이동
+                window.location.href = hitItem.href;
+            }
+        }
+    });
 
-        for (let i = leftIdx - 1; i >= 0; i--) {
-            let next = itemsData[i + 1];
-            let curr = itemsData[i];
-            curr.pushedX = next.pushedX - (next.scaledW / 2) - padPx - (curr.scaledW / 2);
+    renderer.compile(scene, camera);
+    renderer.render(scene, camera);
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        const diff = targetScrollX - scrollX;
+        scrollX += diff * 0.14;
+
+        const isMobile = cachedCanvasWidth <= 768;
+        const cfg = isMobile ? CONFIG.mobile : CONFIG.pc;
+        const normSpeed = Math.min(Math.abs(diff) / (Math.max(cachedCanvasWidth, 320) * 0.18), 1.0);
+        currentStretch += (normSpeed - currentStretch) * 0.15;
+
+        const scaleFactorX = 1.0 + currentStretch * cfg.stretchX;
+        const scaleFactorY = 1.0 - currentStretch * cfg.stretchY;
+
+        if (totalWidth > 0) {
+            items.forEach((item) => {
+                if (!item || !item.mesh) return;
+                let x = item.baseX + scrollX;
+                x = ((x + totalWidth / 2) % totalWidth + totalWidth) % totalWidth - totalWidth / 2;
+                item.mesh.position.x = x;
+
+                const w = item.baseWidth * scaleFactorX;
+                const h = item.baseHeight * scaleFactorY;
+                item.mesh.scale.set(w, h, 1);
+                item.mesh.material.uniforms.uPlaneSize.value.set(w, h);
+            });
         }
 
-        for (let i = rightIdx + 1; i < itemsData.length; i++) {
-            let prev = itemsData[i - 1];
-            let curr = itemsData[i];
-            curr.pushedX = prev.pushedX + (prev.scaledW / 2) + padPx + (curr.scaledW / 2);
-        }
-
-        itemsData.forEach(data => {
-            data.item.style.zIndex = Math.round(10 + data.bulge * 10);
-            data.item.style.transform = `translate3d(calc(-50% + ${data.pushedX}px), -50%, 0) scale(${data.item.currentScale})`;
-        });
-
-        window.loopReq = requestAnimationFrame(render);
+        renderer.render(scene, camera);
     }
-    render();
+
+    animate();
 }
 </script>
 
+<!-- 창 높이 계산 스크립트 -->
 <script is:inline>
-// 🎥 [독립 모듈] 카메라 컨테이너 스크롤 곡면(Fisheye) 왜곡 효과
-document.addEventListener('astro:page-load', initCameraBulge);
-document.addEventListener('DOMContentLoaded', initCameraBulge);
+    function setScreenSize() {
+        if (window.innerWidth <= 768) {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        } else {
+            document.documentElement.style.removeProperty('--vh');
+        }
+    }
 
-function initCameraBulge() {
-    const section = document.querySelector('.motion-gallery-section');
-    const camera = document.getElementById('camera-container');
-    if (!section || !camera) return;
+    setScreenSize();
+    window.addEventListener('resize', setScreenSize);
+    document.addEventListener('astro:page-load', setScreenSize);
+    document.addEventListener('DOMContentLoaded', setScreenSize);
+</script>
 
-    let velocity = 0;
-    let currentBulge = 1.0;
-    let isDragging = false;
-    let lastX = 0;
+<!-- 로딩 -->
+<script is:inline>
+if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('hasLoadedBefore') === 'true') {
+    const _quickLoader = document.getElementById('global-loader');
+    if (_quickLoader) {
+        _quickLoader.style.display = 'none';
+        _quickLoader.style.opacity = '0';
+        _quickLoader.style.visibility = 'hidden';
+    }
+}
 
-    // 1. 마우스 휠 스피드 감지
-    section.addEventListener('wheel', (e) => {
-        velocity = Math.abs(e.deltaX + e.deltaY) * 0.5;
-    }, { passive: true });
+document.addEventListener('astro:page-load', () => {
+    const loaderElement = document.getElementById('global-loader');
+    const loaderText = document.querySelector('.loading-text');
+    const imgElements = document.querySelectorAll('.works-data img');
 
-    // 2. PC 드래그 스피드 감지
-    section.addEventListener('mousedown', (e) => { isDragging = true; lastX = e.pageX; });
-    window.addEventListener('mouseup', () => { isDragging = false; });
-    window.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        velocity = Math.abs(e.pageX - lastX) * 2.0;
-        lastX = e.pageX;
+    if (!loaderElement) return;
+
+    if (loaderElement.dataset.initialized === 'true') return;
+    loaderElement.dataset.initialized = 'true';
+
+    /* 로딩 세션 확인 */
+    if (sessionStorage.getItem('hasLoadedBefore') === 'true') {
+        loaderElement.style.display = 'none';
+        document.body.style.overflow = '';
+        return;
+    }  
+
+    if (imgElements.length === 0) {
+        loaderElement.classList.add('is-hidden');
+        document.body.style.overflow = '';
+        return;
+    }
+
+    document.body.style.overflow = 'hidden';
+    loaderElement.style.opacity = '1';
+    loaderElement.style.visibility = 'visible';
+    loaderElement.style.display = 'flex';
+    
+    if (loaderText) {
+        loaderText.style.opacity = '1';
+        loaderText.style.color = 'var(--txt-color)';
+    }
+
+    let loadedCount = 0;
+    let actualPercent = 0;
+    let displayPercent = 0;
+    let isFinished = false;
+
+    function onImageLoad() {
+        if (isFinished) return;
+        loadedCount++;
+        actualPercent = Math.floor((loadedCount / imgElements.length) * 100);
+    }
+
+    imgElements.forEach(img => {
+        // 브라우저가 화면 밖에 있다고 로딩 안 하는 꼼수 원천 차단
+        if (img.getAttribute('loading') === 'lazy') {
+            img.setAttribute('loading', 'eager'); 
+        }
+
+        if (img.complete && img.naturalWidth !== 0) {
+            onImageLoad(); 
+        } else {
+            img.addEventListener('load', onImageLoad);
+            img.addEventListener('error', onImageLoad); 
+        }
     });
 
-    // 3. 모바일 터치 스피드 감지
-    section.addEventListener('touchstart', (e) => { isDragging = true; lastX = e.touches[0].pageX; }, { passive: true });
-    window.addEventListener('touchend', () => { isDragging = false; });
-    window.addEventListener('touchmove', (e) => {
-        if (!isDragging) return;
-        velocity = Math.abs(e.touches[0].pageX - lastX) * 2.0;
-        lastX = e.touches[0].pageX;
-    }, { passive: true });
+    const forceFinishTimeout = setTimeout(() => {
+        actualPercent = 100;
+    }, 3000); 
 
-    // 4. 애니메이션 렌더링 (독립 루프)
-    function renderCameraBulge() {
-        velocity *= 0.9;
-        if (velocity < 0.1) velocity = 0;
+    const progressTimer = setInterval(() => {
+        if (displayPercent < actualPercent) {
+            displayPercent += 2; 
+            if (displayPercent > actualPercent) displayPercent = actualPercent;
+        }
 
-        // 💡 1. 튀어나오는 강도 (0 ~ 1 사이로 정규화)
-        let intensity = Math.min(velocity * 0.02, 1.0);
+        if (loaderText) loaderText.textContent = displayPercent + '% ';
 
-        // 💡 2. 복귀 애니메이션 보간
-        currentBulge += (intensity - currentBulge) * 0.15;
+        if (displayPercent >= 100 && !isFinished) {
+            isFinished = true;
+            clearInterval(progressTimer);
+            clearTimeout(forceFinishTimeout);
+            sessionStorage.setItem('hasLoadedBefore', 'true');
 
-        // 💡 [여기서 조절!]
-        // maxDepth: 화면 정중앙이 앞으로 튀어나오는 깊이 (px) - 높일수록 볼록함이 선명해짐
-        const maxDepth = 60; 
-        const pushZ = currentBulge * maxDepth;
+            setTimeout(() => {
+                // 🔥 1. 클래스 대신 인라인 스타일로 직접 투명도를 0으로 만들어야 우선순위가 맞음
+                loaderElement.style.opacity = '0';
+                loaderElement.style.visibility = 'hidden';
+                
+                document.body.style.overflow = ''; 
 
-        // scaleY를 약간 눌러주고 z축을 당겨 볼록 렌즈 곡면 형태를 연출
-        const scaleX = 1.0 + (currentBulge * 0.12);
-        const scaleY = 1.0 - (currentBulge * 0.08);
-
-        camera.style.transformOrigin = 'center center';
-        camera.style.transform = `translateZ(${pushZ}px) scale(${scaleX}, ${scaleY})`;
-        
-        requestAnimationFrame(renderCameraBulge);
-    }
-    renderCameraBulge();
-}
+                // 🔥 2. CSS 트랜지션 시간(1s)에 맞춰서 display: none 타이머도 1000ms 이상으로 늦춤
+                setTimeout(() => {
+                    loaderElement.style.display = 'none';
+                }, 1000); // 800 -> 1000으로 수정
+            }, 200); 
+        }
+    }, 20);
+});
 </script>

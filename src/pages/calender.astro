@@ -215,7 +215,7 @@ html, body {
 
 .view_year,
 .view_month {
-  font-family: 'Geist', sans-serif;
+  font-family: var(--font-geist);
 }
 
 
@@ -521,12 +521,15 @@ window.renderCalendar = async function(isSilentUpdate = false) {
     board.innerHTML = ''; 
     if (!isSilentUpdate) board.className = `timeline_board view_${window.currentView} slide_prep`;
 
-    // 💡 현재 언어 상태 확인 (새로 그려질 때 현재 언어에 맞게 바로 출력하기 위함)
-    const isEnglish = localStorage.getItem('isEnglish') === 'true';
+    // 💡 현재 언어 상태 확인
+    const isEnglish = localStorage.getItem('isEnglish') === 'true' || 
+                      (document.documentElement.getAttribute('lang') || '').toLowerCase().includes('en');
+                      
+    // ⭐️ 핵심: 한글이면 아스타산스, 영어면 가이스트를 뿜어내는 인라인 스타일 변수
+    const langFont = isEnglish ? 'font-family: var(--font-geist);' : 'font-family: var(--font-asta);';
 
     // [ YEAR 렌더링 ]
     if (window.currentView === 'year') {
-        // 💡 영어 배열과 한국어 배열 분리
         const monthNamesEn = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
         const monthNamesKo = ["일월", "이월", "삼월", "사월", "오월", "유월", "칠월", "팔월", "구월", "시월", "십일월", "십이월"];
         
@@ -556,13 +559,12 @@ window.renderCalendar = async function(isSilentUpdate = false) {
         });
         
         for (let i = 0; i < 12; i++) {
-            // 💡 번역 스크립트가 인식할 수 있도록 클래스와 데이터 속성 부여
             const mEn = monthNamesEn[i];
             const mKo = monthNamesKo[i];
             const displayMonth = isEnglish ? mEn : mKo;
             
-            // 여기에 translate 클래스가 들어갑니다!
-            yearHtmlStr += `<span class="year_month_label translate" data-en="${mEn}" data-ko="${mKo}">${displayMonth}</span>`;
+            // ⭐️ 태그 구조나 클래스는 그대로 두고, style 변수만 슬쩍 끼워 넣습니다.
+            yearHtmlStr += `<span class="year_month_label translate" data-en="${mEn}" data-ko="${mKo}" style="${langFont}">${displayMonth}</span>`;
             
             let daysInMonth = new Date(y, i + 1, 0).getDate(); 
             for (let d = 1; d <= daysInMonth; d++) {
@@ -575,6 +577,7 @@ window.renderCalendar = async function(isSilentUpdate = false) {
                 let lastDayClass = (d === daysInMonth) ? ' last_day' : '';
                 let eventClass = isEventDay ? ' event_day' : ''; 
                 
+                // 날짜 숫자들은 그대로 둡니다 (Geist 적용됨)
                 yearHtmlStr += `<span class="year_day_item${holiClass}${lastDayClass}${eventClass}">${d}</span>`;
             }
         }
@@ -608,19 +611,16 @@ window.renderCalendar = async function(isSilentUpdate = false) {
 
         let monthHtmlStr = `<div aria-hidden="true" style="display:contents;">`; 
         
-        // 💡 영어/한국어 요일 배열 분리
         const daysOfWeekEn = ["S", "M", "T", "W", "T", "F", "S"];
         const daysOfWeekKo = ["일", "월", "화", "수", "목", "금", "토"];
         
         daysOfWeekEn.forEach((dayEn, index) => {
             let holiClass = (index === 0 || index === 6) ? ' holiday' : '';
-            
-            // 💡 번역 스크립트 연동을 위한 데이터 준비
             let dayKo = daysOfWeekKo[index];
             let displayDay = isEnglish ? dayEn : dayKo;
             
-            // 여기에 translate 클래스가 들어갑니다!
-            monthHtmlStr += `<div class="grid_header${holiClass} translate" data-en="${dayEn}" data-ko="${dayKo}">${displayDay}</div>`;
+            // ⭐️ 여기도 태그 구조 그대로 두고 style 변수만 주입합니다.
+            monthHtmlStr += `<div class="grid_header${holiClass} translate" data-en="${dayEn}" data-ko="${dayKo}" style="${langFont}">${displayDay}</div>`;
         });
 
         const eventRanges = window.projectEvents.map(ev => {
@@ -647,6 +647,7 @@ window.renderCalendar = async function(isSilentUpdate = false) {
             let holiClass = (dotw === 0 || dotw === 6 || holidaysMap[dateStr]) ? ' holiday' : '';
             let eventClass = isEventDay ? ' event_day' : ''; 
             
+            // 숫자들은 그대로 둡니다.
             monthHtmlStr += `
                 <div class="timeline_cell">
                     <div class="timeline_cell_title${holiClass}${eventClass}">${d}</div>
@@ -663,7 +664,6 @@ window.renderCalendar = async function(isSilentUpdate = false) {
         setTimeout(() => {
             board.style.minHeight = '';
             
-            // 💡 달력이 그려진 직후, 새롭게 생성된 translate 요소들을 번역 JS가 인식하도록 업데이트
             if (typeof window.applyLanguageState === 'function') {
                 window.applyLanguageState(true);
             }

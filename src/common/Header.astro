@@ -75,6 +75,8 @@
     </button>
     
   </div>
+
+  <div style="background-color: var(--dynamic-point-r);"></div>
 </header>
 
 <!-- 모바일 오버레이 메뉴 -->
@@ -154,7 +156,7 @@
 .mobile-nav a,
 .nav-links .lang-toggle-btn,
 .mobile-nav .lang-toggle-btn {
-  font-family: 'Geist', sans-serif;
+  font-family: var(--font-geist);
   color: var(--txt-color);
   font-size: 1.5rem;
   font-weight: 600;
@@ -255,15 +257,24 @@
 }
 
 
-
 /* 모바일 오버레이창(메뉴창) */
 .mobile-menu-overlay {
   display: none;
 }
-/* JS로 활성화되었을 때만 노출 */
+
+/* JS로 활성화되었을 때만 전체 노출 */
 .mobile-menu-overlay.show {
   display: block;
 }
+
+.logo-slider,
+.logo-slider::-webkit-slider-thumb,
+.logo-slider::-moz-range-thumb {
+  transition: none;
+}
+
+/* 폰트 지정 */
+.mobile-menu-overlay * { font-family: var(--font-asta, 'Asta Sans', sans-serif); }
 
 
 /* --- 모바일 메뉴 아이콘 --- */
@@ -281,7 +292,7 @@
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 
-  border-radius: 10%;
+  border-radius: var(--rad);
 
   border: none;
   cursor: pointer;
@@ -831,3 +842,70 @@ if (slider && logoLink) {
 }
 </script>
 
+<!-- 슬라이더 -->
+<script is:inline>
+document.addEventListener('astro:page-load', initSamsungSliderFix);
+document.addEventListener('DOMContentLoaded', initSamsungSliderFix);
+
+function initSamsungSliderFix() {
+  if (!/SamsungBrowser/i.test(navigator.userAgent)) return;
+
+  const wrapper = document.querySelector('.logo-link');
+  const realInput = document.querySelector('.logo-slider');
+  
+  if (!wrapper || !realInput) return;
+  if (wrapper.querySelector('.samsung-fake-track')) return;
+
+  // 2. 가짜 트랙 (절대 건드리지 않고 공중에 띄움)
+  const fakeTrack = document.createElement('div');
+  fakeTrack.className = 'samsung-fake-track';
+  fakeTrack.style.position = 'absolute';
+  fakeTrack.style.top = '0';
+  fakeTrack.style.left = '0';
+  fakeTrack.style.width = '30vw';
+  fakeTrack.style.height = '6vh';
+  fakeTrack.style.backgroundColor = '#ffffff'; 
+  fakeTrack.style.borderRadius = 'var(--rad)';
+  fakeTrack.style.overflow = 'hidden';
+  fakeTrack.style.pointerEvents = 'none';
+  fakeTrack.style.zIndex = '1'; // 진짜보다 뒤에 깔림
+
+  // 3. 가짜 손잡이
+  const fakeThumb = document.createElement('div');
+  fakeThumb.className = 'samsung-fake-thumb';
+  fakeThumb.style.position = 'absolute';
+  fakeThumb.style.width = '7vw';
+  fakeThumb.style.height = '10vh';
+  fakeThumb.style.backgroundColor = '#000000'; 
+  fakeThumb.style.filter = 'blur(15px)';
+  fakeThumb.style.WebkitFilter = 'blur(15px)';
+  fakeThumb.style.top = '50%';
+  fakeThumb.style.transform = 'translate(-50%, -50%)';
+  fakeThumb.style.pointerEvents = 'none';
+
+  fakeTrack.appendChild(fakeThumb);
+  wrapper.appendChild(fakeTrack);
+
+  // 4. 위치 겹치기 (💡 여기가 핵심 수정 포인트!)
+  wrapper.style.position = 'relative';
+  
+  // 🔥 진짜 인풋은 자리를 든든하게 차지하도록 absolute를 쓰지 않습니다!
+  realInput.style.position = 'relative'; 
+  realInput.style.zIndex = '10'; // 터치를 받아야 하니 가짜 트랙(1)보다 위로
+  realInput.style.opacity = '0'; // 눈에만 안 보이게 숨김
+  realInput.style.margin = '0';
+
+  // 5. 드래그 연동
+  function updateThumb() {
+    const min = Number(realInput.min) || 0;
+    const max = Number(realInput.max) || 100;
+    const val = Number(realInput.value); 
+    const percent = ((val - min) / (max - min)) * 100;
+    
+    fakeThumb.style.left = `${percent}%`;
+  }
+
+  realInput.addEventListener('input', updateThumb);
+  updateThumb(); 
+}
+</script>

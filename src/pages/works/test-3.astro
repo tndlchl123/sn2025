@@ -1,0 +1,153 @@
+---
+import Layout from '@common/Design-Layout.astro';
+---
+
+<Layout title="Blown">
+    <div class="modal-inner-data">
+        <div class="canvas-wrap">
+            <canvas id="artCanvas"></canvas>
+        </div>
+    </div>
+</Layout>
+
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.3.2/gifshot.min.js"></script>
+
+<style is:global>
+    .works-modal-box {
+       /* border-radius: var(--rad); */
+    }
+    .canvas-wrap {
+        width: 50vw;
+        aspect-ratio: 3 / 4;
+        position: relative;
+        background-color: rgba(var(--dynamic-point-r), 1); /* 캔버스 배경색 */
+        overflow: hidden;
+
+        
+        
+
+        /* rgba(var(--dynamic-point-r), 1) */
+        --canvas-line-color: var(--bg-color); /* 검은색 메인 선 (현재 텍스트 색상 따라감) */
+        --canvas-outline-color: var(--txt-color); /* 선 겉을 감싸는 하얀색 테두리 (현재 배경색 따라감) */
+    }
+
+    canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+</style>
+
+<script is:inline>
+    (function() {
+        const canvas = document.getElementById('artCanvas');
+        const wrap = document.querySelector('.canvas-wrap'); 
+        
+        if (!canvas || !wrap) return;
+
+        const ctx = canvas.getContext('2d');
+
+        // CSS에 적어둔 변수 값을 실시간으로 가져옴
+        const wrapStyle = getComputedStyle(wrap);
+        const LINE_COLOR = wrapStyle.getPropertyValue('--canvas-line-color').trim() || '#111111';
+        const OUTLINE_COLOR = wrapStyle.getPropertyValue('--canvas-outline-color').trim() || '#ffffff';
+
+        let lines = [];
+        let time = 0;
+        
+        // ==========================================
+        // ⚙️ 그래픽 느낌 조절 구역
+        // ==========================================
+        const lineCount = 3000;      // 선의 개수 (빽빽함 조절)
+        const windSpeed = 0.01;      // 바람 부는 속도
+        const windScale = 0.004;     // 선들의 구불거림 정도
+        // ==========================================
+
+        let animationId;
+
+        function initLines(width, height) {
+            lines = [];
+            for (let i = 0; i < lineCount; i++) {
+                lines.push({
+                    x: Math.random() * width,        
+                    y: Math.random() * height,       
+                    length: Math.random() * 100 + 50, // 개별 선의 길이
+                    thickness: Math.random() * 4 + 2  // 선의 두께 범위
+                });
+            }
+        }
+
+        const resizeObserver = new ResizeObserver(entries => {
+            const rect = entries[0].contentRect;
+            if (rect.width === 0 || rect.height === 0) return;
+
+            const dpr = window.devicePixelRatio || 1; 
+            const newWidth = rect.width * dpr;
+            const newHeight = rect.height * dpr;
+
+            if (canvas.width !== newWidth || canvas.height !== newHeight) {
+                canvas.width = newWidth;
+                canvas.height = newHeight;
+                ctx.scale(dpr, dpr);
+                
+                initLines(rect.width, rect.height);
+                
+                if (!animationId) {
+                    draw();
+                }
+            }
+        });
+
+        resizeObserver.observe(wrap);
+
+        function draw() {
+            if (!document.getElementById('artCanvas')) return; 
+
+            const width = canvas.width;
+            const height = canvas.height;
+
+            ctx.clearRect(0, 0, width, height);
+            
+            ctx.lineCap = 'round'; 
+            ctx.lineJoin = 'round'; 
+
+            lines.forEach(line => {
+                let lx = line.x;
+                let ly = line.y;
+
+                // 1. 테두리 선
+                ctx.lineWidth = line.thickness + 1; 
+                ctx.strokeStyle = OUTLINE_COLOR; 
+                ctx.beginPath();
+                ctx.moveTo(lx, ly);
+
+                let vertices = []; 
+                for (let step = 0; step < line.length; step += 5) {
+                    let angle = Math.sin(lx * windScale + time) * 1.2 + 
+                                Math.cos(ly * windScale + time * 0.8) * 1.2 - 
+                                Math.PI / 4;
+                    lx += Math.cos(angle) * 5;
+                    ly += Math.sin(angle) * 5;
+                    ctx.lineTo(lx, ly);
+                    vertices.push({ x: lx, y: ly }); 
+                }
+                ctx.stroke(); 
+
+                // 2. 메인 선
+                lx = line.x;
+                ly = line.y;
+                ctx.lineWidth = line.thickness; 
+                ctx.strokeStyle = LINE_COLOR; 
+                ctx.beginPath();
+                ctx.moveTo(lx, ly);
+
+                vertices.forEach(vertex => ctx.lineTo(vertex.x, vertex.y));
+                ctx.stroke(); 
+            });
+
+            time += windSpeed;
+            animationId = requestAnimationFrame(draw);
+        }
+    })();
+</script>

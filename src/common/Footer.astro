@@ -1,0 +1,69 @@
+---
+import '@common/Global.css';
+---
+
+
+<footer class="site-footer">
+    
+    <div>
+        <p>&copy; 2026</p>
+    </div>
+    <div>
+        <a href="mailto:your-email@domain.com" class="footer-contact">
+            <span class="translate" data-ko="문의하기" data-en="Get in touch">Get in touch</span>
+        </a>
+    </div>
+</footer>
+
+
+
+<style>
+.site-footer {
+    min-height: 3dvh;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+
+    padding-block: var(--pad);
+    font-family: var(--font-mono), var(--font-asta);
+}
+
+.site-footer p,
+.site-footer a {
+    margin: 0;
+    line-height: 1;
+    text-decoration: none;
+    color: inherit;
+}
+
+.footer-contact {
+    position: relative; 
+    display: inline-block; 
+    padding-bottom: 2px; 
+    font-weight: 400; /* 굵기는 고정하여 브라우저 리렌더링 충돌을 원천 차단 */
+}
+
+.footer-contact::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1.5px; /* 기본 두께 */
+    background-color: currentColor; 
+    
+    /* X축(길이)은 0, Y축(두께)은 1로 시작 */
+    transform: scaleX(0); 
+    transform-origin: left; 
+    
+    /* 길이와 두께 변화를 동시에 부드럽게 연출 */
+    transition: transform 0.3s var(--motion);
+}
+
+.footer-contact:hover::after {
+    /* 호버 시 길쭉하게 촥 펼쳐짐 */
+    transform: scaleX(1);
+}
+</style>
+
+<script>import '@common/Global.js';</script>

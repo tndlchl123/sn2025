@@ -2,63 +2,945 @@
 import Layout from '../common/Layout.astro';
 ---
 
-<Layout>
-    <form id="contactForm">
-        <div>
-            <label for="name">이름</label>
-            <input type="text" id="name" name="name" required />
-        </div>
-        <div>
-            <label for="email">전자우편 주소</label>
-            <input type="email" id="email" name="email" required />
-        </div>
-        <div>
-            <label for="phone">연락처</label>
-            <input type="text" id="phone" name="phone" />
-        </div>
-        <div>
-            <label for="message">문의 내용</label>
-            <textarea id="message" name="message" required></textarea>
-        </div>
-        <button type="submit">문의하기</button>
+<Layout title="contact">
+  <div class="contact-main-container">
+    <div class="contact-title">
+      <div class="sr-only">
+        운영시간은 월요일부터 토요일, 오전 9시부터 오후 6시이며,
+        휴게시간은 낮 12시부터 오후 1시입니다.
+        일요일 및 공휴일은 휴무입니다.
+      </div>
+
+      <div class="title-row" aria-hidden="true">
+        <span class="translate" data-ko="월요일 - 금요일" data-en="mon to fri"></span>
+        <span>09:00 - 18:00</span>
+      </div>
+      <div class="title-row" aria-hidden="true">
+        <span class="translate" data-ko="점심 시간" data-en="break time"></span>
+        <span>12:00 - 13:00</span>
+      </div>
+      <div class="title-row" aria-hidden="true">
+        <span class="translate" data-ko="주말 / 공휴일" data-en="holidays"></span>
+        <span class="translate" data-ko="휴무" data-en="closed"></span>
+      </div>
+    </div>
+
+    <div class="contact-clock-wrap" aria-hidden="true">
+      <div id="contact-clock" class="contact-clock">
+        <div id="contact-hour" class="contact-hand contact-hour-hand"></div>
+        <div id="contact-minute" class="contact-hand contact-min-hand"></div>
+        <div id="contact-second" class="contact-hand contact-sec-hand"></div>
+        <div class="contact-center-dot"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="contact-container">
+    <form id="contactForm" class="custom-form" novalidate>
+      <div class="form-group">
+        <input type="text" id="name" name="name" class="translate" data-ko="이름" data-en="Name" placeholder="이름" autocomplete="name" required />
+        <span class="error-msg" id="nameError"></span>
+      </div>
+      
+      <div class="form-group">
+        <input type="email" id="email" name="email" class="translate" data-ko="메일" data-en="Email" placeholder="메일" autocomplete="email" required />
+        <span class="error-msg" id="emailError"></span>
+      </div>
+      
+      <div class="form-group">
+        <input type="text" id="phone" name="phone" class="translate" data-ko="번호" data-en="Phone" inputmode="numeric" maxlength="11" placeholder="번호" autocomplete="tel" />
+        <span class="error-msg" id="phoneError"></span>
+      </div>
+      
+      <div class="form-group">
+        <textarea id="message" name="message" class="translate" data-ko="내용" data-en="Details" placeholder="내용" rows="1" required></textarea>
+        <span class="error-msg" id="messageError"></span>
+      </div>
+
+      <div class="form-group privacy-group">
+        <label class="privacy-label" for="privacyAgree">
+          <input type="checkbox" id="privacyAgree" name="privacyAgree" required />
+          <span class="custom-checkbox"></span>
+          <span class="privacy-text">
+            <a href="/privacy" target="_blank" class="privacy-link translate" data-ko="개인정보처리방침" data-en="Privacy Policy">개인정보처리방침</a>
+            <span class="translate" data-ko="에 동의합니다." data-en=" (Required)">에 동의합니다.</span>
+          </span>
+        </label>
+        <span class="error-msg" id="privacyAgreeError"></span>
+      </div>
+      
+      <button type="submit" id="submitBtn" class="translate" data-ko="문의 제출" data-en="Submit">문의 제출</button>
+      
     </form>
 
-    <div id="formResult" style="display:none; margin-top:10px;"></div>
+
+    <div id="formResult" class="form-result" style="display:none;"></div>
+  </div>
+
 </Layout>
 
-<script>
-const form = document.getElementById('contactForm');
-const resultDiv = document.getElementById('formResult');
+<!-- layout -->
+<style>
+.contact-main-container {
+  --pad: 20px;               
+  --bg-color: #ffffff;
 
-form.addEventListener('submit', async (e) => {
-    e.preventDefault(); // 새로고침 방지
+  --clock-h: calc((50px + (var(--pad) * 4)) * 2);
+}
+
+@media (max-width: 768px) {
+  .contact-main-container {
+    --clock-h: calc(55px + (var(--pad) * 4));
+  }
+}
+
+.contact-main-container {
+  display: grid;
+  place-items: center;
+  position: relative;
+  
+  width: 100%;
+  height: var(--clock-h);
+
+  min-width: 0;
+  overflow: hidden; 
+
+  margin-block: 10px;
+}
+
+
+/* hide(in loading) */
+.contact-main-container {
+  opacity: 0;
+}
+.contact-main-container.is-ready {
+  opacity: 1;
+  overflow: visible;
+}
+
+.contact-title, 
+.contact-clock-wrap {
+  grid-area: 1 / 1; 
+  width: 100%;
+  height: 100%;
+}
+
+.contact-title {
+  z-index: 2;
+  mix-blend-mode: difference;
+  overflow: visible;
+}
+
+.contact-clock-wrap {
+  z-index: 1;
+}
+</style>
+
+<!-- title -->
+<style>
+.contact-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px; 
+
+  width: 100%;
+  height: var(--clock-h);
+
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* each row */
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  
+  font-family: var(--font-geist);
+  text-transform: uppercase;
+  white-space: nowrap; 
+
+  line-height: 0.76; 
+}
+
+.title-row > span {
+  font-weight: 350;
+  color: #fff; /* for mix-blend */
+}
+
+
+.title-row span:last-child {
+  padding-right: 0.1em;
+}
+.title-row span:first-child {
+  margin-left: -0.03em; 
+}
+
+
+</style>
+
+<!-- clock -->
+<style>
+/* clock container */
+.contact-clock-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  width: 100%;
+}
+
+/* clock */
+.contact-clock {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: var(--clock-h);
+
+  background-color: transparent;
+}
+
+
+
+/* clock hands */
+.contact-hand {
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+
+  transform-origin: bottom center; /* origin */
+  transform: translateX(-50%) rotate(0deg); /* align center */
+
+  background-color: var(--txt-color);
+}
+
+
+
+/* each clock hand */
+.contact-hour-hand {
+  width: 3px;
+  height: 40%; /* hour */
+}
+.contact-min-hand {
+  width: 2px;
+  height: 45%; /* min */
+}
+.contact-sec-hand {
+  width: 3px;
+  height: 50%; /* sec */
+}
+
+
+/* clock center point */
+.contact-center-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  background-color: var(--txt-color);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+</style>
+
+<!-- mob -->
+<style>
+@media (max-width: 768px) {
+  .contact-main-container {
+    --clock-h: calc((25px + 0.5vw) * 5 + (var(--pad) * 4));
+    overflow: visible;
+  }
+  
+  /* title container */
+  .contact-title {
+    gap: 2px;
+    letter-spacing: -0.1em;
+  }
+  
+  /* all row */
+  .title-row > span {
+    font-weight: 400;
+  }
+
+  /* last row */
+  .title-row:last-child {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  /* the rest row */
+  .title-row:not(:last-child) > span {
+    display: block;
+    width: 100%;
+
+    text-align: justify;
+    text-align-last: justify;
+
+    white-space: normal;
+    word-break: keep-all;
+
+    line-height: 0.79;
+    height: 0.79em; /* container height = line height */
+    overflow: hidden;
+  }
+  
+  .title-row:not(:last-child) {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .title-row > span::after {
+    content: "";
+    display: inline-block;
+    width: 100%;
+    height: 0;
+    visibility: hidden;
+  }
+}
+</style>
+
+<!-- 입력폼 -->
+<style>
+    .contact-container {
+      width: 100%;
+      padding-top: 2vh;
+      --form-fs: 1rem;
+    }
+
+    .custom-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      
+      --form-bg: rgba(var(--txt-color-r), 0.2);
+      --form-text: var(--txt-color);
+
+      --input-h: calc(40px + 0.25vw);
+      --input-pad: 0 calc(5px + 0.2vw);
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
     
-    const formData = {
-        name: document.getElementById('name').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        message: document.getElementById('message').value
+    /* ====================================================
+       2. 입력창 3개 + 텍스트영역 + 제출버튼 높이 완벽 통일 
+       ==================================================== */
+    .custom-form input,
+    .custom-form textarea,
+    .custom-form button[type="submit"],
+    #message {
+        width: 100%;
+        display: block;
+        
+        font-family: inherit; 
+        line-height: 1.5; 
+
+        background-color: rgba(var(--txt-color-r), 0.2);
+        color: var(--form-text);
+        border: none;
+        outline: none;
+        
+        font-size: var(--form-fs);
+
+        /* 3. 예전 코드의 핵심: height 하나로 모든 박스 높이를 절대 고정! */
+        height: var(--input-h);
+
+        padding: var(--input-pad);
+        padding-left: var(--pad);
+
+        border-radius: var(--rad);
+        
+        transition: background-color 1.5s var(--motion), color 0.5s var(--motion), border 0.5s var(--motion);
+    }
+
+    /* 영문 폰트 패밀리 지정 */
+    .custom-form input, .custom-form textarea, .custom-form button[type="submit"], #message, .custom-form button[type="submit"], .privacy-label {
+      font-family: var(--font-mono);
+    }
+
+
+    .custom-form input { overflow: hidden; }
+    .custom-form textarea { overflow: visible; }
+
+    /* 입력창/제출: 호버/포커스 */
+    .custom-form input:hover,
+    .custom-form textarea:hover,
+    .custom-form input:focus,
+    .custom-form textarea:focus,
+    .custom-form button[type="submit"]:hover,
+    .custom-form button[type="submit"]:focus {
+        background-color: rgba(var(--txt-color-r), 0.2);
+    }
+    
+    /* ====================================================
+        4. 문의: 내용 칸 (대표님 예전 코드 로직 100% 적용)
+       ==================================================== */
+    #message {
+        resize: none;
+
+        /* 높이는 위에서 var(--input-h)로 완벽히 고정되었으므로, 
+           예전 코드처럼 텍스트에리어 전용 상하 여백만 살짝 줍니다. */
+        /* 전체높이(약 40px) - 줄간격(약 24px) = 16px. 이를 위아래로 나누면 약 8px 정도가 세로 중앙에 옵니다. */
+        padding-block: calc(8px + 0.125vw); 
+
+        overflow: auto; 
+        scrollbar-width: none; 
+    }
+
+    /* 플레이스 홀더 */
+    .custom-form input::placeholder, .custom-form textarea::placeholder,
+    .custom-form input::-webkit-input-placeholder,
+    .custom-form textarea::-webkit-input-placeholder,
+    .custom-form input::-moz-placeholder,
+    .custom-form textarea::-moz-placeholder { color: var(--txt-color); opacity: 0.5; }
+
+    /* ====================================================
+       개인정보처리방침 동의 박스 스타일
+       ==================================================== */
+    .privacy-group {
+    }
+
+    .privacy-label {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      box-sizing: border-box;
+      
+      height: var(--input-h);
+      padding: var(--input-pad);
+      padding-left: var(--pad);
+      
+      background-color: rgba(var(--txt-color-r), 0.2);
+      border-radius: var(--rad);
+      transition: background-color 1.5s var(--motion), border 0.5s var(--motion);
+      
+      cursor: pointer;
+    }
+
+    /* 실제 기본 체크박스는 화면에서 숨김 */
+    .privacy-label input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+
+    /* 커스텀 네모 체크박스 (기본: 연하게) */
+    .custom-checkbox {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 12px;
+      
+      border: 1px solid var(--txt-color, #000);
+      background-color: transparent;
+      opacity: 0.5; /* ⭐️ 플레이스홀더처럼 연하게 시작 */
+      position: relative;
+      transition: all 0.5s var(--motion);
+    }
+
+    /* 텍스트 및 링크 스타일 (기본: 연하게) */
+    .privacy-text {
+      color: var(--txt-color, #000);
+      font-size: var(--form-fs);
+      opacity: 0.5; /* ⭐️ 입력창 플레이스홀더(0.5)와 똑같은 투명도 부여 */
+      transition: all 0.5s var(--motion);
+    }
+
+    /* ⭐️ 체크박스를 클릭(체크)했을 때 전체 활성화 */
+    /* 1. 네모 박스 색상 꽉 차고 진해짐 */
+    .privacy-label input[type="checkbox"]:checked ~ .custom-checkbox {
+      opacity: 1;
+      background-color: var(--txt-color, #000); 
+    }
+    /* 2. 글자(개인정보처리방침 내용) 전체 투명도 1로 쨍하게 켜짐 */
+    .privacy-label input[type="checkbox"]:checked ~ .privacy-text {
+      opacity: 1;
+    }
+
+    .privacy-link {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .privacy-link:hover {
+      opacity: 0.7;
+    }
+
+    /* 제출 버튼 세부 조정 */
+    .custom-form button[type="submit"] {
+        cursor: pointer;
+        text-align: left;
+    }
+
+
+    /* ====================================================
+       에러 상태 및 메시지 처리
+       ==================================================== */
+    /* 에러 발생 시 테두리 + 배경색 제거 공통 적용 */
+    .custom-form input.is-invalid,
+    .custom-form textarea.is-invalid,
+    #message.is-invalid,
+    .privacy-group.is-invalid .privacy-label {
+        border: 1px solid var(--txt-color);
+        background-color: var(--bg-color);
+        color: var(--txt-color);
+    }
+
+    /* 에러 메시지 */
+    .error-msg { 
+        display: none; 
+        font-size: var(--form-fs); 
+        padding-block: var(--pad); /* 요청하신 패딩 반영 */
+        padding-left: var(--pad);  /* 글자가 너무 왼쪽에 붙지 않게 띄워줌 */
+    }
+    .error-msg.show { display: block; }
+
+    /* 제출 결과 */
+    .form-result {
+        margin-top: 20px;
+        padding: 16px;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 600;
+        font-size: var(--form-fs);
+    }
+    .form-result.success {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+    .form-result.error {
+        background-color: #ffebee;
+        color: #c62828;
+    }
+</style>
+
+
+<!-- 자바스크립트 동작 및 유효성 검사 -->
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const form = document.getElementById('contactForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const resultDiv = document.getElementById('formResult');
+    
+    if (!form) return;
+
+    const phoneInput = document.getElementById('phone');
+    const emailInput = document.getElementById('email');
+
+    // 연락처: 숫자만 입력되도록 강제
+    if (phoneInput) {
+      phoneInput.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+      });
+    }
+
+    // 이메일: 영문, 숫자, 일부 특수기호(@ . _ -)만 입력되도록 강제 (한글 차단)
+    if (emailInput) {
+      emailInput.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/[^a-zA-Z0-9@._-]/g, '');
+      });
+    }
+
+    // 1. 에러 메시지 띄울 때: 영문이면 font-mono 지정
+    const showError = (id, koMsg, enMsg) => {
+      const input = document.getElementById(id);
+      const errorSpan = document.getElementById(`${id}Error`);
+      const isEnglish = localStorage.getItem('isEnglish') === 'true';
+
+      if (input) {
+        input.classList.add('is-invalid');
+        
+        if (id === 'privacyAgree') {
+          const group = input.closest('.privacy-group');
+          if (group) group.classList.add('is-invalid');
+        }
+      }
+      if (errorSpan) {
+        errorSpan.classList.add('translate');
+        errorSpan.setAttribute('data-ko', koMsg);
+        errorSpan.setAttribute('data-en', enMsg);
+        errorSpan.textContent = isEnglish ? enMsg : koMsg;
+
+        // ⭐️ 영문일 때만 mono 폰트 적용, 한글일 땐 기본 상속
+        errorSpan.style.fontFamily = isEnglish ? 'var(--font-mono)' : '';
+
+        errorSpan.classList.add('show');
+      }
     };
 
-    try {
+    const clearErrors = () => {
+      document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+      document.querySelectorAll('.error-msg.show').forEach(el => el.classList.remove('show'));
+    };
+
+    const isValidEmail = (email) => {
+      return /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+    };
+
+    // 언어 상태 업데이트 함수 (제출 버튼 등 상태 변경용)
+    const updateElementLang = (el, koText, enText, isEnglish) => {
+      if (!el) return;
+      el.classList.add('translate');
+      el.setAttribute('data-ko', koText);
+      el.setAttribute('data-en', enText);
+      el.textContent = isEnglish ? enText : koText;
+
+      // 폰트패밀리
+      el.style.fontFamily = isEnglish ? 'var(--font-mono)' : '';
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors(); 
+
+      const isEnglish = localStorage.getItem('isEnglish') === 'true';
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const privacyChecked = document.getElementById('privacyAgree').checked;
+
+      let hasError = false;
+
+      // 이름 검사
+      if (!name) {
+        showError('name', '이름을 입력해주세요.', 'Please enter your name.');
+        hasError = true;
+      }
+      
+      // 이메일 검사
+      if (!email) {
+        showError('email', '이메일을 입력해주세요.', 'Please enter your email.');
+        hasError = true;
+      } else if (!email.includes('@')) {
+        showError('email', '이메일 주소에는 반드시 @가 포함되어야 합니다.', 'Email address must include @.');
+        hasError = true;
+      } else if (!isValidEmail(email)) {
+        showError('email', '올바른 영문 이메일 형식이 아닙니다.', 'Invalid email format.');
+        hasError = true;
+      }
+
+      // 연락처 검사
+      if (!phone) {
+        showError('phone', '연락처를 입력해주세요.', 'Please enter your phone number.');
+        hasError = true;
+      } else if (phone.length < 9) {
+        showError('phone', '올바른 연락처 번호를 입력해주세요.', 'Please enter a valid phone number.');
+        hasError = true;
+      }
+
+      // 문의 내용 검사
+      if (!message) {
+        showError('message', '문의 내용을 입력해주세요.', 'Please enter your inquiry in detail.');
+        hasError = true;
+      }
+
+      // 개인정보 검사
+      if (!privacyChecked) {
+        showError('privacyAgree', '개인정보처리방침에 동의해주세요.', 'Please agree to the Privacy Policy.');
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      // 전송 시작 (제출 버튼 번역 데이터 덮어쓰기)
+      updateElementLang(submitBtn, '전송 중...', 'Sending...', isEnglish);
+      submitBtn.disabled = true;
+      
+      if (resultDiv) resultDiv.style.display = 'none';
+
+      try {
         const response = await fetch('https://falling-night-3940.tndlchl123.workers.dev', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, phone, message })
         });
         
         if (response.ok) {
-            resultDiv.style.display = 'block';
-            resultDiv.textContent = '문의가 성공적으로 접수되었습니다. 감사합니다!';
-            form.reset();
+          resultDiv.className = 'form-result success translate';
+          updateElementLang(resultDiv, '문의가 성공적으로 접수되었습니다. 감사합니다!', 'Your inquiry has been successfully submitted. Thank you!', isEnglish);
+          resultDiv.style.display = 'block';
+          form.reset(); 
+          
+          const messageInputEl = document.getElementById('message');
+          if(messageInputEl) messageInputEl.style.setProperty('height', 'auto', 'important');
         } else {
-            throw new Error('전송 실패');
+          throw new Error('전송 실패');
         }
-    } catch (err) {
+      } catch (err) {
+        resultDiv.className = 'form-result error translate';
+        updateElementLang(resultDiv, '전송 중 오류가 발생했습니다. 다시 시도해 주세요.', 'An error occurred during transmission. Please try again.', isEnglish);
         resultDiv.style.display = 'block';
-        resultDiv.textContent = '전송 중 오류가 발생했습니다. 다시 시도해 주세요.';
+      } finally {
+        // 전송 종료 후 원래 제출 버튼 문구로 복구
+        updateElementLang(submitBtn, '문의 제출', 'Submit', isEnglish);
+        submitBtn.disabled = false;
+      }
+    });
+  });
+</script>
+
+<!-- 입력창 높이 -->
+<script>
+  // Astro 라우팅 환경에서는 DOMContentLoaded 대신 astro:page-load를 사용합니다.
+  document.addEventListener("astro:page-load", () => {
+    
+    const messageInput = document.getElementById('message');
+    
+    if (messageInput) {
+      // 1. 초기 줄 수를 1줄로 세팅
+      messageInput.setAttribute('rows', '1');
+      
+      const adjustHeight = () => {
+        // 2. 높이를 일단 초기화(auto)하여 줄어들 수 있게 만듦
+        messageInput.style.setProperty('height', 'auto', 'important');
+        // 3. 안에 들어있는 내용물(scrollHeight)의 높이만큼 픽셀을 다시 부여
+        messageInput.style.setProperty('height', messageInput.scrollHeight + 'px', 'important');
+      };
+
+      // 4. 사용자가 타자를 칠 때마다 함수 실행
+      messageInput.addEventListener('input', adjustHeight);
+      
+      // 혹시 로드될 때 이미 값이 들어있을 경우를 대비해 최초 1회 실행
+      adjustHeight();
     }
+    
+  });
+</script>
+
+<!-- clock js -->
+<script>
+// 페이지 이동 시 타이머 중복 실행 방지
+let clockInterval; 
+
+document.addEventListener("astro:page-load", function() {
+  const hourHand = document.getElementById('contact-hour');
+  const minHand = document.getElementById('contact-minute');
+  const secHand = document.getElementById('contact-second');
+
+  if (!hourHand) return;
+
+  function updateClock() {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+
+    const secDegree = seconds * 6;
+    const minDegree = (minutes * 6) + (seconds * 0.1);
+    const hourDegree = (hours % 12) * 30 + (minutes * 0.5);
+
+    if (secHand) secHand.style.transform = `translateX(-50%) rotate(${secDegree}deg)`;
+    if (minHand) minHand.style.transform = `translateX(-50%) rotate(${minDegree}deg)`;
+    if (hourHand) hourHand.style.transform = `translateX(-50%) rotate(${hourDegree}deg)`;
+  }
+
+  if (clockInterval) clearInterval(clockInterval);
+  updateClock();
+  clockInterval = setInterval(updateClock, 1000);
+});
+</script>
+
+<!-- title resize js -->
+<script>
+function fitTextPerfectly(animate = false) {
+  const container = document.querySelector('.contact-title');
+  const rows = document.querySelectorAll('.title-row');
+  const spans = document.querySelectorAll('.title-row > span'); 
+  const mainContainer = document.querySelector('.contact-main-container');
+  
+  if (!container || rows.length === 0 || spans.length === 0) return;
+
+  if (mainContainer) mainContainer.style.removeProperty('--clock-h');
+
+  const toggleBtn = document.querySelector('.lang-toggle-btn');
+  let isEnglish = true;
+  if (toggleBtn) {
+    isEnglish = toggleBtn.classList.contains('active'); 
+  } else {
+    isEnglish = localStorage.getItem('isEnglish') === 'true';
+  }
+
+  // 1. 현재(과거) 상태 미리 복사해두기
+  let oldFontSize = rows[0].style.fontSize || window.getComputedStyle(rows[0]).fontSize;
+  let oldGap = container.style.gap || window.getComputedStyle(container).gap;
+
+  // 2. 측정 모드: 트랜지션 완전 차단
+  container.style.transition = 'none';
+  rows.forEach(row => {
+    row.style.transition = 'none';
+    row.querySelectorAll(':scope > span').forEach(sp => sp.style.transition = 'none');
+  });
+
+  // 100px 및 측정용 세팅 
+  container.style.gap = isEnglish ? '' : '0px';
+  rows.forEach(row => row.style.gap = isEnglish ? '' : '0px');
+
+  const containerW = container.clientWidth;
+  const containerH = container.clientHeight;
+  if (containerW === 0 || containerH === 0) return;
+
+  const gapPx = parseFloat(window.getComputedStyle(container).gap) || 0;
+  const isMobile = window.getComputedStyle(rows[0]).flexDirection === 'column';
+  
+  let minRatio = Infinity;
+  let ratioH = Infinity;
+
+  spans.forEach(span => {
+    span.style.width = 'auto'; 
+    span.style.whiteSpace = 'nowrap';
+    span.style.fontSize = '100px';
+    span.style.flexShrink = '0';
+  });
+  rows.forEach(row => {
+    row.style.fontSize = '100px';
+    row.style.flexShrink = '0';
+  });
+
+  if (!isMobile) {
+    const availableH = containerH - (gapPx * (rows.length - 1)); 
+    const centerGap = 50; 
+    rows.forEach(row => {
+      const rowSpans = row.querySelectorAll(':scope > span');
+      const textW = Array.from(rowSpans).reduce((sum, sp) => sum + sp.getBoundingClientRect().width, 0);
+      if (textW > 0) {
+        const ratioW = (containerW - centerGap) / textW; 
+        if (ratioW < minRatio) minRatio = ratioW;
+      }
+    });
+    const singleRowH = rows[0].getBoundingClientRect().height;
+    if (singleRowH > 0) ratioH = availableH / (singleRowH * rows.length);
+  } else {
+    const rowGap = parseFloat(window.getComputedStyle(rows[0]).gap) || 0;
+    let totalLines = 0;
+    rows.forEach(row => {
+      const rowIsColumn = window.getComputedStyle(row).flexDirection === 'column';
+      totalLines += rowIsColumn ? row.querySelectorAll(':scope > span').length : 1;
+    });
+    const totalGaps = gapPx * (rows.length - 1) + rowGap * (totalLines - rows.length);
+    const availableH = containerH - totalGaps;
+    rows.forEach((row) => {
+      const rowIsColumn = window.getComputedStyle(row).flexDirection === 'column';
+      const rowSpans = row.querySelectorAll(':scope > span');
+      if (rowIsColumn) {
+        rowSpans.forEach(span => {
+          const spanW = span.getBoundingClientRect().width;
+          if (spanW > 0) {
+            const ratioW = (containerW - 2) / spanW; 
+            if (ratioW < minRatio) minRatio = ratioW;
+          }
+        });
+      } else {
+        const centerGap = 10; 
+        const textW = Array.from(rowSpans).reduce((sum, sp) => sum + sp.getBoundingClientRect().width, 0);
+        if (textW > 0) {
+          const ratioW = (containerW - centerGap) / textW; 
+          if (ratioW < minRatio) minRatio = ratioW;
+        }
+      }
+    });
+    const singleSpanH = spans[0].getBoundingClientRect().height;
+    if (singleSpanH > 0) ratioH = availableH / (singleSpanH * totalLines); 
+  }
+
+  const finalRatio = Math.min(minRatio, ratioH);
+  let safeRatio = (finalRatio === Infinity || finalRatio <= 0) ? 0.5 : finalRatio; 
+  if (!isEnglish) safeRatio = safeRatio * 0.95; 
+  const finalSize = 100 * safeRatio; 
+
+  // 3. 측정이 끝났으니, 안 보이게 재빨리 '과거 상태'로 복구
+  spans.forEach(span => {
+    span.style.width = ''; 
+    span.style.whiteSpace = '';
+    span.style.flexShrink = ''; 
+    span.style.fontSize = oldFontSize; 
+  });
+  rows.forEach(row => {
+    row.style.flexShrink = '';
+    row.style.fontSize = oldFontSize; 
+    row.style.gap = oldGap;           
+  });
+  container.style.gap = oldGap;
+
+  void container.offsetHeight; 
+
+  // ==========================================
+  // 💡 5. 드디어 애니메이션 장착! (직접 만드신 var(--motion) 변수 사용)
+  // ==========================================
+  const motion = animate ? 'all 0.5s var(--motion)' : 'none';
+  
+  container.style.transition = motion;
+  rows.forEach(row => {
+    row.style.transition = motion;
+    row.querySelectorAll(':scope > span').forEach(sp => sp.style.transition = motion);
+  });
+
+  // 6. 진짜 새로운 크기와 간격 적용 (이제 var(--motion) 리듬에 맞춰 스르륵 바뀜!)
+  container.style.gap = isEnglish ? '' : '0px';
+
+  rows.forEach((row, index) => {
+    row.style.gap = isEnglish ? '' : '0px';
+    row.style.fontSize = finalSize + 'px';
+    row.style.lineHeight = isEnglish ? '0.76' : '1.05';
+
+    const rowSpans = row.querySelectorAll(':scope > span');
+    rowSpans.forEach(span => {
+      span.style.fontSize = finalSize + 'px'; 
+
+      if (span.classList.contains('translate')) {
+        span.style.fontWeight = isEnglish ? '350' : '450';
+      } else {
+        span.style.fontWeight = '350';
+      }
+
+      if (isMobile && index !== rows.length - 1) {
+        span.style.lineHeight = isEnglish ? '0.79' : '1.05';
+        span.style.height = isEnglish ? '0.79em' : '1.05em';
+      } else {
+        span.style.lineHeight = '';
+        span.style.height = '';
+      }
+    });
+  });
+
+  let realHeight = 0;
+  rows.forEach(row => {
+    realHeight += row.getBoundingClientRect().height;
+  });
+  realHeight += gapPx * (rows.length - 1); 
+
+  if (mainContainer) {
+    // 💡 메인 껍데기 높이도 var(--motion)으로 부드럽게!
+    mainContainer.style.transition = animate ? 'height 0.5s var(--motion)' : 'none';
+    mainContainer.style.setProperty('--clock-h', realHeight + 'px');
+    mainContainer.classList.add('is-ready');
+  }
+}
+
+document.addEventListener("astro:page-load", () => {
+  fitTextPerfectly(false);
+  if (document.fonts) document.fonts.ready.then(() => fitTextPerfectly(false));
+});
+
+window.addEventListener('resize', () => fitTextPerfectly(false));
+
+document.addEventListener('click', (e) => {
+  const toggleBtn = e.target.closest('.lang-toggle-btn');
+  if (toggleBtn) {
+    fitTextPerfectly(true); 
+    setTimeout(() => {
+      fitTextPerfectly(true); 
+    }, 350); 
+  }
 });
 </script>
