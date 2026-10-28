@@ -14,27 +14,27 @@ html {
 /* 모달 배경 */
 .works-modal-overlay {
     scrollbar-gutter: stable;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
 
-  background-color: rgba(var(--txt-color-r), 0.5); 
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+    background-color: rgba(var(--txt-color-r), 0.5); 
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
 
-  z-index: 10;
+    z-index: 10;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-  /* 스르륵 나타나기 위한 세팅 (숨김 상태) */
-  opacity: 0;
-  pointer-events: none;
-  visibility: hidden;
-  transition: opacity 0.5s var(--motion), visibility 0.5s var(--motion);
+    /* 스르륵 나타나기 위한 세팅 (숨김 상태) */
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.5s var(--motion), visibility 0.5s var(--motion);
 }
 
 /* JS로 .show 클래스가 붙었을 때 (스르륵 나타남) */
@@ -46,12 +46,13 @@ html {
 
 /* 모달 내용 박스 */
 .works-modal-box {
-    width: 50%;
+    width: auto;
+    height: 80vh;
+    aspect-ratio: 3/4;
+
     border-radius: var(--rad);
     background-color: var(--bg-color);
     position: relative;
-
-    aspect-ratio: 3/4;
 
     overflow-y: auto; 
     -ms-overflow-style: none;
@@ -72,23 +73,21 @@ html {
 
 #modal_content_area {
     width: 100%;
-    height: 100%;
+    height: auto;
 }
 </style>
 
 <!-- 모달창 스크립트 -->
 <script is:inline>
-let modalLenis;
-let modalRafId;
-
 window.openWorksModal = async function(url) {
     const modal = document.getElementById('content_modal');
-    const modalBox = document.querySelector('.works-modal-box');
     const contentArea = document.getElementById('modal_content_area');
 
     if (!modal || !contentArea || !url) return;
 
+    // 메인 Lenis가 모달 안쪽 스크롤을 건드리지 못하게 차단 (매우 중요)
     modal.setAttribute('data-lenis-prevent', 'true');
+    
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
 
@@ -129,25 +128,7 @@ window.openWorksModal = async function(url) {
             contentArea.appendChild(newScript);
         });
 
-        // 기존 모달 레니스가 남아있다면 정리 후 새로 가동
-        if (modalLenis) {
-            modalLenis.destroy();
-            cancelAnimationFrame(modalRafId);
-        }
-
-        if (typeof Lenis !== 'undefined') {
-            modalLenis = new Lenis({
-                wrapper: modalBox,
-                content: contentArea,
-                lerp: 1,
-            });
-
-            function raf(time) {
-                modalLenis.raf(time);
-                modalRafId = requestAnimationFrame(raf);
-            }
-            modalRafId = requestAnimationFrame(raf);
-        }
+        // 🚨 모달 전용 Lenis 초기화 부분 완전히 삭제됨 🚨
 
     } catch (error) {
         console.error("모달 데이터 로드 실패:", error);
@@ -162,9 +143,9 @@ function initWorksModal() {
 
     if (!modal || !contentArea) return;
 
+    // 초기화 시점에도 메인 스크롤 간섭 방지
     modal.setAttribute('data-lenis-prevent', 'true');
 
-    // 일반 HTML 버튼으로 .open-modal을 눌렀을 때도 동일하게 작동
     triggers.forEach(trigger => {
         trigger.onclick = function(e) {
             e.preventDefault();
@@ -175,13 +156,9 @@ function initWorksModal() {
 
     const closeModal = () => {
         modal.classList.remove('show');
-        document.body.style.overflow = '';
+        document.body.style.overflow = ''; // 뒷배경 메인 스크롤 원상복구
 
-        if (modalLenis) {
-            modalLenis.destroy();
-            cancelAnimationFrame(modalRafId);
-            modalLenis = null;
-        }
+        // 🚨 모달 Lenis destroy 부분 완전히 삭제됨 🚨
 
         setTimeout(() => {
             contentArea.innerHTML = '';
@@ -189,6 +166,7 @@ function initWorksModal() {
     };
 
     modal.onclick = function(e) {
+        // 모달 바깥 배경 클릭 시 닫기
         if (e.target === modal) closeModal();
     };
 }
