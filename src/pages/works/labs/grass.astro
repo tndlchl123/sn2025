@@ -10,21 +10,21 @@ import Layout from '@common/Design-Layout.astro';
     </div>
 </Layout>
 
-
 <style is:global>
     .works-modal-box {
         border-radius: var(--rad);
     }
+
     .canvas-wrap {
-        width: 50vw;
-        aspect-ratio: 3 / 4;
+        /* 모달 박스 크기에 빈틈없이 100% 맞도록 변경 */
+        width: 100%;
+        height: 100%;
         position: relative;
-        background-color: #394522; /* 캔버스 배경 */
+        background-color: #394522;
         overflow: hidden;
 
-        /* rgba(var(--dynamic-point-r), 1) */
-        --canvas-line-color: #84944e; /* 메인 선 */
-        --canvas-outline-color: rgba(0, 0, 0, 0.8); /* 테두리 */
+        --canvas-line-color: #84944e;
+        --canvas-outline-color: rgba(0, 0, 0, 0.8);
     }
 
     canvas {
@@ -38,11 +38,10 @@ import Layout from '@common/Design-Layout.astro';
     (function() {
         const canvas = document.getElementById('artCanvas');
         const wrap = document.querySelector('.canvas-wrap'); 
-        
+        if (!canvas || !wrap) return;
 
         const ctx = canvas.getContext('2d');
 
-        // 🎨 CSS에 적어둔 변수 값을 JS가 실시간으로 가져옵니다!
         const wrapStyle = getComputedStyle(wrap);
         const LINE_COLOR = wrapStyle.getPropertyValue('--canvas-line-color').trim() || '#111111';
         const OUTLINE_COLOR = wrapStyle.getPropertyValue('--canvas-outline-color').trim() || '#ffffff';
@@ -50,13 +49,9 @@ import Layout from '@common/Design-Layout.astro';
         let lines = [];
         let time = 0;
         
-        // ==========================================
-        // ⚙️ 2. 여기서 그래픽 느낌을 마음대로 조절하세요!
-        // ==========================================
-        const lineCount = 5000;      // 👈 [밀도 조절] 선의 개수. (기존 800 -> 3000으로 늘려서 아주 빽빽해짐!)
-        const windSpeed = 0.02;      // 👈 [속도 조절] 숫자가 커지면 바람이 빨리 붑니다 (예: 0.03)
-        const windScale = 0.004;     // 👈 [구불거림 조절] 숫자가 커지면 선들이 더 꼬불꼬불해집니다 (예: 0.01)
-        // ==========================================
+        const lineCount = 5000;
+        const windSpeed = 0.02;
+        const windScale = 0.004;
 
         let animationId;
 
@@ -66,9 +61,7 @@ import Layout from '@common/Design-Layout.astro';
                 lines.push({
                     x: Math.random() * width,        
                     y: Math.random() * height,       
-                    // 👈 [길이 조절] 숫자를 늘리면 개별 선이 길어집니다
                     length: Math.random() * 100 + 50, 
-                    // 👈 [두께 조절] 선의 두께 범위 (현재 2~6)
                     thickness: Math.random() * 2 + 1  
                 });
             }
@@ -79,13 +72,15 @@ import Layout from '@common/Design-Layout.astro';
             if (rect.width === 0 || rect.height === 0) return;
 
             const dpr = window.devicePixelRatio || 1; 
-            const newWidth = rect.width * dpr;
-            const newHeight = rect.height * dpr;
+            const newWidth = Math.round(rect.width * dpr);
+            const newHeight = Math.round(rect.height * dpr);
 
             if (canvas.width !== newWidth || canvas.height !== newHeight) {
                 canvas.width = newWidth;
                 canvas.height = newHeight;
-                ctx.scale(dpr, dpr);
+                
+                // 창 크기 변경 시 스케일이 중복으로 곱해지는 현상 방지
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
                 
                 initLines(rect.width, rect.height);
                 
@@ -103,10 +98,8 @@ import Layout from '@common/Design-Layout.astro';
             const width = canvas.width;
             const height = canvas.height;
 
-            // 매 프레임마다 이전 화면을 지워줌 (이걸 안 지우면 선이 잔상처럼 꽉 차버림)
             ctx.clearRect(0, 0, width, height);
             
-            // 💡 선의 끝부분을 둥글게(round) 할지 네모나게(square) 할지 결정 (JS 문법이라 여기에 남겨둠)
             ctx.lineCap = 'round'; 
             ctx.lineJoin = 'round'; 
 
@@ -114,9 +107,9 @@ import Layout from '@common/Design-Layout.astro';
                 let lx = line.x;
                 let ly = line.y;
 
-                // 1. 하얀색(배경색) 테두리를 먼저 그려서 선들끼리 겹칠 때 입체감을 줌
+                // 1. 테두리 그리기
                 ctx.lineWidth = line.thickness + 1; 
-                ctx.strokeStyle = OUTLINE_COLOR; // 👈 CSS에서 가져온 변수 적용!
+                ctx.strokeStyle = OUTLINE_COLOR;
                 ctx.beginPath();
                 ctx.moveTo(lx, ly);
 
@@ -132,7 +125,7 @@ import Layout from '@common/Design-Layout.astro';
                 } 
                 ctx.stroke(); 
 
-                // 2. 테두리 안쪽에 진짜 색상(검은색)을 덮어서 그림
+                // 2. 메인 선 그리기
                 lx = line.x;
                 ly = line.y;
                 ctx.lineWidth = line.thickness; 
@@ -147,7 +140,5 @@ import Layout from '@common/Design-Layout.astro';
             time += windSpeed;
             animationId = requestAnimationFrame(draw);
         }
-
-        
     })();
 </script>

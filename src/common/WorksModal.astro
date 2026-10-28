@@ -1,11 +1,11 @@
-<!-- 1. 모달 빈 껍데기 (이게 있어야 자바스크립트가 찾아서 화면에 띄움!) -->
+<!-- 1. 모달 빈 껍데기 -->
 <div id="content_modal" class="works-modal-overlay">
   <div class="works-modal-box">
     <div id="modal_content_area"></div>
   </div>
 </div>
 
-<!-- 모달창 -->
+<!-- 모달창 스타일 -->
 <style>
 html {
     overflow-y: scroll;
@@ -30,21 +30,19 @@ html {
     justify-content: center;
     align-items: center;
 
-    /* 스르륵 나타나기 위한 세팅 (숨김 상태) */
     opacity: 0;
     pointer-events: none;
     visibility: hidden;
     transition: opacity 0.5s var(--motion), visibility 0.5s var(--motion);
 }
 
-/* JS로 .show 클래스가 붙었을 때 (스르륵 나타남) */
 .works-modal-overlay.show {
-  opacity: 1;
-  pointer-events: auto;
-  visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
 }
 
-/* 모달 내용 박스 */
+/* 모달 내용 박스 (높이 80vh 기준 3:4 고정) */
 .works-modal-box {
     width: auto;
     height: 80vh;
@@ -59,21 +57,20 @@ html {
     scrollbar-width: none; 
     overscroll-behavior: contain;
 
-    /* 박스가 아래에서 위로 살짝 올라오며 나타나는 효과 */
     opacity: 0;
     transform: translateY(30px);
     transition: opacity 0.5s var(--motion), transform 0.5s var(--motion);
 }
 
-/* 배경이 나타날 때 내용 박스도 제자리로 올라옴 */
 .works-modal-overlay.show .works-modal-box {
-  opacity: 1;
-  transform: translateY(0);
+    opacity: 1;
+    transform: translateY(0);
 }
 
+/* 모달 내부 영역이 모달 박스 크기를 100% 물려받도록 설정 */
 #modal_content_area {
     width: 100%;
-    height: auto;
+    height: 100%;
 }
 </style>
 
@@ -85,9 +82,7 @@ window.openWorksModal = async function(url) {
 
     if (!modal || !contentArea || !url) return;
 
-    // 메인 Lenis가 모달 안쪽 스크롤을 건드리지 못하게 차단 (매우 중요)
     modal.setAttribute('data-lenis-prevent', 'true');
-    
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
 
@@ -107,16 +102,20 @@ window.openWorksModal = async function(url) {
 
         contentArea.innerHTML = '';
 
-        // 스타일 & HTML & 스크립트 주입
+        // 스타일 주입
         const styles = doc.querySelectorAll('style');
         styles.forEach(style => {
             contentArea.appendChild(style.cloneNode(true));
         });
 
+        // HTML 주입 (높이 100%가 끊기지 않도록 wrapper 크기 지정)
         const wrapper = document.createElement('div');
+        wrapper.style.width = '100%';
+        wrapper.style.height = '100%';
         wrapper.innerHTML = innerData.innerHTML;
         contentArea.appendChild(wrapper);
 
+        // 스크립트 주입
         const scripts = doc.querySelectorAll('script');
         scripts.forEach(script => {
             const newScript = document.createElement('script');
@@ -127,8 +126,6 @@ window.openWorksModal = async function(url) {
             }
             contentArea.appendChild(newScript);
         });
-
-        // 🚨 모달 전용 Lenis 초기화 부분 완전히 삭제됨 🚨
 
     } catch (error) {
         console.error("모달 데이터 로드 실패:", error);
@@ -143,7 +140,6 @@ function initWorksModal() {
 
     if (!modal || !contentArea) return;
 
-    // 초기화 시점에도 메인 스크롤 간섭 방지
     modal.setAttribute('data-lenis-prevent', 'true');
 
     triggers.forEach(trigger => {
@@ -156,9 +152,7 @@ function initWorksModal() {
 
     const closeModal = () => {
         modal.classList.remove('show');
-        document.body.style.overflow = ''; // 뒷배경 메인 스크롤 원상복구
-
-        // 🚨 모달 Lenis destroy 부분 완전히 삭제됨 🚨
+        document.body.style.overflow = '';
 
         setTimeout(() => {
             contentArea.innerHTML = '';
@@ -166,7 +160,6 @@ function initWorksModal() {
     };
 
     modal.onclick = function(e) {
-        // 모달 바깥 배경 클릭 시 닫기
         if (e.target === modal) closeModal();
     };
 }
