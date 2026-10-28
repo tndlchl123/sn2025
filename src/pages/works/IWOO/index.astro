@@ -3,7 +3,7 @@ import Layout from '@common/Design-Layout.astro';
 ---
 
 <Layout title="IWOO"
-keywords="이우, iwoo, 도자기브랜드, 테이블웨어, 백자, 매트포슬린, 온기, 도자예술로, 이천도자기, 현대도자, 세라믹스튜디오, 공예디자인"
+keywords="이우, iwoo, 도자기브랜드, 테이블웨어, 백자, 매트포슬린, 온기, 도자예술로, 이천도자기, 이천, 도자기, 도자예술, 도자예술로, 도자 예술로, 현대도자, 세라믹스튜디오, 공예디자인"
 >
 
 <div class="gradient-box">
@@ -771,27 +771,32 @@ keywords="이우, iwoo, 도자기브랜드, 테이블웨어, 백자, 매트포�
 -->
 
 <section class="iw-keyvisual">
-
   <div class="keyvisual-text">
     <p class="scroll-animate-text">brand key visual</p>
     <p class="sub-title">
-      이우의 핵심 그래픽은 실용과 예술의 교차에서 시작하여 색채의 유연한 흐름으로 구현되었으며,
-      부드러운 색상의 전환을 통해 브랜드가 추구하는 방향성을 시각화합니다.
+      이우의 핵심 그래픽은 실용과 예술이 만나는 교차의 순간을 구조화하여, 상반된 가치가 빚어내는 유기적 연결을 시각 효과로 구현합니다.
     </p>
   </div>
 
   <div class="box">
-    <img src="/iwoo/keyvisual/1.webp?=v2" alt="그라디언트 그래픽 1">
-
-    <img src="/iwoo/keyvisual/2.webp?=v2" alt="그라디언트 그래픽 2">
+    <!-- 💡 2. .img-wrap 으로 한 겹 싸기! -->
+    <div class="img-wrap">
+        <img src="/iwoo/keyvisual/1.webp" alt="그라디언트 그래픽 1" draggable="false">
+    </div>
+    <div class="img-wrap">
+        <img src="/iwoo/keyvisual/2.webp" alt="그라디언트 그래픽 2" draggable="false">
+    </div>
   </div>
 
   <div class="box-2">
-    <img src="/iwoo/keyvisual/3.webp?=v2" alt="그라디언트 그래픽 3">
-
-    <img src="/iwoo/keyvisual/4.webp?=v2" alt="그라디언트 그래픽 4">
+    <!-- 💡 2. .img-wrap 으로 한 겹 싸기! -->
+    <div class="img-wrap">
+        <img src="/iwoo/keyvisual/3.webp" alt="그라디언트 그래픽 3" draggable="false">
+    </div>
+    <div class="img-wrap">
+        <img src="/iwoo/keyvisual/4.webp" alt="그라디언트 그래픽 4" draggable="false">
+    </div>
   </div>
-
 </section>
 
 <section class="iw-grid">
@@ -828,8 +833,7 @@ keywords="이우, iwoo, 도자기브랜드, 테이블웨어, 백자, 매트포�
       
       <div class="slider-dots">
         <div class="dot"><div class="progress"></div></div>
-        <div class="dot"><div class="progress"></div></div><img src="/iwoo/grid/3.webp" alt="펼쳐진 책 페이지 1">
-        <img src="/iwoo/grid/3-2.webp" alt="펼쳐진 책 페이지 2">
+        <div class="dot"><div class="progress"></div></div>
       </div>
     </div>
   </div>
@@ -892,6 +896,22 @@ keywords="이우, iwoo, 도자기브랜드, 테이블웨어, 백자, 매트포�
   <img class="applications-img-package" src="/iwoo/applications/7.webp" alt="박스 위 보자기">
 
 </section>
+
+
+<svg xmlns="http://www.w3.org/2000/svg" class="sr-only">
+    <filter id="kv-blur" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+        <!-- 1. 가로(X)축으로 길게 번짐 -->
+        <feGaussianBlur in="SourceGraphic" stdDeviation="100 0" result="blurX" />
+        <!-- 2. 세로(Y)축으로 길게 번짐 -->
+        <feGaussianBlur in="SourceGraphic" stdDeviation="0 100" result="blurY" />
+        <!-- 3. 두 블러를 십자가 형태로 반반 합성 -->
+        <feComposite in="blurX" in2="blurY" operator="arithmetic" k1="0" k2="0.5" k3="0.5" k4="0" result="cross" />
+        <!-- 4. 십자가의 날카로운 경계를 일반 블러로 부드럽게 처리 -->
+        <feGaussianBlur in="cross" stdDeviation="5" result="softCross" />
+        <!-- 5. 블러 처리된 결과물에 채도 강조 -->
+        <feColorMatrix in="softCross" type="saturate" values="2" />
+    </filter>
+</svg>
 
 </Layout>
 
@@ -1322,7 +1342,9 @@ width: 60%;
 
 
 
-
+.iw-1 .slider-track:first-of-type {
+  --slide-duration: 1000ms;
+}
 
 /* 1. 단일 비디오 */
 .iw-1 > video {
@@ -2821,251 +2843,59 @@ width: 60%;
 
 
 
+/* 부모 flex 컨테이너 (여기 있던 overflow: hidden은 삭제) */
 .iw-keyvisual .box,
 .iw-keyvisual .box-2 {
-  display: flex;
-  gap: var(--iw-space);
-  width: 100%;
-  padding-inline: var(--iw-space);
-  margin-bottom: var(--iw-space);
+    display: flex;
+    gap: var(--iw-space);
+    width: 100%;
+    padding-inline: var(--iw-space);
+    margin-bottom: var(--iw-space);
 }
 
+.iw-keyvisual .box-2 { padding-bottom: 30vh;}
 
-.iw-keyvisual .box img,
-.iw-keyvisual .box-2 img {
-  flex: 1;
-  min-width: 0;
-  
-  height: 25vw;
-  object-fit: cover;
-  padding: 0;
+/* 🔥 새로 추가한 껍데기: 여기서 넘치는 블러를 칼같이 자릅니다 */
+.iw-keyvisual .img-wrap {
+    flex: 1;
+    min-width: 0;
+    aspect-ratio: 3/4;
+    position: relative;
+    overflow: hidden;   /* 블러 튀어나가는 거 차단 */
+    isolation: isolate; /* 맥 사파리 누수 방지 */
 }
 
-
-
-
-/* ==========================================
-   1. 그라디언트 모듈 전용 CSS 변수 및 기본 컨테이너
-   (폰트, 크기, 색상, 라운드 등 모든 디자인 요소는 여기서만 수정!)
-========================================== */
-.iw-keyvisual .gradient-module {
-  width: calc(100% - (var(--iw-space) * 2));
-  height: 70vh;
-  margin-inline: var(--iw-space);
+/* 껍데기 안의 실제 이미지 세팅 */
+.iw-keyvisual .img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    
+    /* 🔥 transform(확대)과 filter(블러/채도)가 둘 다 스르륵 움직이도록 설정 */
+    transition: transform 0.6s var(--motion), filter 0.6s var(--motion);
+    
+    /* 🔥 브라우저 GPU 강제 기상 (애니메이션 뚝뚝 끊김 방지) */
+    transform: translateZ(0);
 }
 
-.gradient-module {
-  /* --- [ 사이즈 및 레이아웃 변수 ] --- */
-  --box-height: 3vh;
-  /* --radius: var(--iw-space); */
-  --radius: 0;
-  
-  /* --- [ 색상 변수 ] --- */
-  --text-color: var(--iw-5);   /* ★완벽 통합: 전체 글자색 (버튼, 툴팁, 텍스트 공통) */
-  --box-bg: rgba(var(--iw-1r), 0.5);      /* 기본 박스 및 버튼 배경색 */
-  --box-bg-active: rgba(var(--iw-1r), 1); /* 활성화된 버튼 배경색 */
-  
-  /* --- [ 폰트 변수 ] --- */
-  --ui-font-size: 16px;        /* 툴팁, 버튼 등 일반 UI 글자 크기 통일 */
-  --info-font-size: 16px;      /* 카메라 정보 패널 등 큰 글자 크기 */
-  
-  /* --- [ 슬라이더 전용 변수 ] --- */
-  --slider-padding: 15px;      /* 슬라이더 손잡이가 박스 밖으로 안 나가게 막는 여백 */
-  --thumb-width: 50px;         /* 툴팁(가짜 손잡이) 너비 */
-  --thumb-height: 3vh;         /* 툴팁(가짜 손잡이) 높이 (박스 높이보다 살짝 작게) */
-
-  /* --- [ 기본 컨테이너 스타일 ] --- */
-  position: relative;
-  width: 100%;
-  height: 100%;
-
-  background-color: #000;
-
-  color: var(--text-color);
-
-  overflow: hidden;
-
-  margin-bottom: 30vh;
+/* 🔥 PC 환경 호버 */
+@media (hover: hover) and (pointer: fine) {
+    .iw-keyvisual .img-wrap:hover img {
+        /* 살짝 커지면서(1.05배) + 십자가 블러 + 채도 쨍하게! */
+        transform: scale(1.02) translateZ(0);
+        filter: url(#kv-blur) saturate(1.3);
+    }
 }
 
-/* 캔버스 설정 */
-.gradient-module canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  cursor: grab;
+/* 🔥 모바일 환경 터치 */
+@media (max-width: 768px) {
+    .iw-keyvisual .img-wrap:active img,
+    .iw-keyvisual .img-wrap:focus-within img {
+        transform: scale(1.02) translateZ(0);
+        filter: url(#kv-blur) saturate(1.3);
+    }
 }
-.gradient-module canvas:active {
-  cursor: grabbing;
-}
-
-
-/* ==========================================
-   2. 상/하단 공통 UI 및 레이아웃
-========================================== */
-/* 상단 유형 버튼 */
-.top-ui {
-  position: absolute;
-  top: var(--iw-space);
-  left: var(--iw-space);
-  right: var(--iw-space);
-  display: flex;
-  gap: var(--iw-space);
-  z-index: 1;
-}
-.mode-btn {
-  flex: 1;
-  height: var(--box-height);
-  background: var(--box-bg); 
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border-radius: var(--radius); /* ★ 통합 변수 적용 */
-  color: var(--text-color);     /* ★ 통합 변수 적용 */
-  padding-left: var(--iw-space);
-  text-align: left;
-  cursor: pointer;
-  transition: all 1s var(--iw-mo);
-  font-size: var(--ui-font-size); 
-}
-.mode-btn.active {
-  background: var(--box-bg-active); 
-}
-
-/* 하단 컨트롤 패널 */
-.bottom-ui {
-  position: absolute;
-  bottom: var(--iw-space);
-  left: var(--iw-space);
-  right: var(--iw-space);
-  display: flex;
-  gap: var(--iw-space);
-  align-items: flex-end;
-  z-index: 10;
-}
-
-/* 하단 개별 박스 (공통) */
-.bottom-box {
-  flex: 1;
-  height: var(--box-height);
-  background: var(--box-bg); 
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border-radius: var(--radius); /* ★ 통합 변수 적용 */
-  overflow: hidden;
-  transition: max-height 1s var(--iw-mo);
-}
-
-/* ==========================================
-   3. 색상 선택 패널 전용
-========================================== */
-.color-wrapper {
-  height: auto; 
-  max-height: var(--box-height); 
-  transition: max-height 1s var(--iw-mo); 
-}
-
-.color-wrapper.expanded {
-  max-height: 39vh; 
-}
-
-.color-header {
-  height: var(--box-height);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: var(--ui-font-size); 
-}
-
-.color-content {
-  padding: 0 var(--iw-space) var(--iw-space) var(--iw-space);
-}
-
-.color-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--iw-space);
-}
-
-.color-item {
-  height: var(--box-height); 
-}
-.color-item input[type="color"],
-.color-item select {
-  width: 100%;
-  height: 100%;
-  border: none;
-  border-radius: var(--radius); /* ★ 통합 변수 적용 */
-}
-.color-item input[type="color"]::-webkit-color-swatch-wrapper {
-  padding: 0;
-}
-.color-item input[type="color"]::-webkit-color-swatch {
-  border: none;
-}
-
-
-/* ==========================================
-   4. 슬라이더 디자인 (박스 전체가 트랙 역할)
-========================================== */
-.gradient-module .slider-track-box {
-  position: relative; 
-  display: flex;
-  align-items: center;
-  padding: 0; 
-}
-
-.gradient-module .slider-track-box input[type="range"] {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 100%; 
-  background: transparent; 
-  outline: none;
-  z-index: 2; 
-  position: relative;
-  cursor: pointer;
-  margin: 0;
-}
-
-.gradient-module .slider-track-box input[type="range"]::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 100%; 
-  background: transparent; 
-  border: none;
-}
-
-/* 보이지 않는 진짜 손잡이 */
-.gradient-module .slider-track-box input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: var(--thumb-width);
-  height: var(--box-height); 
-  background: transparent; 
-}
-
-/* 눈에 보이는 가짜 하얀색 손잡이 툴팁 */
-.gradient-module .range-tooltip {
-  position: absolute;
-  top: 50%;
-  left: 0; 
-  transform: translateY(-50%);
-  
-  width: var(--thumb-width);
-  height: var(--thumb-height);
-
-  background: var(--iw-1);
-  color: var(--text-color);     /* ★ 통합 변수 적용 */
-  font-size: var(--ui-font-size); 
-  border-radius: var(--radius); /* ★ 통합 변수 적용 */
-  
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none; 
-  z-index: 1;
-}
-
-
-
 
 
 

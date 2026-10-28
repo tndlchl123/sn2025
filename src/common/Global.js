@@ -53,6 +53,10 @@ if (typeof window !== 'undefined') {
 
     // 3. 통합 적용 함수 
     const applyLanguageState = (isInitialLoad = false) => {
+      // 👈 [수정 1] 페이지 이동 후 돌아왔을 때 최신 언어 상태 동기화
+      isEnglish = localStorage.getItem('isEnglish') === 'true';
+      localStorage.setItem('lang', isEnglish ? 'en' : 'ko');
+      document.documentElement.classList.toggle('lang-en', isEnglish);
 
       const targetElements = document.querySelectorAll('.translate');
       
@@ -61,10 +65,12 @@ if (typeof window !== 'undefined') {
       // ==========================================
       if (targetElements.length > 0) {
         targetElements.forEach(el => {
-          if (!el.hasAttribute('data-ko')) {
-            el.setAttribute('data-ko', el.innerHTML.trim());
+          // 👈 [수정 2] data-ko 대신 data-kr을 사용하여 다른 페이지 스크립트와의 충돌 원천 차단
+          if (!el.hasAttribute('data-kr')) {
+            el.setAttribute('data-kr', el.getAttribute('data-ko') || el.innerHTML.trim());
+            el.removeAttribute('data-ko');
           }
-          const targetHTML = isEnglish ? el.getAttribute('data-en') : el.getAttribute('data-ko');
+          const targetHTML = isEnglish ? el.getAttribute('data-en') : el.getAttribute('data-kr');
           
           if (targetHTML) {
             // 1. 현재 요소가 INPUT이거나 TEXTAREA인 경우 (플레이스홀더 스크램블 적용)
@@ -192,11 +198,18 @@ if (typeof window !== 'undefined') {
       btn.onclick = () => {
         isEnglish = !isEnglish; 
         localStorage.setItem('isEnglish', isEnglish); 
+        localStorage.setItem('lang', isEnglish ? 'en' : 'ko'); // 👈 [수정 3] 다른 페이지와 언어 상태 동기화
+        document.documentElement.classList.toggle('lang-en', isEnglish);
         applyLanguageState(false); 
       };
     });
   };
 
+  // 👈 [수정 3] 뒤로가기 시 이벤트 중복 실행 방지
+  if (window._langToggleHandler) {
+    document.removeEventListener('astro:page-load', window._langToggleHandler);
+  }
+  window._langToggleHandler = initLanguageToggle;
   document.addEventListener('DOMContentLoaded', initLanguageToggle);
   document.addEventListener('astro:page-load', initLanguageToggle);
 }

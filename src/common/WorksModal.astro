@@ -46,21 +46,22 @@ html {
 
 /* 모달 내용 박스 */
 .works-modal-box {
+    width: 50%;
+    border-radius: var(--rad);
+    background-color: var(--bg-color);
+    position: relative;
 
-  background-color: var(--bg-color);
+    aspect-ratio: 3/4;
 
-  /* border-radius: var(--pad); */
-  position: relative;
+    overflow-y: auto; 
+    -ms-overflow-style: none;
+    scrollbar-width: none; 
+    overscroll-behavior: contain;
 
-  overflow-y: auto; 
-  -ms-overflow-style: none;
-  scrollbar-width: none; 
-  overscroll-behavior: contain;
-
-  /* 박스가 아래에서 위로 살짝 올라오며 나타나는 효과 */
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.5s var(--motion), transform 0.5s var(--motion);
+    /* 박스가 아래에서 위로 살짝 올라오며 나타나는 효과 */
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.5s var(--motion), transform 0.5s var(--motion);
 }
 
 /* 배경이 나타날 때 내용 박스도 제자리로 올라옴 */
@@ -69,6 +70,10 @@ html {
   transform: translateY(0);
 }
 
+#modal_content_area {
+    width: 100%;
+    height: 100%;
+}
 </style>
 
 <!-- 모달창 스크립트 -->

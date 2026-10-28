@@ -1,0 +1,862 @@
+---
+import Layout from '@common/Design-Layout.astro';
+---
+
+<Layout title="">
+    <div class="modal-inner-data">
+        <div class="canvas-wrap">
+            <canvas id="artCanvas"></canvas>
+        </div>
+    </div>
+</Layout>
+
+
+
+<style is:global>
+    /* 모달 자체 컨테이너를 중앙으로 모아줍니다 */
+    .modal-inner-data {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    .works-modal-box {
+        border-radius: var(--rad);
+    }
+    
+    /* 🔥 요청하신 1:1 비율 & 가로/세로 50% 점유율 완벽 적용 */
+    .canvas-wrap {
+        width: 50vw;         /* 가로폭 화면 50% */
+        height: 50vw;        /* 세로폭도 똑같이 */
+        max-width: 50vh;     /* (방어코드) 가로로 긴 모니터에서 세로가 잘리지 않게 최대 50vh로 제한 */
+        max-height: 50vh;
+        aspect-ratio: 1 / 1; /* 1:1 비율 지정 */
+        margin: 0 auto;
+        
+        position: relative;
+        background-color: var(--bg-color); 
+        overflow: hidden;
+        cursor: default; 
+    }
+
+    #artCanvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        pointer-events: none; 
+    }
+</style>
+
+<script is:inline>
+    function initModalParticles() {
+        const container = document.querySelector('.canvas-wrap'); 
+        let canvas = document.getElementById('artCanvas');
+
+        if (!container || !canvas || canvas.dataset.active === 'true') return;
+        canvas.dataset.active = 'true';
+
+        const ctx = canvas.getContext('2d', { alpha: true });
+        
+        // --- 카메라 및 변수 세팅 ---
+        const cameraZ = 4.5;
+        const fovRad = (75 * Math.PI) / 180;
+        
+        let canvasWidth = 0;
+        let canvasHeight = 0;
+        let viewHeight = 0;
+        let focalLength = 0;
+
+        const renderMap = new Map();
+
+        // [1단계 추가] 한 곳에서 관리할 글자 배열 (명암 단계별로 딱 한 번만 입력하세요!)
+        const LIGHT_SYMBOLS = ['S', 'H', 'A', 'P', 'E', 'N', 'W'];
+        const MID_SYMBOLS   = ['S', 'H', 'A', 'P', 'E', 'N', 'W'];
+        const DARK_SYMBOLS  = ['S', 'H', 'A', 'P', 'E', 'N', 'W', '●', '■'];
+
+        // [여기 추가!] PC와 모바일의 입자 간격(그리드 사이즈)을 한 곳에서 관리
+        function getGridSize() {
+            // [확대 버그 픽스 1] 줌 인 상태일 때 억지로 모바일용 굵기로 변하는 현상을 방지합니다.
+            const scale = (window.visualViewport ? window.visualViewport.scale : 1);
+            const actualWidth = window.innerWidth * scale; // 줌 비율을 곱해 원래 창 너비를 기억함
+            return actualWidth <= 768 ? 3 : 5; 
+        }
+
+        function drawParticlesToCanvas(gridSize, maxDotSizeMultiplier) {
+            const fontSize = gridSize * 1.2; 
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // [수정 1] 너무 두꺼웠던 3단계를 없애고, 일반 900과 테두리를 두른 900_1 딱 두 개만 남깁니다.
+            const textBuckets = { 
+                '200': [], 
+                '400': [], 
+                '600': [], 
+                '900': [],   // 테두리 없는 일반 900 굵기
+                '900_1': []  // 900 굵기 + 테두리 (가장 깊고 어두운 그림자)
+            };
+
+            for (const cell of renderMap.values()) {
+                const cellX = cell.x;
+                const cellY = cell.y;
+                
+                const right = renderMap.get(`${cellX + gridSize}_${cellY}`);
+                const left  = renderMap.get(`${cellX - gridSize}_${cellY}`);
+                const down  = renderMap.get(`${cellX}_${cellY + gridSize}`);
+                const up    = renderMap.get(`${cellX}_${cellY - gridSize}`);
+
+                // X축(가로) 굴곡 경사도 (앞뒤 레이어가 너무 멀리 떨어져 있으면 굴곡 계산에서 제외!)
+                let dzdx = 0;
+                const limit = 1.5; // 이 수치 이상 차이나면 다른 레이어로 인식
+                if (right && left && Math.abs(right.z - left.z) < limit) dzdx = (right.z - left.z) / 2;
+                else if (right && Math.abs(right.z - cell.z) < limit) dzdx = right.z - cell.z;
+                else if (left && Math.abs(cell.z - left.z) < limit)  dzdx = cell.z - left.z;
+
+                // Y축(세로) 굴곡 경사도
+                let dzdy = 0;
+                if (down && up && Math.abs(down.z - up.z) < limit) dzdy = (down.z - up.z) / 2;
+                else if (down && Math.abs(down.z - cell.z) < limit) dzdy = down.z - cell.z;
+                else if (up && Math.abs(cell.z - up.z) < limit)   dzdy = cell.z - up.z;
+
+                // 1. 베이스 볼륨감: 도형 전체가 기본적으로 갖는 둥근 입체감
+                const baseLen = Math.sqrt(cell.worldX * cell.worldX + cell.worldY * cell.worldY + cell.worldZ * cell.worldZ) || 1;
+                const baseNx = cell.worldX / baseLen;
+                const baseNy = cell.worldY / baseLen;
+                const baseNz = cell.worldZ / baseLen;
+
+                // 2. 디테일 굴곡: 오돌토돌한 표면 질감
+                const detailStrength = 20.0; // 베이스 볼륨과 섞기 위해 수치를 안정화합니다.
+                
+                // 3. [핵심 수정] 베이스 덩어리감 + 디테일 굴곡 합체!
+                const nx = baseNx - (dzdx * detailStrength);
+                const ny = baseNy - (dzdy * detailStrength); 
+                const nz = Math.max(0.1, baseNz + 0.5); // 뒤로 넘어가는 면도 살짝 보이게 보정
+                
+                const len = Math.sqrt(nx*nx + ny*ny + nz*nz);
+                const normX = nx / len, normY = ny / len, normZ = nz / len;
+
+                // 빛의 방향 세팅 (위에서 아래로, 살짝 앞쪽)
+                const lx = 0.0, ly = 1.0, lz = 0.5;
+                const lightLen = Math.sqrt(lx*lx + ly*ly + lz*lz);
+                const nlx = lx / lightLen, nly = ly / lightLen, nlz = lz / lightLen;
+
+                // 빛과 표면의 각도 계산
+                const dot = (normX * nlx) + (normY * nly) + (normZ * nlz);
+
+                // 4. [명암 대비 튜닝] 글자 두께가 다채롭게(200~900) 나오도록 범위를 넓힙니다.
+                let lightRatio = Math.pow(Math.max(0, dot), 1.5); 
+
+                // 틈새 굴곡 강제로 파버리기 (AO)
+                const slope = Math.sqrt(dzdx * dzdx + dzdy * dzdy); 
+                const ao = Math.max(0.0, 1.0 - (slope * 30.0)); 
+                
+                // 빛에 틈새 그림자를 곱해서 겹치는 곳을 깊게 누름
+                lightRatio = lightRatio * (0.3 + ao * 0.7); 
+
+                // 림 라이트 (외곽선 빛 - 덩어리 입체감을 방해하지 않게 살짝 뺌)
+                const rimLight = Math.pow(1.0 - Math.abs(normZ), 3.0) * 0.3;
+
+                const normalizedZ = (cell.z + shapeRadius) / (shapeRadius * 1.5); 
+                const depthRatio = Math.max(0.0, Math.min(1.0, normalizedZ));
+
+                // [최종 믹스] 조명의 비중을 75%로 올려 글자 두께로 덩어리감이 확 살게 만듭니다.
+                const clampedZ = Math.min(1.0, (lightRatio * 0.75) + rimLight + (depthRatio * 0.15));
+                const darkness = 1.0 - clampedZ;
+                const maxDotSize = gridSize * maxDotSizeMultiplier; 
+                const minDotSize = 0.4; 
+                const dotSize = minDotSize + (maxDotSize - minDotSize) * Math.pow(darkness, 1.2);
+
+                const noise = Math.abs(Math.sin(cell.x * 12.9898 + cell.y * 78.233)) * 43758.5453;
+                
+                let symbol;
+                let bucketKey = '200';
+
+                // [수정 2] 명암에 따라 5단계로 스무스하게 쪼개고, 배열은 위에서 만든 글로벌 배열을 가져다 씁니다.
+                if (darkness > 0.8) {
+                    symbol = DARK_SYMBOLS[Math.floor(noise) % DARK_SYMBOLS.length];
+                    bucketKey = '900_1'; 
+                } else if (darkness > 0.6) {
+                    symbol = DARK_SYMBOLS[Math.floor(noise) % DARK_SYMBOLS.length];
+                    bucketKey = '900'; 
+                } else if (darkness > 0.4) {
+                    symbol = MID_SYMBOLS[Math.floor(noise) % MID_SYMBOLS.length];
+                    bucketKey = '600';   
+                } else if (darkness > 0.2) {
+                    symbol = LIGHT_SYMBOLS[Math.floor(noise) % LIGHT_SYMBOLS.length];
+                    bucketKey = '400';   
+                } else {
+                    symbol = LIGHT_SYMBOLS[Math.floor(noise) % LIGHT_SYMBOLS.length];
+                    bucketKey = '200';   
+                }
+
+                const cx = Math.round(cell.x + (gridSize / 2));
+                const cy = Math.round(cell.y + (gridSize / 2));
+
+                if (symbol === '■') {
+                    const rectHeight = dotSize * 0.9; 
+                    const rectWidth = rectHeight * 0.7; 
+                    ctx.fillRect(cx - rectWidth / 2, cy - rectHeight / 2, rectWidth, rectHeight);
+                } 
+                else if (symbol === '●') {
+                    const ovalHeight = dotSize * 0.9; 
+                    const ovalWidth = ovalHeight * 0.7; 
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy, ovalWidth / 2, ovalHeight / 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                else if (symbol !== ' ') {
+                    textBuckets[bucketKey].push({ char: symbol, x: cx, y: cy });
+                }
+            }
+
+            // [수정 3] 렌더링 파트 간소화 (테두리 1단계만 체크)
+            for (const key in textBuckets) {
+                if (textBuckets[key].length > 0) {
+                    const weight = key.split('_')[0];      // '200', '400', '600', '900'
+                    const strokeLevel = key.split('_')[1]; // undefined 또는 '1'
+
+                    ctx.font = `${weight} ${fontSize}px 'sn_en', sans-serif`;
+                    
+                    // 테두리가 있는 '900_1' 일 때만 셋팅
+                    if (strokeLevel === '1') {
+                        // [수정 2] 두께를 0.2에서 0.08로 대폭 줄여 글자가 떡지는 것을 막습니다.
+                        ctx.lineWidth = fontSize * 0.05; 
+                        ctx.lineJoin = 'round';          // 선이 꺾이는 모서리를 둥글게
+                        ctx.lineCap = 'round';           // 선의 시작과 끝부분까지 완전히 둥글게 마감
+                        ctx.strokeStyle = ctx.fillStyle;
+                    }
+
+                    for (const item of textBuckets[key]) {
+                        // 테두리가 지정된 레벨이면 테두리 선을 먼저 그리고
+                        if (strokeLevel === '1') {
+                            ctx.strokeText(item.char, item.x, item.y);
+                        }
+                        // 그 위에 글자 본체를 채웁니다.
+                        ctx.fillText(item.char, item.x, item.y);
+                    }
+                }
+            }
+        }
+
+        // 🔥 회원님의 원본 리사이즈 함수 완벽 복구 (모달창 안에서만 돌도록 타겟만 변경)
+        function resizeCanvas() {
+            if (window.visualViewport && window.visualViewport.scale > 1.01) return;
+
+            const width = container.clientWidth;
+            viewHeight = container.clientHeight; 
+            if (width === 0 || viewHeight === 0) return;
+
+            canvas.style.display = 'none'; 
+            
+            // 모달 안이므로 문서 높이 재계산 없이 깔끔하게 viewHeight 사용
+            const docHeight = viewHeight;
+            
+            canvas.style.display = 'block'; 
+
+            canvasWidth = width;
+            canvasHeight = docHeight;
+            
+            const dpr = window.devicePixelRatio || 1;
+            const newWidth = width * dpr;
+            const newHeight = docHeight * dpr;
+            
+            if (canvas.width !== newWidth || canvas.height !== newHeight) {
+                canvas.width = newWidth;
+                canvas.height = newHeight;
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                
+                if (typeof renderMap !== 'undefined' && renderMap.size > 0) {
+                    ctx.fillStyle = document.documentElement.classList.contains('dark-mode') ? '#eeeeee' : '#222222';
+                    const gridSize = getGridSize(); 
+                    drawParticlesToCanvas(gridSize, 1.5);
+                }
+            }
+
+            canvas.style.width = width + 'px';
+            canvas.style.height = docHeight + 'px';
+
+            focalLength = (viewHeight / 2) / Math.tan(fovRad / 2);
+        }
+
+        const mouse = { px: -999, py: -999 };
+        const mouseWorldPos = { x: 0, y: 0, z: 0 };
+        
+        const repulsionRadius = 1;     
+        const repulsionStrength = 0.05;  
+        
+        const stiffness = window.innerWidth <= 768 ? 0.09 : 0.1;
+        const damping = window.innerWidth <= 768 ? 0.84 : 0.88;
+        let transitionBoost = 0;  
+
+        function updateMousePos(x, y) {
+            const rect = container.getBoundingClientRect();
+            mouse.px = x - rect.left;
+            mouse.py = y - rect.top;
+        }
+
+        let isTouch = false;
+        container.addEventListener('touchstart', (e) => { isTouch = true; if(e.touches.length > 0) updateMousePos(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+        container.addEventListener('touchmove', (e) => { if(e.touches.length > 0) updateMousePos(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+        container.addEventListener('touchend', () => { mouse.px = -999; mouse.py = -999; setTimeout(() => { isTouch = false; }, 500); });
+        container.addEventListener('mousemove', (e) => { 
+            if (!isTouch) {
+                updateMousePos(e.clientX, e.clientY); 
+                
+                // 🔥 수정완료: 전체 화면이 아니라 "모달 박스 내부"를 기준으로 좌우 반반 나눔!
+                const rect = container.getBoundingClientRect();
+                const mouseXInBox = e.clientX - rect.left;
+                const isLeft = mouseXInBox < (rect.width / 2);
+                
+                if (isLeft) {
+                    container.style.cursor = 'w-resize'; // 왼쪽 절반: 이전 도형
+                } else {
+                    container.style.cursor = 'e-resize'; // 오른쪽 절반: 다음 도형
+                }
+            }
+        });
+        container.addEventListener('mouseleave', () => { mouse.px = -999; mouse.py = -999; });
+
+        const isMobile = window.innerWidth <= 768;
+        // 렉 방지를 위해 모달창에서는 2만5천개로 세팅
+        const particleCount = 25000;
+
+        const posArray = new Float32Array(particleCount * 3); 
+        const shapePositions = new Float32Array(particleCount * 3); 
+        const velocities = new Float32Array(particleCount * 3); 
+        const particleWeights = new Float32Array(particleCount);
+
+        for (let i = 0; i < particleCount; i++) {
+            const i3 = i * 3;
+            posArray[i3] = (Math.random() - 0.5) * 20;
+            posArray[i3+1] = (Math.random() - 0.5) * 20;
+            posArray[i3+2] = (Math.random() - 0.5) * 10;
+            velocities[i3] = velocities[i3+1] = velocities[i3+2] = 0;
+            particleWeights[i] = 0.5 + Math.random() * 9; 
+        }
+
+        // [추가됨] 1~10 도형을 랜덤하게 섞어주는 함수
+        function shuffleShapes() {
+            const shapes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            for (let i = shapes.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shapes[i], shapes[j]] = [shapes[j], shapes[i]];
+            }
+            return shapes;
+        }
+
+        let shapeOrder = shuffleShapes(); // 최초 실행 시 1차 셔플
+        let currentShapeIndex = 0;
+        let currentShape = shapeOrder[currentShapeIndex];
+
+        resizeCanvas();
+
+        container.addEventListener('click', (e) => {
+            // 회원님의 기존 푸터 예외처리 구문 완벽 보존
+            if (e.target.closest('.sn_footer_wrap')) return;
+
+            const footerWrap = document.querySelector('.sn_footer_wrap');
+            if (footerWrap) {
+                const info = footerWrap.querySelector('.sn_footer_info');
+                const isOpen = footerWrap.classList.contains('is-open');
+                const isClosing = !isOpen && info && info.style.display === 'block';
+                if (isOpen || isClosing) return; 
+            }
+
+            const rect = container.getBoundingClientRect();
+            const isLeftClick = (e.clientX - rect.left) < window.innerWidth / 2;
+
+            if (isLeftClick) {
+                // 왼쪽 클릭: 이전 도형
+                currentShapeIndex--;
+                if (currentShapeIndex < 0) {
+                    currentShapeIndex = shapeOrder.length - 1; // 맨 처음에서 누르면 맨 끝 도형으로
+                }
+            } else {
+                // 오른쪽 클릭: 다음 도형
+                currentShapeIndex++;
+                if (currentShapeIndex >= shapeOrder.length) {
+                    shapeOrder = shuffleShapes(); // 10개를 다 봤으면 새롭게 랜덤 셔플!
+                    currentShapeIndex = 0;
+                }
+            }
+            
+            currentShape = shapeOrder[currentShapeIndex];
+            transitionBoost = window.innerWidth <= 768 ? 2.5 : 2; 
+            calculateNewShape();
+        });
+
+        function getResponsiveRadius() {
+            if (viewHeight === 0) return 2.0; 
+            const aspect = canvasWidth / viewHeight;
+            const visibleHeight = 2 * Math.tan(fovRad / 2) * cameraZ; 
+            const visibleWidth = visibleHeight * aspect;
+            return aspect >= 1 ? (visibleHeight / 2) * 1.1 : (visibleWidth / 2) * 1.25;
+        }
+        let shapeRadius = getResponsiveRadius();
+
+        // dot amount
+        const densityRatios = [0.3, 1.0, 0.5, 0.9, 0.7, 0.3, 0.7, 1.0, 0.5, 0.3];
+        const densityRatiosMobile = [0.3, 1.0, 0.9, 0.25, 0.25, 0.25, 0.25, 1.0, 0.3, 0.15];
+        let targetRenderCount = particleCount;   
+        let currentRenderCount = particleCount;
+
+        // 🔥 회원님의 calculateNewShape 함수 주석, 공백 하나 안 건드리고 100% 원복!
+        // 수학 좌표 수식 계산
+        function calculateNewShape() {
+            const isMob = window.innerWidth <= 768;
+            const PI2 = Math.PI * 2;
+            const deg = Math.PI / 180;
+            const width = canvasWidth;
+            const height = viewHeight;
+            
+            const visibleHeight = 2 * Math.tan(fovRad / 2) * cameraZ; 
+            const visibleWidth = visibleHeight * (width / height);
+
+            // 푸터 요소를 찾거나 높이를 계산하는 코드를 완전히 삭제합니다.
+            const marginTopPx = 10;
+            const marginXPx = 10;
+            // 푸터가 열리든 말든 절대 영향받지 않도록 하단 여백을 고정값으로 박아버립니다.
+            const marginBottomPx = isMob ? 40 : 20;
+
+            const worldPerPixelY = visibleHeight / height;
+            const worldPerPixelX = visibleWidth / width;
+            const extraBuffer = 0; 
+
+            const marginWorldTop = (marginTopPx * worldPerPixelY) + extraBuffer;
+            const marginWorldBottom = (marginBottomPx * worldPerPixelY) + extraBuffer;
+            const marginWorldX = (marginXPx * worldPerPixelX) + extraBuffer;
+            
+            const usableWidth = visibleWidth - (marginWorldX * 2);
+            const usableHeight = visibleHeight - marginWorldTop - marginWorldBottom;
+
+            const keepRatio = [1, 3, 7].includes(currentShape);
+
+            const targetW = usableWidth;
+            const targetH = usableHeight;
+
+            const aspect = width / height;
+            let stretchX = 1.0;
+            let stretchY = 1.0;
+            const intensity = 1.5; 
+            
+            if (isMob) {
+                const usableAspect = usableHeight / usableWidth;
+                stretchY = Math.max(1.0, usableAspect);
+            } else {
+                if (aspect > 1) { stretchX = 1.0 + ((aspect - 1.0) * intensity); } 
+                else if (aspect < 1) { stretchY = 1.0 + ((height / width - 1.0) * intensity); }
+            }
+
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                const ratio = i / particleCount;
+                let x = 0, y = 0, z = 0, s = 1.0, rotX = 0, rotY = 0, rotZ = 0, offsetX = 0, offsetY = 0;
+
+                // 1. grid sphere
+                if (currentShape === 1) {
+                    const segments = isMob ? 20 : 40; 
+                    const ringIdx = Math.floor(Math.random() * segments); 
+                    const stepIdx = Math.floor(Math.random() * segments);
+                    const phi = (ringIdx / segments) * Math.PI; 
+                    const theta = (stepIdx / segments) * Math.PI * 2;
+                    const lineNoise = (Math.random() - 0.5) * 0.05; 
+                    const r = shapeRadius * (1.0 + lineNoise);
+                    x = r * Math.sin(phi) * Math.cos(theta); y = r * Math.sin(phi) * Math.sin(theta); z = r * Math.cos(phi);
+                    rotX = 25 * deg; rotY = 30 * deg; rotZ = 0; s = isMob ? 0.4 : 0.88;
+                    offsetX = 0; offsetY = (isMob ? 0 : 0) * shapeRadius;
+                } 
+                // 2. ribbon
+                else if (currentShape === 2) { 
+                    const u = ratio * PI2; const strand = Math.floor(Math.random() * 3); const v = (Math.random() - 0.5) * 2; 
+                    const phase = strand * (PI2 / 3); const twist = Math.sin(u * 4 + phase) * 0.3 * shapeRadius;
+                    const r = shapeRadius * (0.8 + twist); const edgeWidth = Math.pow(Math.abs(v), 0.05) * Math.sign(v) * 0.12 * shapeRadius;
+                    x = r * Math.cos(u + phase) + edgeWidth * Math.sin(u * 2); y = r * Math.sin(u + phase) + edgeWidth * Math.cos(u * 2);
+                    z = Math.cos(u * 5 + phase) * shapeRadius * 0.1 + edgeWidth;
+                    s = isMob ? 0.23 : 0.6; rotX = isMob ? 45 * deg : Math.PI / 6; rotY = isMob ? 60 * deg : Math.PI / 4; rotZ = isMob ? 10 * deg : 0;
+                    offsetX = (isMob ? 0.075 : 0.35) * shapeRadius; offsetY = (isMob ? -0.035 : -0.3) * shapeRadius;
+                } 
+                // 3. cross bar
+                else if (currentShape === 3) {
+                    const numBars = 27; 
+                    const barIdx = i % numBars;
+                    
+                    const t = shapeRadius * 0.1; 
+                    let L = shapeRadius * 1.0; 
+                    
+                    if (isMob) {
+                        if (barIdx >= 9 && barIdx < 18) { L = shapeRadius * 1.5; }
+                    } else {
+                        if (barIdx < 9) { L = shapeRadius * 1; }
+                    }
+                    const g = shapeRadius * 0.25; 
+
+                    const pos = [0, (t + g), -(t + g)];
+                    const subIdx = barIdx % 9; 
+                    const p1 = pos[Math.floor(subIdx / 3)];
+                    const p2 = pos[subIdx % 3];
+
+                    let u_loc, v, w;
+                    const rand1 = Math.random() > 0.5 ? 1 : -1;
+                    const rand2 = Math.random() > 0.5 ? 1 : -1;
+                    const randLength = Math.random() - 0.5; 
+                    const edgeType = Math.random();
+
+                    if (edgeType < 0.92) { 
+                        u_loc = randLength * 2 * L; v = rand1 * (t / 2); w = rand2 * (t / 2);
+                    } else if (edgeType < 0.96) {
+                        u_loc = rand1 * L; v = randLength * t; w = rand2 * (t / 2);
+                    } else {
+                        u_loc = rand1 * L; v = rand2 * (t / 2); w = randLength * t;
+                    }
+
+                    if (barIdx < 9) {
+                        x = u_loc; y = p1; z = p2; y += v; z += w;
+                    } else if (barIdx < 18) {
+                        y = u_loc; x = p1; z = p2; x += v; z += w;
+                    } else {
+                        z = u_loc; x = p1; y = p2; x += v; y += w;
+                    }
+
+                    s = isMob ? 0.35 : 0.6; 
+                    rotX = 0; rotY = 50 * deg; rotZ = 0;
+                    offsetX = (isMob ? 0 : 0) * shapeRadius; 
+                    offsetY = (isMob ? 0.04 : 0) * shapeRadius;
+                } 
+                // 4. pickle
+                else if (currentShape === 4) {
+                    const u = Math.random() * PI2; const sliceIdx = Math.floor(Math.random() * 10);
+                    const h = (sliceIdx / 9 * 2 - 1) * shapeRadius * 1.15; const wave = Math.pow(Math.abs(Math.sin(u * 3 + sliceIdx)), 0.5) * 0.4;
+                    const thickness = 0.1 * shapeRadius; 
+                    const r = shapeRadius * (0.7 + wave) + (Math.random() - 0.5) * thickness; 
+                    x = r * Math.cos(u) * 1.3; y = h * 1.2; z = r * Math.sin(u);
+                    s = isMob ? 0.29 : 0.47; 
+                    offsetX = (isMob ? 0 : 0) * shapeRadius; 
+                    offsetY = (isMob ? -0.05 : 0) * shapeRadius;
+                } 
+                // 5. rings
+                else if (currentShape === 5) {
+                    const u = (Math.random() - 0.5) * 2; const theta = Math.random() * Math.PI * 2;
+                    const baseR = shapeRadius * 0.7; const r = baseR * Math.sqrt(1 + u * u); 
+                    const uGrid = Math.round(u * 10) / 10;
+                    const ringThickness = 0.05 * shapeRadius; // 두께 설정
+                    x = baseR * (Math.cos(theta) - uGrid * Math.sin(theta)) * 1.3 + (Math.random() - 0.5) * ringThickness;
+                    z = baseR * (Math.sin(theta) + uGrid * Math.cos(theta)) + (Math.random() - 0.5) * ringThickness;
+                    y = uGrid * shapeRadius * 1.2; 
+                    s = isMob ? 0.32 : 0.5; 
+                    rotX = 0; rotY = 0; rotZ = 0;
+                    offsetX = (isMob ? 0 : 0) * shapeRadius; 
+                    offsetY = (isMob ? -0.05 : 0) * shapeRadius;
+                } 
+                // 6. asterisk
+                else if (currentShape === 6) {
+                    const numAxes = 2 + 6 + 12; const axisIdx = Math.floor(Math.random() * numAxes); const u = (Math.random() - 0.5) * 2; 
+                    const randomBoost = Math.abs(Math.sin(axisIdx * 12.34)); const minLength = 1.35; const extraLength = 1.5; 
+                    const maxR = shapeRadius * (minLength + (randomBoost * extraLength)); const coreR = shapeRadius * 0.022;
+                    const theta = Math.random() * PI2; const cosT = Math.cos(theta) * coreR; const sinT = Math.sin(theta) * coreR;
+                    const posLong = u * maxR; let dirX, dirY, dirZ;
+                    if (axisIdx === 0) { dirX = 1; dirY = 0; dirZ = 0; } else if (axisIdx === 1) { dirX = 0; dirY = 1; dirZ = 0; } 
+                    else if (axisIdx < 8) {
+                        const angle = 70 * deg; const rotateU = (axisIdx - 2) * (60 * deg); 
+                        dirX = Math.sin(angle) * Math.cos(rotateU); dirY = Math.cos(angle); dirZ = Math.sin(angle) * Math.sin(rotateU);
+                    } else {
+                        const angle = 35 * deg; const rotateU = (axisIdx - 8) * (30 * deg); 
+                        dirX = Math.sin(angle) * Math.cos(rotateU); dirY = Math.cos(angle); dirZ = Math.sin(angle) * Math.sin(rotateU);
+                    }
+                    let ux = 1, uy = 0, uz = 0; if (Math.abs(dirX) > 0.9) {ux = 0; uy = 1;}
+                    const vx = uy * dirZ - uz * dirY; const vy = uz * dirX - ux * dirZ; const vz = ux * dirY - uy * dirX;
+                    const vlen = Math.sqrt(vx*vx + vy*vy + vz*vz); const nx = vx/vlen, ny = vy/vlen, nz = vz/vlen;
+                    const wx = dirY * nz - dirZ * ny; const wy = dirZ * nx - dirX * nz; const wz = dirX * ny - dirY * nx;
+                    x = dirX * posLong + nx * cosT + wx * sinT; y = dirY * posLong + ny * cosT + wy * sinT; z = dirZ * posLong + nz * cosT + wz * sinT;
+                    s = isMob ? 0.17 : 0.52; rotX = 0; rotY = 0; rotZ = 0;
+                    offsetX = (isMob ? 0 : 0.01) * shapeRadius; offsetY = (isMob ? 0.03 : 0) * shapeRadius;
+                } 
+                // 7. 12 ring
+                else if (currentShape === 7) {
+                    const numDiscs = 12; const pIdx = i % numDiscs; const baseAngle = pIdx * (Math.PI * 2 / numDiscs);
+                    const rBase = shapeRadius * 0.75; const discRadius = shapeRadius * 0.55; const thickness = shapeRadius * 0.04; 
+                    const tilt = Math.PI * 0.32; const randDistribution = Math.random(); const thetaLocal = Math.random() * Math.PI * 2;
+                    let lx, ly, lz;
+                    if (randDistribution < 0.6) {
+                        lx = discRadius * Math.cos(thetaLocal); ly = discRadius * Math.sin(thetaLocal); lz = (Math.random() > 0.5 ? 0.5 : -0.5) * thickness;
+                    } else if (randDistribution < 0.95) {
+                        const rLocal = Math.sqrt(Math.random()) * discRadius;
+                        lx = rLocal * Math.cos(thetaLocal); ly = rLocal * Math.sin(thetaLocal); lz = (Math.random() > 0.5 ? 0.5 : -0.5) * thickness;
+                    } else {
+                        lx = discRadius * Math.cos(thetaLocal); ly = discRadius * Math.sin(thetaLocal); lz = (Math.random() - 0.5) * thickness;
+                    }
+                    const rx = lx; const ry = ly * Math.cos(tilt) - lz * Math.sin(tilt); const rz = ly * Math.sin(tilt) + lz * Math.cos(tilt);
+                    const tx = rx + rBase;
+                    x = tx * Math.cos(baseAngle) - ry * Math.sin(baseAngle); y = tx * Math.sin(baseAngle) + ry * Math.cos(baseAngle); z = rz;
+                    s = isMob ? 0.34 : 0.62; rotX = 0; rotY = 0; rotZ = 0; offsetX = 0; offsetY = 0;
+                } 
+                // 8. rope
+                else if (currentShape === 8) {
+                    const turns = 12; const u = (ratio * 0.35) * Math.PI * 2 * turns; const v = Math.random() * Math.PI * 2; 
+                    const edgeFilter = Math.random() > 0.1 ? 1.0 : Math.random() * 0.2;
+                    const tubeR = shapeRadius * 0.15; const pathR = shapeRadius * 1.5; 
+                    const tubeX = tubeR * edgeFilter * Math.cos(v); const tubeY = tubeR * edgeFilter * Math.sin(v);
+                    const h = (ratio * 2 - 1) * shapeRadius * 1.5;
+                    x = (pathR + tubeX) * Math.cos(u); z = (pathR + tubeX) * Math.sin(u); y = h + tubeY;
+                    s = isMob ? 0.19 : 0.35; rotX = 0; rotY = 45 * deg; rotZ = isMob ? 25 * deg : 45 * deg;
+                    offsetX = (isMob ? -0.02 : -0.039) * shapeRadius; offsetY = (isMob ? 0.015 : 0) * shapeRadius;
+                } 
+                // 9. cone
+                else if (currentShape === 9) {
+                    const u = Math.random() * PI2; const v = Math.random() * Math.PI; const drop = Math.pow(Math.sin(v / 2), 3);
+                    x = shapeRadius * drop * Math.cos(u); y = shapeRadius * Math.cos(v) * 1.2; z = shapeRadius * drop * Math.sin(u);
+                    s = isMob ? 0.1 : 0.7; 
+                    offsetY = (isMob ? 0.04 : 0.25) * shapeRadius;
+                } 
+                // 10. tornado
+                else if (currentShape === 10) {
+                    const v = (Math.random() - 0.5) * 2; const strandIdx = Math.floor(Math.random() * 12); const baseAngle = (strandIdx / 12) * PI2;
+                    const r = shapeRadius * (0.2 + Math.pow(Math.abs(v), 1.5) * 0.8); const swirlAngle = baseAngle + v * Math.PI;
+                    const w = (Math.random() - 0.5) * 2; const edgeFilter = Math.pow(Math.abs(w), 0.1) * Math.sign(w);
+                    const ribbonWidth = shapeRadius * 0.15; const finalAngle = swirlAngle + (edgeFilter * 0.15); const finalR = r + (edgeFilter * ribbonWidth);
+                    x = finalR * Math.cos(finalAngle) * 1.3; y = v * shapeRadius * 1.5; z = finalR * Math.sin(finalAngle);
+                    s = isMob ? 0.3 : 0.38; rotX = 15 * deg; offsetY = (isMob ? 0.05 : 0) * shapeRadius;
+                } 
+
+                x *= s; y *= s; z *= s;
+                if (rotX !== 0) { const c = Math.cos(rotX), sn = Math.sin(rotX); const y2 = y * c - z * sn; z = y * sn + z * c; y = y2; }
+                if (rotY !== 0) { const c = Math.cos(rotY), sn = Math.sin(rotY); const x2 = x * c + z * sn; z = -x * sn + z * c; x = x2; }
+                if (rotZ !== 0) { const c = Math.cos(rotZ), sn = Math.sin(rotZ); const x2 = x * c - y * sn; y = x * sn + y * c; x = x2; }
+                x += offsetX; y += offsetY;
+
+                if (isMob) {
+                    if (currentShape === 4) y *= -0.8;
+                    if (currentShape === 5) y *= -0.8;
+                    if (currentShape === 9) y *= 0.77;
+                }
+
+                const finalX = x * (keepRatio ? 1.0 : stretchX);
+                const finalY = y * (keepRatio ? 1.0 : stretchY);
+                
+                shapePositions[i3] = finalX; shapePositions[i3+1] = finalY; shapePositions[i3+2] = z;
+            }
+
+            let requiredScaleX = Infinity, requiredScaleY = Infinity;
+            const targetHalfW = targetW / 2, targetHalfH = targetH / 2;
+
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                const px = shapePositions[i3], py = shapePositions[i3+1], pz = shapePositions[i3+2];
+                const denomX = 4.5 * Math.abs(px) + targetHalfW * pz;
+                if (denomX > 0) requiredScaleX = Math.min(requiredScaleX, (4.5 * targetHalfW) / denomX);
+                const denomY = 4.5 * Math.abs(py) + targetHalfH * pz;
+                if (denomY > 0) requiredScaleY = Math.min(requiredScaleY, (4.5 * targetHalfH) / denomY);
+            }
+
+            let finalScaleX = 1.0, finalScaleY = 1.0, finalScaleZ = 1.0;
+
+            if (isMob) {
+                finalScaleX = requiredScaleX; finalScaleY = requiredScaleX; finalScaleZ = requiredScaleX;
+            } else {
+                if (keepRatio) {
+                    const uniformScale = Math.min(1.0, requiredScaleX, requiredScaleY);
+                    finalScaleX = uniformScale; finalScaleY = uniformScale; finalScaleZ = uniformScale;
+                } else {
+                    finalScaleX = Math.min(1.0, requiredScaleX); finalScaleY = Math.min(1.0, requiredScaleY); finalScaleZ = Math.min(finalScaleX, finalScaleY);
+                }
+            }
+
+            const isRealMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            let globalOffsetY = 0;
+            if (isMob && isRealMobileDevice) globalOffsetY = -0.1 * shapeRadius;
+
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                shapePositions[i3] = shapePositions[i3] * finalScaleX;
+                shapePositions[i3+1] = (shapePositions[i3+1] * finalScaleY) + globalOffsetY;
+                shapePositions[i3+2] = shapePositions[i3+2] * finalScaleZ;
+            }
+
+            const activeRatios = isMob ? densityRatiosMobile : densityRatios;
+            targetRenderCount = particleCount * activeRatios[currentShape - 1];
+        } 
+        calculateNewShape(); 
+
+        let isAnimating = true;
+        let lastTime = performance.now();
+        let totalTime = 0;
+        let animationId;
+
+        function animate() {
+            // 모달창 닫히면 멈춤 (렉 방지)
+            if (!document.getElementById('artCanvas')) {
+                cancelAnimationFrame(animationId);
+                return;
+            }
+            
+            if (!isAnimating) return; 
+            animationId = requestAnimationFrame(animate);
+            
+            const now = performance.now();
+            let deltaTime = (now - lastTime) / 1000;
+            lastTime = now;
+            totalTime += deltaTime;
+
+            deltaTime = Math.min(deltaTime, 0.1); 
+            const timeStep = deltaTime * 60;
+
+            transitionBoost *= Math.pow(0.92, timeStep); 
+            
+            currentRenderCount += (targetRenderCount - currentRenderCount) * (1 - Math.pow(0.85, timeStep));
+            const renderLimit = Math.floor(currentRenderCount);
+
+            const activeRatios = window.innerWidth <= 768 ? densityRatiosMobile : densityRatios;
+            const currentDensity = activeRatios[currentShape - 1];
+            const speedCompensator = Math.max(1.0, currentDensity / 0.5);
+
+            if (mouse.px !== -999) {
+                mouseWorldPos.x = (mouse.px - canvasWidth / 2) / focalLength * cameraZ;
+                mouseWorldPos.y = -(mouse.py - viewHeight / 2) / focalLength * cameraZ;
+            } else {
+                mouseWorldPos.x = -999; mouseWorldPos.y = -999;
+            }
+
+            const waveCount = 97;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const computedColor = getComputedStyle(document.documentElement).getPropertyValue('--txt-color').trim();
+            ctx.fillStyle = computedColor || '#222222'; // 변수가 비어있을 경우를 대비한 안전 방어막
+
+            const cx = canvasWidth / 2;
+            const cy = viewHeight / 2;
+
+            renderMap.clear();
+            const gridSize = getGridSize(); 
+
+            for (let i = 0; i < renderLimit; i++) {
+                const i3 = i * 3, waveIdx = i % waveCount; 
+                const weight = particleWeights[i];
+
+                const homeX = shapePositions[i3];
+                const homeY = shapePositions[i3+1];
+                const homeZ = shapePositions[i3+2];
+
+                const tempZDist = cameraZ - posArray[i3+2];
+                if (tempZDist > 0 && mouse.px !== -999) {
+                    const tempScale = focalLength / tempZDist;
+                    const screenPx = cx + (posArray[i3] * tempScale);
+                    const screenPy = cy - (posArray[i3+1] * tempScale);
+
+                    const sdx = screenPx - mouse.px;
+                    const sdy = screenPy - mouse.py;
+                    const sDistSq = sdx * sdx + sdy * sdy;
+
+                    const screenHoverRadius = 150; 
+
+                    if (sDistSq < screenHoverRadius * screenHoverRadius) {
+                        const sDist = Math.max(0.1, Math.sqrt(sDistSq)); 
+                        const force = (screenHoverRadius - sDist) / screenHoverRadius;
+                        const power = 0.25; 
+                        
+                        velocities[i3] += (sdx / sDist) * force * power * timeStep / tempScale;
+                        velocities[i3+1] -= (sdy / sDist) * force * power * timeStep / tempScale; 
+                        velocities[i3+2] -= force * 0.1 * timeStep; 
+                    }
+                }
+
+                const curStiffness = (stiffness + (transitionBoost * speedCompensator * 0.03)) / weight;
+                const ax = (homeX - posArray[i3]) * curStiffness * timeStep;
+                const ay = (homeY - posArray[i3+1]) * curStiffness * timeStep;
+                const az = (homeZ - posArray[i3+2]) * curStiffness * timeStep;
+                const curDamping = Math.pow(damping, timeStep);
+
+                velocities[i3] = (velocities[i3] + ax) * curDamping;
+                velocities[i3+1] = (velocities[i3+1] + ay) * curDamping;
+                velocities[i3+2] = (velocities[i3+2] + az) * curDamping;
+
+                posArray[i3] += velocities[i3] * timeStep;
+                posArray[i3+1] += velocities[i3+1] * timeStep;
+                posArray[i3+2] += velocities[i3+2] * timeStep;
+
+                const pX = posArray[i3];
+                const pY = posArray[i3+1];
+                const pZ = posArray[i3+2];
+                
+                const zDist = cameraZ - pZ;
+                if (zDist <= 0) continue; 
+
+                const scale = focalLength / zDist;
+                
+                const screenX = cx + (pX * scale);
+                const screenY = cy - (pY * scale); 
+
+                if (screenX < 0 || screenX > canvasWidth || screenY < 0 || screenY > canvasHeight) continue;
+
+                const gx = Math.floor(screenX / gridSize) * gridSize;
+                const gy = Math.floor(screenY / gridSize) * gridSize;
+                const cellKey = `${gx}_${gy}`;
+
+                const existingParticle = renderMap.get(cellKey);
+                if (!existingParticle || pZ > existingParticle.z) {
+                    renderMap.set(cellKey, {
+                        x: gx, y: gy, z: pZ, worldX: pX, worldY: pY, worldZ: pZ 
+                    });
+                }
+            }
+
+            drawParticlesToCanvas(gridSize, 1.5);
+        }
+        
+        animate();
+
+        // 🔥 회원님의 원본 리사이즈 이벤트 방식을 모달에 맞게 완벽 복구
+        let lastWindowWidth = window.innerWidth;
+        let lastWindowHeight = window.innerHeight; 
+        let resizeTimeout; 
+        let rafResizeTimer;
+
+        window.addEventListener('resize', () => {
+            if(container.clientWidth === 0) return; 
+            if (window.visualViewport && window.visualViewport.scale > 1.01) return; 
+
+            const currentWindowWidth = window.innerWidth;
+            const currentWindowHeight = window.innerHeight;
+            
+            const isMobile = currentWindowWidth <= 768; 
+            const isTouchDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+            if (isMobile || isTouchDevice) {
+                const isWidthChanged = Math.abs(currentWindowWidth - lastWindowWidth) > 20;
+                if (isWidthChanged) {
+                    clearTimeout(resizeTimeout); 
+                    resizeTimeout = setTimeout(() => {
+                        resizeCanvas(); 
+                        shapeRadius = getResponsiveRadius(); 
+                        calculateNewShape(); 
+                        lastWindowWidth = currentWindowWidth;
+                        lastWindowHeight = currentWindowHeight;
+                    }, 150);
+                }
+            } else {
+                const isWidthChanged = currentWindowWidth !== lastWindowWidth;
+                const isHeightChanged = currentWindowHeight !== lastWindowHeight;
+
+                if (isWidthChanged || isHeightChanged) {
+                    if (rafResizeTimer) cancelAnimationFrame(rafResizeTimer);
+                    
+                    rafResizeTimer = requestAnimationFrame(() => {
+                        resizeCanvas(); 
+                        shapeRadius = getResponsiveRadius(); 
+                        calculateNewShape(); 
+                        lastWindowWidth = currentWindowWidth;
+                        lastWindowHeight = currentWindowHeight;
+                    });
+                }
+            }
+        });
+    }
+
+    // 모달창 열릴 때 렉 없도록 아주 살짝 딜레이(0.2초) 후 그래픽 실행
+    function triggerModalParticles() {
+        setTimeout(initModalParticles, 200);
+    }
+    
+    document.addEventListener('astro:page-load', triggerModalParticles);
+    document.addEventListener('DOMContentLoaded', triggerModalParticles);
+    triggerModalParticles();
+</script>

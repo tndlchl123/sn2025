@@ -1,0 +1,30 @@
+---
+import Layout from '@common/Design-Layout.astro';
+---
+
+<Layout title="flower">
+    <div class="modal-inner-data">
+        <video 
+            src="/labs/flower.mp4" 
+            autoplay 
+            loop 
+            muted 
+            playsinline
+            class="modal-video">
+        </video>
+    </div>
+</Layout>
+
+<style is:global>
+.modal-video {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+</style>
+
+
+
+

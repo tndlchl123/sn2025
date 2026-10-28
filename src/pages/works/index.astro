@@ -53,17 +53,16 @@ import WorksGrid from '@common/WorksGrid.astro';
         </span>
       </button>
 
-      <!-- Lab -->
-      <button class="filter-btn" data-filter="lab">
+      <!-- Labs -->
+      <button class="filter-btn" data-filter="labs">
         <span class="sr-only">실험</span>
         <span class="rolling-text" aria-hidden="true">
           <span class="char" data-char="l" style="--i: 1;" aria-hidden="true">l</span>
           <span class="char" data-char="a" style="--i: 2;" aria-hidden="true">a</span>
           <span class="char" data-char="b" style="--i: 3;" aria-hidden="true">b</span>
+          <span class="char" data-char="s" style="--i: 4;" aria-hidden="true">s</span>
         </span>
       </button>
-
-      
 
       <!-- etc -->
       <button class="filter-btn" data-filter="etc">
@@ -240,7 +239,7 @@ import WorksGrid from '@common/WorksGrid.astro';
 </style>
 
 <!-- 필터 애니메이션 -->
-<style>
+<style is:global>
 
 /* 사라질 때만 투명해지며 축소 */
 .work-item.is-vanishing {
@@ -265,7 +264,8 @@ if (typeof document !== 'undefined') {
     const searchInput = document.getElementById('work-search');
     const workItems = document.querySelectorAll('.work-item');
 
-    if (!grid || !filterBtns.length || !workItems.length) return;
+    if (grid && grid.dataset.init === 'true') return;
+    if (grid) grid.dataset.init = 'true';
 
     let filterTimeout;
 
