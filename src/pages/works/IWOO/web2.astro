@@ -1,5 +1,5 @@
 ---
-import Layout from '@common/Design-Layout.astro';
+import Layout from '@components/DesignLayout.astro';
 import GalleryItems from './GallaryItems.astro';
 ---
 
@@ -168,18 +168,25 @@ import GalleryItems from './GallaryItems.astro';
 </footer>
 
 <!-- 갤러리 전환용 십자가 블러 SVG 필터 -->
-<svg xmlns="http://www.w3.org/2000/svg" class="sr-only">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="width: 0; height: 0; position: absolute; pointer-events: none;" aria-hidden="true" focusable="false">
+    <!-- 크롬/기본 브라우저용 십자가 블러 (stdDeviation 100 적용, 비비드 제거) -->
     <filter id="cross-blur" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
-        <!-- 1. 가로(X)축으로 길게 번짐 -->
-        <feGaussianBlur in="SourceGraphic" stdDeviation="80 0" result="blurX" />
-        <!-- 2. 세로(Y)축으로 길게 번짐 -->
-        <feGaussianBlur in="SourceGraphic" stdDeviation="0 80" result="blurY" />
-        <!-- 3. 두 블러를 십자가 형태로 반반 합성 -->
+        <feGaussianBlur in="SourceGraphic" stdDeviation="100 0" result="blurX" />
+        <feGaussianBlur in="SourceGraphic" stdDeviation="0 100" result="blurY" />
         <feComposite in="blurX" in2="blurY" operator="arithmetic" k1="0" k2="0.5" k3="0.5" k4="0" result="cross" />
-        <!-- 4. 십자가의 날카로운 경계를 일반 블러로 부드럽게 처리 -->
-        <feGaussianBlur in="cross" stdDeviation="6" result="softCross" />
-        <!-- 5. 블러 처리된 결과물에 채도 강조 -->
-        <feColorMatrix in="softCross" type="saturate" values="2" />
+        <feGaussianBlur in="cross" stdDeviation="2" result="softCross" />
+    </filter>
+
+    <!-- 사파리 전용 정적 십자가 블러 (stdDeviation 100 적용, 비비드 제거) -->
+    <filter id="cross-blur-safari" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="100 0" result="blurX" />
+        <feGaussianBlur in="SourceGraphic" stdDeviation="0 100" result="blurY" />
+        <feComposite in="blurX" in2="blurY" operator="arithmetic" k1="0" k2="0.5" k3="0.5" k4="0" result="cross" />
+        <feGaussianBlur in="cross" stdDeviation="2" result="softCross" />
+        <feMerge>
+            <feMergeNode in="SourceGraphic" />
+            <feMergeNode in="softCross" />
+        </feMerge>
     </filter>
 </svg>
 
@@ -683,6 +690,16 @@ import GalleryItems from './GallaryItems.astro';
 
 <!-- 메인 컨텐츠 -->
 <style is:global>
+    svg.sr-only {
+        clip: auto !important;
+        clip-path: none !important;
+        overflow: visible !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        pointer-events: none !important;
+    }
+
     /* 전체 껍데기 */
     .content-wrapper {
         position: relative;
@@ -724,20 +741,24 @@ import GalleryItems from './GallaryItems.astro';
         padding: var(--pad);
         width: 100%;
         box-sizing: border-box;
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
     }
 
-    /* 🔥 에러 났던 부분 수정 (is:global 안으로 가져오고 calc 수식 복구) */
+    /* 마이너스(-) 기호 깨짐 없이 gap을 제외한 2열(50%) 폭을 자동 확보 */
     .grid-gallery .grid-item {
-        flex: 1 1 calc(50% - (var(--pad) / 2)); /* 마이너스 기호와 괄호 위치 정상화 */
-        min-width: 300px; 
+        flex: 1 1 45%;
+        min-width: 300px;
         width: 100%;
-
-        transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), 
-                    opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        transition:
+            transform 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+            opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         opacity: 1;
         transform: scale(1);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
     }
-    
+
     .grid-gallery .grid-item.is-vanishing {
         opacity: 0;
         transform: scale(0.95);
@@ -750,16 +771,22 @@ import GalleryItems from './GallaryItems.astro';
         display: none;
     }
 
-    /* 3:4 비율 고정 및 칼각 */
+    /* 3:4 비율 고정 및 독립 GPU 레이어 격리 */
     .grid-gallery .image-box {
         position: relative;
         width: 100%;
-        aspect-ratio: 3 / 4; 
+        aspect-ratio: 3 / 4;
         overflow: hidden;
         background-color: rgba(128, 128, 128, 0.1);
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        contain: layout paint style;
+        isolation: isolate;
     }
 
-    /* 🔥 꾹 누르기 및 드래그 완벽 방지 */
+    /* 꾹 누르기 및 드래그 완벽 방지 */
     .grid-gallery .image-box,
     .grid-gallery .image-box * {
         -webkit-touch-callout: none !important;
@@ -768,15 +795,22 @@ import GalleryItems from './GallaryItems.astro';
         -webkit-user-drag: none !important;
     }
 
-    /* 사진 꽉 채우기 + 블러 트랜지션 */
+    /* 사진 꽉 채우기 + GPU 가속 */
     .grid-gallery .image-box img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         display: block;
-        transition: transform 0.6s var(--motion), filter 0.6s var(--motion);
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        transition:
+            transform 0.6s var(--motion),
+            filter 0.6s var(--motion),
+            -webkit-filter 0.6s var(--motion);
     }
-    
+
     .grid-gallery .image-box::before {
         content: '';
         position: absolute;
@@ -784,16 +818,26 @@ import GalleryItems from './GallaryItems.astro';
         z-index: 3;
     }
 
-    /* 호버 시 사진 위를 어둡게 만드는 오버레이 막 */
+    /* 호버 시 사진 위를 덮는 오버레이 막 */
     .grid-gallery .image-box::after {
         content: '';
         position: absolute;
         inset: 0;
         background-color: rgba(0, 0, 0, 0.3);
         opacity: 0;
-        transition: opacity 0.4s var(--motion);
+        transition: opacity 0.6s var(--motion);
+        will-change: opacity;
         pointer-events: none;
         z-index: 2;
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+
+    /* 사파리 전용 블러 레이어는 기본 브라우저에서 숨김 */
+    .grid-gallery .safari-blur-layer {
+        display: none;
     }
 
     /* 캡션 기본 설정 */
@@ -802,28 +846,99 @@ import GalleryItems from './GallaryItems.astro';
         max-height: 0;
         opacity: 0;
         overflow: hidden;
-        
         font-family: 'Lilex', 'HakgyoansimBareondotumR', sans-serif;
         font-size: 0.95rem;
         line-height: var(--hd-line-height);
-        color: var(--hd-color); 
-        
-        transition: max-height 0.4s var(--motion), opacity 0.3s var(--motion), padding 0.4s var(--motion);
+        color: var(--hd-color);
+        transition:
+            max-height 0.4s var(--motion),
+            opacity 0.3s var(--motion),
+            padding 0.4s var(--motion);
         padding: 0;
     }
 
-    /* 🔥 PC 환경 호버 */
-    @media (hover: hover) and (pointer: fine) {
-        .grid-gallery .grid-item:hover .image-box img {
-            filter: url(#cross-blur) saturate(1.3);
+    /* [1. 크롬/기본 브라우저] ::after에 backdrop-filter(#cross-blur)를 걸어 opacity로 부드럽게 페이드 */
+    @supports not (-webkit-hyphens: none) {
+        .grid-gallery .image-box::after {
+            backdrop-filter: url(#cross-blur);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .grid-gallery .grid-item:hover .image-box::after {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid-gallery .grid-item:active .image-box::after,
+            .grid-gallery .grid-item:focus-within .image-box::after,
+            .grid-gallery .grid-item.is-active .image-box::after {
+                opacity: 1;
+            }
         }
     }
 
-    /* 🔥 모바일 환경 터치 */
-    @media (max-width: 768px) {
-        .grid-gallery .grid-item:active .image-box img,
-        .grid-gallery .grid-item:focus-within .image-box img {
-            filter: url(#cross-blur) saturate(1.3);
+    /* [2. 사파리 전용] 싱글 갤러리와 동일하게 #cross-blur-safari 및 GPU 레이어 가속 적용 */
+    @supports (-webkit-hyphens: none) {
+        .grid-gallery .safari-blur-layer {
+            display: block;
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.6s var(--motion);
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            will-change: opacity;
+        }
+
+        .grid-gallery .safari-blur-layer img {
+            width: 100% !important;
+            height: 100% !important;
+            max-width: none !important;
+            max-height: none !important;
+            object-fit: cover;
+            -webkit-filter: url('#cross-blur-safari');
+            filter: url('#cross-blur-safari');
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+
+        /* PC 호버 (사파리) */
+        @media (hover: hover) and (pointer: fine) {
+            .grid-gallery .grid-item:hover .image-box::after,
+            .grid-gallery .grid-item:hover .safari-blur-layer {
+                opacity: 1;
+            }
+
+            .grid-gallery .grid-item:hover .image-box:not(:has(.safari-blur-layer)) img {
+                -webkit-filter: url('#cross-blur-safari');
+                filter: url('#cross-blur-safari');
+            }
+        }
+
+        /* 모바일 터치 (사파리) */
+        @media (max-width: 768px) {
+            .grid-gallery .grid-item:active .image-box::after,
+            .grid-gallery .grid-item:focus-within .image-box::after,
+            .grid-gallery .grid-item.is-active .image-box::after,
+            .grid-gallery .grid-item:active .safari-blur-layer,
+            .grid-gallery .grid-item:focus-within .safari-blur-layer,
+            .grid-gallery .grid-item.is-active .safari-blur-layer {
+                opacity: 1;
+            }
+
+            .grid-gallery .grid-item:active .image-box:not(:has(.safari-blur-layer)) img,
+            .grid-gallery .grid-item:focus-within .image-box:not(:has(.safari-blur-layer)) img,
+            .grid-gallery .grid-item.is-active .image-box:not(:has(.safari-blur-layer)) img {
+                -webkit-filter: url('#cross-blur-safari');
+                filter: url('#cross-blur-safari');
+            }
         }
     }
 </style>
@@ -850,7 +965,7 @@ import GalleryItems from './GallaryItems.astro';
     @media (hover: hover) and (pointer: fine) {
         .grid-gallery .grid-item:hover .image-box img {
             transform: scale(1.05);
-            filter: url(#cross-blur) saturate(1.3);
+            filter: url(#cross-blur);
         }
 
         .grid-gallery .grid-item:hover .image-box::after {
@@ -869,7 +984,7 @@ import GalleryItems from './GallaryItems.astro';
         .grid-gallery .grid-item:active .image-box img,
         .grid-gallery .grid-item:focus-within .image-box img {
             transform: scale(1.05);
-            filter: url(#cross-blur) saturate(1.3);
+            filter: url(#cross-blur);
         }
 
         .grid-gallery .grid-item:active .image-box::after,

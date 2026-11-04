@@ -144,3 +144,29 @@ a, button, input, textarea {
 
   transition: all 0.5s var(--motion);
 }
+
+#safearea-cap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  
+  height: env(safe-area-inset-top, 0px);
+  min-height: 0;
+
+  /* 핵심: 슬라이더 로직에서 만들어주는 CSS 변수를 바로 갖다 씁니다 */
+  background: var(--bg-color) !important;
+
+  pointer-events: none;
+  mix-blend-mode: normal !important;
+  isolation: isolate;
+  transform: translateZ(0);
+
+  z-index: 9999; /* 다른 요소들 위로 확실히 덮이게 층위를 올림 */
+}
+
+@supports not (height: env(safe-area-inset-top)) {
+  #safearea-cap {
+    height: 0;
+  }
+}

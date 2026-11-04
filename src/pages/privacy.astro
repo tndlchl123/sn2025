@@ -1,8 +1,8 @@
 ---
-import Layout from '@common/Layout.astro';
+import Layout from '@components/Layout.astro';
 ---
 
-<Layout>    
+<Layout title="privacy">    
 <div class="privacy-container">
 
 	<div class="privacy-content-index">
@@ -721,8 +721,6 @@ import Layout from '@common/Layout.astro';
 
 </Layout>
 
-
-
 <!-- var -->
 <style>
 .privacy-container {
@@ -790,13 +788,17 @@ ul.privacy-index {
 
 /* each index */
 ul.privacy-index li {
-    display: flex;
+    display: block;
+
+    color: var(--txt-color);
+
 	opacity: 0.5;
-    font-weight: 400; 
+    
+    font-family: var(--font-mono), "Asta sans", sans-serif;
+    font-variation-settings: "wght" 400; 
 
     cursor: pointer;
     transition: all 1s var(--motion);
-    align-items: flex-start;
 }
 /* index gap */
 ul.privacy-index li:not(:last-child) {
@@ -806,17 +808,15 @@ ul.privacy-index li:not(:last-child) {
 ul.privacy-index li span {
     display: inline-block;
     width: var(--num-width); 
-    font-weight: 350;
+    font-variation-settings: "wght" 400;
     pointer-events: none;
-
-    flex-shrink: 0;
 }
 </style>
 <!-- index: active / hover -->
 <style>
 ul.privacy-index li.active, /* .active: 자바스크립트로 추가 */
 ul.privacy-index li.active span { 
-	
+	font-variation-settings: "wght" 550;
 	opacity: 1; 
 }
 
@@ -824,8 +824,8 @@ ul.privacy-index li.active span {
 @media (hover: hover) and (pointer: fine) {
     ul.privacy-index li:hover,
 	ul.privacy-index li:hover span { 
-        
-		opacity: 1;
+        opacity: 1;
+		font-variation-settings: "wght" 550;
 	}
 }
 </style>
@@ -865,7 +865,7 @@ ul.privacy-index li.active span {
     display: flex;
     align-items: flex-start;
 
-    
+    font-weight: 550;
 
     margin-bottom: 10px;
 }
@@ -913,10 +913,13 @@ ul.privacy-index li.active span {
 .privacy-subparagraph span:first-child { 
     width: var(--sp-width);
     flex-shrink: 0; 
+    
 }
 
+.privacy-subparagraph span { font-family: var(--font-mono), monospace;}
+
 /* (a): 목: item */
-.sn_privacy_item {
+.privacy-item {
     display: flex;
     align-items: flex-start;
 
@@ -924,9 +927,9 @@ ul.privacy-index li.active span {
 
     margin-bottom: 10px; 
 }
-.sn_privacy_item:last-of-type { margin-bottom: 0; }
+.privacy-item:last-of-type { margin-bottom: 0; }
 
-.sn_privacy_item span:first-child { 
+.privacy-item span:first-child { 
     width: var(--i-width);
     flex-shrink: 0; 
 }

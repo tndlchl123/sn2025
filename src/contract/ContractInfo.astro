@@ -1,0 +1,585 @@
+---
+
+// ============================================================================
+// [계약서 개별 설정 영역] 매 계약마다 아래 데이터만 수정해서 사용하세요.
+// ============================================================================
+
+// [01] 계약 기본 정보
+const basicInfo = {
+    title: '디지털 컨텐츠 디자인 용역 계약',
+    contractDate: '2025년 01월 01일',
+    workStart: '2025년 01월 01일 부터',
+    workEnd: '2025년 03월 01일 까지',
+    modDays: '영업일 기준 7일',
+    modStart: '2025년 02월 03일 부터',
+    modEnd: '2025년 02월 10일 까지',
+    modCount: '1회',
+};
+
+// [02] 수요자(고객) 정보 (공급자 정보는 하단 HTML에 고정되어 있습니다)
+const clientInfo = {
+    company: 'brand',
+    ceo: '홍길동',
+    bizNum: '123-45-67890',
+    address: '서울특별시 12345',
+    phone: '010-1234-5678',
+    email: 'contact@brand.co.kr',
+};
+
+// [03] 계약 금액 설정 (공급가액과 비율만 적으면 부가세/총액/분할금이 자동 계산됩니다)
+const priceInfo = {
+    supplyPrice: 258320000, // 공급가액 (부가세 10% 제외 금액, 숫자만 입력)
+    downPercent: 35,        // 선급금 비율 (%)
+    midPercent: 35,         // 중도금 비율 (% - 중도금이 없으면 0으로 입력)
+    balancePercent: 30,     // 잔금 비율 (%)
+};
+
+// [04] 제공 범위 표 데이터
+const scopeGroups = [
+    {
+        category: '디자인 기획',
+        items: [
+            { quantity: 1, name: '시장 조사 보고서', spec: '1920 × 1080 (px)', format: 'PDF', dpi: 72, usage: '웹' },
+            { quantity: 1, name: '디자인 기획 보고서', spec: '1920 × 1080 (px)', format: 'PDF', dpi: 72, usage: '웹' },
+        ],
+    },
+    {
+        category: '디자인 제작',
+        items: [
+            { quantity: 1, name: '로고 디자인 가로형', spec: '297 × 210 (mm)', format: 'AI', dpi: 300, usage: '인쇄' },
+            { quantity: 1, name: '로고 디자인 세로형', spec: '210 × 297 (mm)', format: 'AI', dpi: 300, usage: '인쇄' },
+            { quantity: 1, name: '로고 디자인 심볼형', spec: '297 × 297 (mm)', format: 'AI', dpi: 300, usage: '인쇄' },
+            { quantity: 3, name: '로고 디자인 목업', spec: '1920 × 1080 (px)', format: 'PNG', dpi: 72, usage: '웹' },
+            { quantity: 3, name: '로고 디자인 목업', spec: '1080 × 1920 (px)', format: 'PNG', dpi: 72, usage: '웹' },
+            { quantity: 1, name: '웹 배너 이미지', spec: '1920 × 1080 (px)', format: 'JPG', dpi: 72, usage: '웹' },
+        ],
+    },
+    {
+        category: '가이드 제작',
+        items: [
+            { quantity: 1, name: '브랜드 가이드북', spec: '297 × 210 (mm)', format: 'PDF', dpi: 300, usage: '인쇄' },
+        ],
+    },
+];
+---
+
+    <!-- 추후 계약 동의 전송 스크립트에서 고객/계약 정보를 쉽게 읽어갈 수 있도록 data 속성에도 바인딩 -->
+<section 
+    class="pay-notice-wrap" 
+    id="contract-info-root"
+    data-title={basicInfo.title}
+    data-contract-date={basicInfo.contractDate}
+    data-company={clientInfo.company}
+    data-ceo={clientInfo.ceo}
+    data-biz-num={clientInfo.bizNum}
+    data-address={clientInfo.address}
+    data-phone={clientInfo.phone}
+    data-email={clientInfo.email}
+    data-supply-price={priceInfo.supplyPrice}
+>
+    <div class="pay-notice-section-wrap">
+
+        <!-- [01] 계약 기본 정보 -->
+        <div class="pay-notice-section">
+            <p class="pay-notice-title"><span>[01]</span>계약 기본 정보</p>
+
+            <div class="pay-notice-body">
+                <p class="pay-notice-text"><span>계약명</span>{basicInfo.title}</p>
+                <p class="pay-notice-text"><span>계약 체결일</span>{basicInfo.contractDate}</p>
+                <p class="pay-notice-text">
+                    <span>제작 기간</span>
+                    {basicInfo.workStart}<br>{basicInfo.workEnd}
+                </p>
+                <p class="pay-notice-text">
+                    <span>수정 기간</span>
+                    {basicInfo.modDays}<br>{basicInfo.modStart}<br>{basicInfo.modEnd}
+                </p>
+                <p class="pay-notice-text"><span>수정 횟수</span>{basicInfo.modCount}</p>
+            </div>
+
+        </div>
+
+        <!-- [02] 계약 당사자 -->
+        <div class="pay-notice-section">
+            <p class="pay-notice-title"><span>[02]</span>계약 당사자</p>
+
+            <div class="pay-notice-body is-two-col">
+                <!-- 공급자 (고정 정보) -->
+                <div class="pay-notice-contractors">
+                    <p class="pay-notice-subtitle">공급자</p>
+                    <p class="pay-notice-text"><span>상호</span>순(sn)</p>
+                    <p class="pay-notice-text"><span>대표자명</span>최이수</p>
+                    <p class="pay-notice-text"><span>사업자등록번호</span>649-20-02174</p>
+                    <p class="pay-notice-text"><span>소재지</span>충청북도 충주시 금릉로 17</p>
+                    <p class="pay-notice-text"><span>전화번호</span>010-2382-2025</p>
+                    <p class="pay-notice-text"><span>이메일</span>contact<wbr>@<wbr>sn2025.co.kr</p>
+                </div>
+
+                <!-- 수요자 (프런트매터 연동 정보) -->
+                <div class="pay-notice-contractors">
+                    <p class="pay-notice-subtitle">수요자</p>
+                    <p class="pay-notice-text"><span>상호</span>{clientInfo.company}</p>
+                    <p class="pay-notice-text"><span>대표자명</span>{clientInfo.ceo}</p>
+                    <p class="pay-notice-text"><span>사업자등록번호</span>{clientInfo.bizNum}</p>
+                    <p class="pay-notice-text"><span>소재지</span>{clientInfo.address}</p>
+                    <p class="pay-notice-text"><span>전화번호</span>{clientInfo.phone}</p>
+                    <p class="pay-notice-text"><span>이메일</span>{clientInfo.email}</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- [03] 계약 금액 -->
+        <div 
+            class="pay-notice-section" 
+            id="auto-price-calc"
+            data-supply-price={priceInfo.supplyPrice}
+            data-down-percent={priceInfo.downPercent}
+            data-mid-percent={priceInfo.midPercent}
+            data-balance-percent={priceInfo.balancePercent}
+        >
+            <p class="pay-notice-title"><span>[03]</span>계약 금액</p>
+
+            <div class="pay-notice-body">
+                <div class="pay-notice-price">
+                    <p class="pay-notice-subtitle">전체 금액</p>
+                    <div class="pay-notice-price-list">
+                        <p class="pay-notice-text is-dim">
+                            <span>공급가액</span>
+                            <span>&nbsp;</span>
+                            <span class="pay-notice-price-amount" id="auto-supply">0</span>
+                            <span>원</span>
+                        </p>
+                        <p class="pay-notice-text is-dim">
+                            <span>부가가치세</span>
+                            <span>&nbsp;</span>
+                            <span class="pay-notice-price-amount" id="auto-vat">0</span>
+                            <span>원</span>
+                        </p>
+                        <p class="pay-notice-text is-bold">
+                            <span>총금액</span>
+                            <span>&nbsp;</span>
+                            <span class="pay-notice-price-amount" id="auto-total">0</span>
+                            <span>원</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pay-notice-price">
+                    <p class="pay-notice-subtitle">분할 지급 구조</p>
+                    <div class="pay-notice-price-list">
+                        <p class="pay-notice-text" id="row-down-payment">
+                            <span>선급금</span>
+                            <span id="text-down-percent">0%</span>
+                            <span class="pay-notice-price-amount" id="auto-down-amount">0</span>
+                            <span>원</span>
+                        </p>
+                        <p class="pay-notice-text" id="row-mid-payment">
+                            <span>중도금</span>
+                            <span id="text-mid-percent">0%</span>
+                            <span class="pay-notice-price-amount" id="auto-mid-amount">0</span>
+                            <span>원</span>
+                        </p>
+                        <p class="pay-notice-text" id="row-bal-payment">
+                            <span>잔금</span>
+                            <span id="text-bal-percent">0%</span>
+                            <span class="pay-notice-price-amount" id="auto-bal-amount">0</span>
+                            <span>원</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- [04] 제공 범위 -->
+        <div class="pay-notice-section">
+            <p class="pay-notice-title"><span>[04]</span>제공 범위</p>
+
+            <div class="pay-notice-body">
+                <p class="pay-notice-text pay-notice-scroll">
+                    분류부터 용도까지 스크롤하여<br>전체 내용 확인 부탁드립니다.
+                </p>
+
+                <div class="pay-notice-scope">
+                    <!-- 표 헤더 -->
+                    <div class="pay-notice-scope-row pay-notice-scope-head">
+                        <div class="scope-col category">분류</div>
+                        <div class="scope-col quantity">수량</div>
+                        <div class="scope-col name">명칭</div>
+                        <div class="scope-col spec">규격 (단위)</div>
+                        <div class="scope-col format">형식</div>
+                        <div class="scope-col dpi">해상도</div>
+                        <div class="scope-col usage">용도</div>
+                    </div>
+
+                    <!-- 프런트매터 배열(scopeGroups) 자동 렌더링 -->
+                    {scopeGroups.map((group) => (
+                        <div class="pay-notice-scope-group">
+                            {group.items.map((item, idx) => (
+                                <div class="pay-notice-scope-row">
+                                    <div class="scope-col category">{idx === 0 ? group.category : ''}</div>
+                                    <div class="scope-col quantity">{item.quantity}</div>
+                                    <div class="scope-col name">{item.name}</div>
+                                    <div class="scope-col spec">{item.spec}</div>
+                                    <div class="scope-col format">{item.format}</div>
+                                    <div class="scope-col dpi">{item.dpi}</div>
+                                    <div class="scope-col usage">{item.usage}</div>
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ============================================================================
+     스타일 영역
+============================================================================= -->
+<style>
+.pay-notice-wrap {
+    font-family: var(--font-mono), var(--font-asta), sans-serif;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    padding-bottom: 40px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.pay-notice-section-wrap {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.pay-notice-section {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 섹션 간격 */
+.pay-notice-section:not(:last-child) {
+    margin-bottom: 80px;
+}
+
+/* ⭐️ 좌측 대제목 ([ 01 ] ~ [ 04 ]) 너비 50px 고정 및 줄바꿈 방지 */
+.pay-notice-title {
+    display: flex;
+    align-items: baseline;
+    margin: 0 0 20px 0;
+    font-size: var(--sn-text-size, 1rem);
+    font-weight: var(--sn-f-weight, 600);
+    line-height: 1.4;
+    white-space: nowrap; /* 줄바꿈 원천 차단 */
+}
+
+.pay-notice-title > span {
+    flex: 0 0 50px;
+    width: 50px;
+    min-width: 50px;
+    font-weight: 500;
+}
+
+/* 서브 타이틀 (공급자, 수요자, 전체 금액, 분할 지급 구조) */
+.pay-notice-subtitle {
+    margin: 0 0 20px 0;
+    font-size: var(--sn-text-size, 1rem);
+    font-weight: var(--sn-f-weight, 600);
+    line-height: 1.4;
+}
+
+/* 기본 텍스트 행 */
+.pay-notice-text {
+    display: flex;
+    align-items: baseline;
+    gap: 0;
+    margin: 0 0 12px 0;
+    font-size: var(--sn-text-size, 1rem);
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+/* 항목 라벨 (계약명, 상호, 대표자명 등) */
+.pay-notice-text > span:first-child {
+    flex: 0 0 10vw;
+    font-size: var(--sn-text-size, 1rem);
+    font-weight: var(--sn-f-weight, 600);
+    white-space: nowrap;
+}
+
+/* [03] 계약 금액 세부 스타일 */
+#auto-price-calc[data-mid-percent="0"] #row-mid-payment {
+    display: none !important;
+}
+
+.pay-notice-text.is-dim {
+    opacity: 0.5;
+}
+
+.pay-notice-text.is-dim > span:first-child {
+    font-weight: 400;
+}
+
+.pay-notice-text.is-bold,
+.pay-notice-text.is-bold .pay-notice-price-amount {
+    font-weight: var(--sn-f-weight, 700);
+}
+
+.pay-notice-price:not(:last-child) {
+    margin-bottom: 30px;
+}
+
+/* [04] 제공 범위 표 스타일 */
+.pay-notice-scope {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.pay-notice-scope-head,
+.pay-notice-scope-group,
+.pay-notice-scope-row {
+    min-width: max-content;
+}
+
+.pay-notice-scope-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 8px 0;
+}
+
+.pay-notice-scope-head {
+    font-weight: var(--sn-f-weight, 600);
+    margin-bottom: 10px;
+}
+
+.pay-notice-scope-group {
+    margin-top: 12px;
+}
+
+.scope-col {
+    font-size: var(--sn-text-size, 1rem);
+    white-space: nowrap;
+}
+
+/* 표 컬럼 너비 */
+.scope-col.category { flex: 0 0 10vw; font-weight: var(--sn-f-weight, 500); }
+.scope-col.quantity { flex: 0 0 40px; text-align: center; }
+.scope-col.name     { flex: 0 0 200px; }
+.scope-col.spec     { flex: 0 0 160px; }
+.scope-col.format   { flex: 0 0 60px; text-align: center; }
+.scope-col.dpi      { flex: 0 0 70px; text-align: right; }
+.scope-col.usage    { flex: 0 0 50px; text-align: center; }
+
+.pay-notice-scope-row:not(.pay-notice-scope-head) .scope-col.dpi::after {
+    content: " DPI";
+}
+
+.pay-notice-scroll {
+    display: none;
+}
+
+/* ----------------------------------------------------
+   PC 레이아웃 (1024px 이상)
+------------------------------------------------------- */
+@media (min-width: 1024px) {
+    .pay-notice-section {
+        display: flex;
+        
+        align-items: flex-start;
+        gap: 30px; /* 타이틀과 본문 사이 간격 */
+        width: 100%;
+    }
+
+    /* 좌측 대제목 영역 폭 고정 (숫자 50px + 여유 공간 확보) */
+    .pay-notice-title {
+        flex: 0 0 180px;
+        margin-bottom: 0;
+    }
+
+    /* 우측 본문 영역 (나머지 전체 폭 100% 활용, 표가 커져도 밀려나지 않음) */
+    .pay-notice-body {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* [02] 계약 당사자: 공급자 / 수요자 2단 배치 */
+    .pay-notice-body.is-two-col {
+        display: flex;
+        gap: 40px;
+    }
+
+    .pay-notice-contractors {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* [03] 계약 금액 폭 100% 채우기 */
+    .pay-notice-price {
+        display: flex;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .pay-notice-price .pay-notice-subtitle {
+        flex: 0 0 10vw;
+        margin-bottom: 0;
+    }
+
+    .pay-notice-price-list {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .pay-notice-price .pay-notice-text > span:first-child {
+        flex: 0 0 80px;
+        font-weight: 400;
+    }
+
+    .pay-notice-price .pay-notice-text > span:nth-child(2) {
+        flex: 0 0 50px;
+        text-align: right;
+    }
+
+    .pay-notice-price .pay-notice-price-amount {
+        margin-left: auto;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .pay-notice-price .pay-notice-price-amount + span {
+        flex: 0 0 auto;
+        margin-left: 5px;
+    }
+}
+
+/* 가로 스크롤 안내 노출 분기 */
+@media screen and (max-width: 1024px) {
+    .pay-notice-scroll {
+        display: block;
+        margin-bottom: 15px;
+    }
+
+    /* ⭐️ 1. 스크롤바 전체 두께(높이)를 눈에 보이게 4px 정도로 설정 */
+    .pay-notice-scope::-webkit-scrollbar {
+        height: 10px;
+    }
+
+    /* ⭐️ 2. 트랙(배경)은 완전히 투명하게 숨김 */
+    .pay-notice-scope::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    /* ⭐️ 3. 손잡이(thumb)가 트랙 영역에 딱 맞아떨어지도록 둥글기 제거 및 색상 지정 */
+    .pay-notice-scope::-webkit-scrollbar-thumb {
+        background: rgba(var(--sn-txt-color-r, 0, 0, 0), 0.3);
+        border-radius: 0;
+    }
+
+}
+
+/* ----------------------------------------------------
+   모바일 반응형 (768px 이하)
+------------------------------------------------------- */
+@media (max-width: 768px) {
+    .pay-notice-section:not(:last-child) {
+        margin-bottom: 50px;
+    }
+
+    .pay-notice-body {
+        padding-left: 0;
+    }
+
+    .pay-notice-text > span:first-child {
+        flex: 0 0 32vw;
+    }
+
+    .pay-notice-contractors:not(:last-child) {
+        margin-bottom: 30px;
+    }
+
+    .pay-notice-price .pay-notice-subtitle {
+        margin-top: 20px;
+        margin-bottom: 12px;
+    }
+
+    .pay-notice-price .pay-notice-text > span:first-child {
+        flex: 0 0 25vw;
+    }
+
+    .pay-notice-price .pay-notice-text > span:nth-child(2) {
+        flex: 0 0 40px;
+    }
+
+    .pay-notice-price .pay-notice-price-amount {
+        margin-left: auto;
+        text-align: right;
+    }
+
+    .pay-notice-price .pay-notice-price-amount + span {
+        margin-left: 5px;
+    }
+
+    .scope-col.category {
+        flex: 0 0 90px;
+    }
+}
+</style>
+
+<!-- ============================================================================
+     금액 자동 계산 스크립트 (Astro 페이지 로드 호환 및 하이픈 ID 적용)
+============================================================================= -->
+<script>
+const initPriceCalc = () => {
+    const calcDiv = document.getElementById('auto-price-calc');
+    if (!calcDiv) return;
+
+    const supplyPrice = parseInt(calcDiv.dataset.supplyPrice || '0', 10);
+    const downPct = parseFloat(calcDiv.dataset.downPercent || '0');
+    const midPct = parseFloat(calcDiv.dataset.midPercent || '0');
+    const balPct = parseFloat(calcDiv.dataset.balancePercent || '0');
+
+    const vat = Math.floor(supplyPrice * 0.1);
+    const totalAmount = supplyPrice + vat;
+
+    const formatNumber = (num) => num.toLocaleString('ko-KR');
+
+    const elSupply = document.getElementById('auto-supply');
+    const elVat = document.getElementById('auto-vat');
+    const elTotal = document.getElementById('auto-total');
+
+    if (elSupply) elSupply.innerText = formatNumber(supplyPrice);
+    if (elVat) elVat.innerText = formatNumber(vat);
+    if (elTotal) elTotal.innerText = formatNumber(totalAmount);
+
+    const downAmount = Math.floor((totalAmount * (downPct / 100)) / 10000) * 10000;
+    const midAmount = Math.floor((totalAmount * (midPct / 100)) / 10000) * 10000;
+    const balAmount = totalAmount - downAmount - midAmount;
+
+    const elDownPct = document.getElementById('text-down-percent');
+    const elDownAmt = document.getElementById('auto-down-amount');
+    const elMidPct = document.getElementById('text-mid-percent');
+    const elMidAmt = document.getElementById('auto-mid-amount');
+    const elBalPct = document.getElementById('text-bal-percent');
+    const elBalAmt = document.getElementById('auto-bal-amount');
+
+    if (elDownPct) elDownPct.innerText = downPct + '%';
+    if (elDownAmt) elDownAmt.innerText = formatNumber(downAmount);
+
+    if (elMidPct) elMidPct.innerText = midPct + '%';
+    if (elMidAmt) elMidAmt.innerText = formatNumber(midAmount);
+
+    if (elBalPct) elBalPct.innerText = balPct + '%';
+    if (elBalAmt) elBalAmt.innerText = formatNumber(balAmount);
+};
+
+// 일반 로드 및 Astro 페이지 전환(View Transitions) 모두 대응
+document.addEventListener('DOMContentLoaded', initPriceCalc);
+document.addEventListener('astro:page-load', initPriceCalc);
+</script>

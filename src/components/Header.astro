@@ -129,7 +129,18 @@
   </nav>
 </div>
 
-<!-- svg ink filter -->
+<!-- xmlns와 version 추가 -->
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="width: 0; height: 0; position: absolute;" aria-hidden="true">
+  <filter id="ink-threshold" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+    <feColorMatrix in="SourceGraphic" type="matrix" values="
+      1 0 0 0 0
+      0 1 0 0 0
+      0 0 1 0 0
+      0 0 0 50 -20" />
+  </filter>
+</svg>
+
+<!-- svg ink filter 
 <svg style="width: 0; height: 0; position: absolute;" aria-hidden="true">
   <filter id="ink-threshold" x="-50%" y="-50%" width="200%" height="200%">
     <feColorMatrix in="SourceGraphic" type="matrix" values="
@@ -139,9 +150,10 @@
       0 0 0 50 -20" />
   </filter>
 </svg>
+-->
 
 <!-- header: menu: basic style -->
-<style>
+<style is:global>
 /* --- 1. 기본 레이아웃 --- */
 .header-container {
   display: flex;
@@ -238,6 +250,9 @@
   
   -webkit-filter: blur(15px);
   filter: blur(15px);
+  
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
 
   transition: background-color 1s var(--motion);
 }
@@ -347,8 +362,8 @@
 
   background: rgba(var(--txt-color-r), 0.9);
 
-  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   transform: translateZ(0);
 
   padding: var(--pad);
@@ -369,28 +384,39 @@
 }
 
 
+/* 0. 브라우저가 CSS 변수를 숫자/길이로 인식해 애니메이션할 수 있도록 등록 */
+@property --ink-blur {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 30px;
+}
 
+@property --ink-opacity {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
 /* --- 모바일 메뉴 --- */
 .mobile-nav {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  
-  filter: url('#ink-threshold');
-  -webkit-filter: url('#ink-threshold');
 }
 
 /* 1. 공통 대기 상태 */
 .mobile-nav a,
 .mobile-nav .lang-toggle-btn {
-  opacity: 0;
-  transition: opacity 0.5s var(--motion);
-  
-  filter: blur(30px);
-  transform: translateY(20px);
+  --ink-blur: 30px;
+  --ink-opacity: 0;
 
+  /* 핵심: filter 체인은 바깥에 고정! (블러 -> 투명도 -> 잉크필터 순서로 한 번에 처리) */
+  -webkit-filter: blur(var(--ink-blur)) opacity(var(--ink-opacity)) url('#ink-threshold');
+  filter: blur(var(--ink-blur)) opacity(var(--ink-opacity)) url('#ink-threshold');
+
+  transform: translateY(20px) scale(0.9);
   color: var(--bg-color);
-
+  -webkit-font-smoothing: antialiased; 
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* 2. 메뉴가 열렸을 때(.show) 일반 링크 복귀 */
@@ -413,11 +439,13 @@
 
 @keyframes inkSlideUp {
   0% {
-    filter: blur(30px);
+    --ink-blur: 30px;
+    --ink-opacity: 0;
     transform: translateY(20px) scale(0.9);
   }
   100% {
-    filter: blur(0px);
+    --ink-blur: 0px;
+    --ink-opacity: 1;
     transform: translateY(0) scale(1);
   }
 }
@@ -502,8 +530,8 @@
 .lang-toggle-btn:hover .char { 
   transform: translateY(-100%);
 }
-
 </style>
+
 
 <!-- color theme  -->
 <script is:inline>
@@ -825,20 +853,20 @@ const slider = document.getElementById('home-slider');
 const logoLink = document.querySelector('.logo-link');
 
 if (slider && logoLink) {
-  slider.addEventListener('pointerdown', (e) => {
+  // 1. 누를 때: 강제 캡처(setPointerCapture) 삭제! 사파리 고장 원인 제거
+  slider.addEventListener('pointerdown', () => {
     logoLink.classList.add('is-dragging');
-    slider.setPointerCapture(e.pointerId);
   });
 
-  const stopDrag = (e) => {
+  // 2. 뗄 때: 클래스 제거
+  const stopDrag = () => {
     logoLink.classList.remove('is-dragging');
-    if (slider.hasPointerCapture(e.pointerId)) {
-      slider.releasePointerCapture(e.pointerId);
-    }
   };
 
-  slider.addEventListener('pointerup', stopDrag);
-  slider.addEventListener('pointercancel', stopDrag);
+  // 3. 핵심: 마우스를 슬라이더 밖으로 확 벗어나서 뗄 수도 있으므로, window에 이벤트를 겁니다.
+  // 이렇게 하면 사파리에서도 마우스가 들러붙지 않고 완벽하게 원래 크기로 돌아옵니다.
+  window.addEventListener('pointerup', stopDrag);
+  window.addEventListener('pointercancel', stopDrag);
 }
 </script>
 

@@ -1,7 +1,7 @@
 ---
 import '@common/Global.css';
-import Header from '@common/Header.astro';
-import Footer from '@common/Footer.astro';
+import Header from '@components/Header.astro';
+import Footer from '@components/Footer.astro';
 import { ClientRouter } from 'astro:transitions';
 const { title = "sn2025" } = Astro.props;
 ---
@@ -10,6 +10,10 @@ const { title = "sn2025" } = Astro.props;
 		<meta charset="utf-8" />
 		<ClientRouter />
 		<link rel="icon" id="dynamic-favicon" type="image/svg+xml" href="/favicon.svg" />
+		<!-- iOS background meta -->
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+		<!-- 테마 컬러 메타태그 (스크립트가 이걸 잡아서 색상을 바꿔줌) -->
+		<meta name="theme-color" id="snThemeColor" content="#ffffff">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<!-- <meta name="generator" content={Astro.generator} />  -->
 		<meta name="color-scheme" content="light dark">

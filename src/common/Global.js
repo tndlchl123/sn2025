@@ -257,3 +257,96 @@ document.addEventListener('astro:page-load', initLenis);
 document.querySelectorAll('img').forEach(img => img.setAttribute('draggable', 'false'));
 
 
+
+
+(function(){
+  // 1. Safe Area Cap DOM 생성
+  function ensureCap(){
+    var body = document.body;
+    if (!body) return null;
+
+    var cap = document.getElementById('safearea-cap');
+    if (!cap) {
+      cap = document.createElement('div');
+      cap.id = 'safearea-cap';
+      body.appendChild(cap);
+    }
+    return cap;
+  }
+
+  // 2. 현재 렌더링된 배경색(--bg-color)을 긁어오는 함수
+  function getBg(){
+    // html(documentElement)에 인라인으로 꽂힌 변수값을 우선 체크
+    var rootStyle = document.documentElement.style.getPropertyValue('--bg-color').trim();
+    if (rootStyle) {
+      return rootStyle;
+    }
+    
+    // 못 찾으면 저장된 테마 값(0~100)을 바탕으로 HSL을 직접 계산해서 반환
+    try {
+      var savedValue = localStorage.getItem('sn-theme-value');
+      if (savedValue !== null) {
+        var val = parseFloat(savedValue);
+        var bgLightness = 10 + (val * 0.85);
+        return 'hsl(0, 0%, ' + bgLightness + '%)';
+      }
+    } catch (e) {}
+
+    // 전부 없으면 다크모드 여부 체크해서 기본값 반환
+    var isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return isDark ? 'hsl(0, 0%, 10%)' : 'hsl(0, 0%, 95%)';
+  }
+
+  // 3. 메타 태그(theme-color) 변경
+  function setThemeColor(color){
+    var meta = document.querySelector('meta[name="theme-color"], #snThemeColor');
+    if (!meta) return;
+    meta.setAttribute('content', color);
+  }
+
+  // 4. 적용 실행부
+  function apply(){
+    ensureCap();
+    var c = getBg();
+    
+    // HSL 값을 테마 컬러에 직접 적용
+    setThemeColor(c);
+  }
+
+  // 5. Observer 세팅: html 태그의 style(즉, --bg-color 변수)이 실시간으로 바뀔 때마다 감지
+  function bindObserver(){
+    var htmlElement = document.documentElement;
+
+    var mo = new MutationObserver(function(mutations){
+      for (var i = 0; i < mutations.length; i++) {
+        if (mutations[i].type === 'attributes' && mutations[i].attributeName === 'style') {
+          apply();
+          break;
+        }
+      }
+    });
+
+    mo.observe(htmlElement, {
+      attributes: true,
+      attributeFilter: ['style']
+    });
+  }
+
+  function init(){
+    apply();
+    bindObserver();
+
+    window.addEventListener('pageshow', apply);
+    window.addEventListener('resize', apply);
+  }
+
+  // 기존 슬라이더 로직(updateTheme) 쪽에서 강제로 갱신시키고 싶을 때 쓸 수 있게 노출
+  window.snSafeBgApply = apply;
+
+  // Astro 페이지 이동 시(View Transitions) 캡 유지 및 재실행
+  document.addEventListener('astro:page-load', () => {
+    init();
+  });
+
+  init();
+})();
