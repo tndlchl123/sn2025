@@ -967,16 +967,8 @@ import GalleryItems from './GallaryItems.astro';
         padding: 0;
     }
 
-    /* 🔥 1. PC 환경: 마우스 호버 시 작동 */
+    /* 🔥 1. PC 환경: 마우스 호버 시 캡션 표시 (블러 해제는 위쪽 스타일에서 처리) */
     @media (hover: hover) and (pointer: fine) {
-        .grid-gallery .grid-item:hover .image-box img {
-            filter: url(#cross-blur);
-        }
-
-        .grid-gallery .grid-item:hover .image-box::after {
-            opacity: 1;
-        }
-
         .grid-gallery .grid-item:hover .item-caption {
             max-height: 80px; 
             opacity: 1;
@@ -984,27 +976,17 @@ import GalleryItems from './GallaryItems.astro';
         }
     }
 
-    /* 🔥 2. 모바일 환경: 터치(:active 또는 포커스)했을 때 작동 */
+    /* 🔥 2. 모바일 환경: 터치(:active 또는 포커스)했을 때 캡션 표시 */
     @media (max-width: 768px) {
-        .grid-gallery .grid-item:active .image-box img,
-        .grid-gallery .grid-item:focus-within .image-box img {
-            filter: url(#cross-blur);
-        }
-
-        .grid-gallery .grid-item:active .image-box::after,
-        .grid-gallery .grid-item:focus-within .image-box::after {
-            opacity: 1;
-        }
-
         .grid-gallery .grid-item:active .item-caption,
-        .grid-gallery .grid-item:focus-within .item-caption {
+        .grid-gallery .grid-item:focus-within .item-caption,
+        .grid-gallery .grid-item.is-active .item-caption {
             max-height: 100px; 
             opacity: 1;
             padding-top: calc(var(--pad) * 0.8); 
         }
     }
 </style>
-
 <!-- 푸터 CSS (INTERSECTION WORKS OF OBJECT -> IWOO 합체 모션 포함) -->
 <style>
     /* 하단 고정형 리빌 푸터 기본 설정: 영문/숫자는 Lilex, 한글은 학교안심 바른돋움으로 자동 매칭 */
