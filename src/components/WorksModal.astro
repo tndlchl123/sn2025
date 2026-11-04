@@ -6,11 +6,14 @@
 </div>
 
 <!-- 모달창 스타일 -->
-<style>
+<style is:global>
 html {
     overflow-y: scroll;
 }
-
+img { 
+    display: block;
+    width: 100%;
+}
 /* 모달 배경 */
 .works-modal-overlay {
     scrollbar-gutter: stable;
@@ -45,8 +48,12 @@ html {
 /* 모달 내용 박스 (높이 80vh 기준 3:4 고정) */
 .works-modal-box {
     width: auto;
-    height: 80vh;
+    height: 80%;
     aspect-ratio: 3/4;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     border-radius: var(--rad);
     background-color: var(--bg-color);
@@ -71,7 +78,27 @@ html {
 #modal_content_area {
     width: 100%;
     height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
+.works-modal-box #modal_content_area video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+
+
+@media screen and (max-width: 1024px) {
+    .works-modal-box {
+        width: 80%;
+        height: auto;
+    }
+}
+
 </style>
 
 <!-- 모달창 스크립트 -->

@@ -1,5 +1,5 @@
 ---
-import Layout from '@common/Design-Layout.astro';
+import Layout from '@components/DesignLayout.astro';
 ---
 
 <Layout title="flower">
@@ -10,18 +10,13 @@ import Layout from '@common/Design-Layout.astro';
             loop 
             muted 
             playsinline
-            class="modal-video">
+        >
         </video>
     </div>
 </Layout>
 
 <style is:global>
-.modal-video {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: cover;
-}
+
 
 </style>
 
