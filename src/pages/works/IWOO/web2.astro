@@ -818,13 +818,13 @@ import GalleryItems from './GallaryItems.astro';
         z-index: 3;
     }
 
-    /* 호버 시 사진 위를 덮는 오버레이 막 */
+    /* 기본 상태에서 사진 위를 덮는 오버레이 막 (opacity: 1 -> 호버 시 0) */
     .grid-gallery .image-box::after {
         content: '';
         position: absolute;
         inset: 0;
         background-color: rgba(0, 0, 0, 0.3);
-        opacity: 0;
+        opacity: 1;
         transition: opacity 0.6s var(--motion);
         will-change: opacity;
         pointer-events: none;
@@ -857,7 +857,7 @@ import GalleryItems from './GallaryItems.astro';
         padding: 0;
     }
 
-    /* [1. 크롬/기본 브라우저] ::after에 backdrop-filter(#cross-blur)를 걸어 opacity로 부드럽게 페이드 */
+    /* [1. 크롬/기본 브라우저] 기본 상태에서 backdrop-filter(#cross-blur)가 보이고(opacity: 1), 호버 시 사라짐(opacity: 0) */
     @supports not (-webkit-hyphens: none) {
         .grid-gallery .image-box::after {
             backdrop-filter: url(#cross-blur);
@@ -865,7 +865,7 @@ import GalleryItems from './GallaryItems.astro';
 
         @media (hover: hover) and (pointer: fine) {
             .grid-gallery .grid-item:hover .image-box::after {
-                opacity: 1;
+                opacity: 0;
             }
         }
 
@@ -873,12 +873,12 @@ import GalleryItems from './GallaryItems.astro';
             .grid-gallery .grid-item:active .image-box::after,
             .grid-gallery .grid-item:focus-within .image-box::after,
             .grid-gallery .grid-item.is-active .image-box::after {
-                opacity: 1;
+                opacity: 0;
             }
         }
     }
 
-    /* [2. 사파리 전용] 싱글 갤러리와 동일하게 #cross-blur-safari 및 GPU 레이어 가속 적용 */
+    /* [2. 사파리 전용] 기본 상태에서 #cross-blur-safari가 씌워져 있고, 호버/터치 시 선명해짐 */
     @supports (-webkit-hyphens: none) {
         .grid-gallery .safari-blur-layer {
             display: block;
@@ -886,7 +886,7 @@ import GalleryItems from './GallaryItems.astro';
             inset: 0;
             z-index: 2;
             pointer-events: none;
-            opacity: 0;
+            opacity: 1;
             transition: opacity 0.6s var(--motion);
             -webkit-transform: translate3d(0, 0, 0);
             transform: translate3d(0, 0, 0);
@@ -909,20 +909,26 @@ import GalleryItems from './GallaryItems.astro';
             backface-visibility: hidden;
         }
 
-        /* PC 호버 (사파리) */
+        /* 사파리 기본 상태: 호버 안 했을 때 #cross-blur-safari 필터 적용 */
+        .grid-gallery .image-box:not(:has(.safari-blur-layer)) img {
+            -webkit-filter: url('#cross-blur-safari');
+            filter: url('#cross-blur-safari');
+        }
+
+        /* PC 호버 (사파리): 호버 시 필터 해제되어 선명하게 표시 */
         @media (hover: hover) and (pointer: fine) {
             .grid-gallery .grid-item:hover .image-box::after,
             .grid-gallery .grid-item:hover .safari-blur-layer {
-                opacity: 1;
+                opacity: 0;
             }
 
             .grid-gallery .grid-item:hover .image-box:not(:has(.safari-blur-layer)) img {
-                -webkit-filter: url('#cross-blur-safari');
-                filter: url('#cross-blur-safari');
+                -webkit-filter: none;
+                filter: none;
             }
         }
 
-        /* 모바일 터치 (사파리) */
+        /* 모바일 터치 (사파리): 터치 시 필터 해제되어 선명하게 표시 */
         @media (max-width: 768px) {
             .grid-gallery .grid-item:active .image-box::after,
             .grid-gallery .grid-item:focus-within .image-box::after,
@@ -930,14 +936,14 @@ import GalleryItems from './GallaryItems.astro';
             .grid-gallery .grid-item:active .safari-blur-layer,
             .grid-gallery .grid-item:focus-within .safari-blur-layer,
             .grid-gallery .grid-item.is-active .safari-blur-layer {
-                opacity: 1;
+                opacity: 0;
             }
 
             .grid-gallery .grid-item:active .image-box:not(:has(.safari-blur-layer)) img,
             .grid-gallery .grid-item:focus-within .image-box:not(:has(.safari-blur-layer)) img,
             .grid-gallery .grid-item.is-active .image-box:not(:has(.safari-blur-layer)) img {
-                -webkit-filter: url('#cross-blur-safari');
-                filter: url('#cross-blur-safari');
+                -webkit-filter: none;
+                filter: none;
             }
         }
     }
@@ -964,7 +970,6 @@ import GalleryItems from './GallaryItems.astro';
     /* 🔥 1. PC 환경: 마우스 호버 시 작동 */
     @media (hover: hover) and (pointer: fine) {
         .grid-gallery .grid-item:hover .image-box img {
-            transform: scale(1.05);
             filter: url(#cross-blur);
         }
 
@@ -983,7 +988,6 @@ import GalleryItems from './GallaryItems.astro';
     @media (max-width: 768px) {
         .grid-gallery .grid-item:active .image-box img,
         .grid-gallery .grid-item:focus-within .image-box img {
-            transform: scale(1.05);
             filter: url(#cross-blur);
         }
 
