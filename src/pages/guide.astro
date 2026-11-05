@@ -1,0 +1,707 @@
+---
+import Layout from '@components/Layout.astro';
+---
+
+<Layout title="guide">
+<p class="guide-ui-title">
+    <span aria-hidden="true">[**]</span>
+    본 가이드의 내용은 안내를 위한 것으로, 
+    실제 계약 조건은 개별 계약 문서를 우선하여 따릅니다.
+</p>
+
+
+<section class="guide-container">
+    <div class="guide-ui-content">
+        
+        <ul class="guide-ui-list">
+            <li tabindex="0" role="button" aria-expanded="false">
+                <span>[00]</span>전체
+            </li>
+            <li tabindex="0" role="button" aria-expanded="false" aria-controls="01">
+                <span>[01]</span>진행 방식
+            </li>
+            <li tabindex="0" role="button" aria-expanded="false" aria-controls="02">
+                <span>[02]</span>일정
+            </li>
+            <li tabindex="0" role="button" aria-expanded="false" aria-controls="03">
+                <span>[03]</span>결제
+            </li>
+            <li tabindex="0" role="button" aria-expanded="false" aria-controls="04">
+                <span>[04]</span>취소 및 환급 규정
+            </li>
+            <li tabindex="0" role="button" aria-expanded="false" aria-controls="05">
+                <span>[05]</span>디자인 시안
+            </li>
+            <li tabindex="0" role="button" aria-expanded="false" aria-controls="06">
+                <span>[06]</span>디자인 수정
+            </li>
+            <li tabindex="0" role="button" aria-expanded="false" aria-controls="07">
+                <span>[07]</span>제공 파일
+            </li>
+            <li tabindex="0" role="button" aria-expanded="false" aria-controls="08">
+                <span>[08]</span>저작권
+            </li>
+            <li tabindex="0" role="button" aria-expanded="false" aria-controls="09">
+                <span>[09]</span>오류 및 확인
+            </li>
+            <li tabindex="0" role="button" aria-expanded="false" aria-controls="10">
+                <span>[10]</span>추가금
+            </li>
+        </ul>
+    </div>
+
+    <div class="guide-content">
+
+        <section id="01" class="guide-content-section">
+            <div class="guide-title"><span>[01]</span>진행 방식</div>
+            <div class="guide-subtitle">기본 방식</div>
+            <div class="guide-text">
+                상담 완료 후 개별 계약 링크를 보내드려요.<br>
+                링크에서 계약 내용을 확인하고, 계약 조건 및 개인정보 수집에 동의한 뒤 완료 버튼을 누르면 그 내역이 순(sn)의 메일로 전송돼요.<br>
+                이후 <b>계좌 입금이 확인되면 순(sn)이 최종 계약서를 고객님 이메일로 전달하여 계약이 체결돼요.</b>
+            </div>
+
+            <div class="guide-subtitle">소통 채널</div>
+            <div class="guide-text">
+                계약 체결 이후의 <b>주요 소통은 이메일</b>을 통해 이루어져요.
+            </div>
+            <div class="guide-subtitle">답변 기한</div>
+            <div class="guide-text">
+                원활한 진행을 위해 <b>7영업일</b> 안으로 답변 부탁드려요.
+            </div>
+            <div class="guide-subtitle">검토 지연</div>
+            <div class="guide-text">
+                중간 검토 답변이 지연되면, 추가금 방지를 위해 다음 단계로 진행돼요.
+            </div>
+            <div class="guide-subtitle">필수 협조 지연</div>
+            <div class="guide-text">
+                진행을 위한 필수 협조(자료 전달 등)가 지연되면, 이로 인해 작업 범위의 변경이 이루어져요.<br>
+                작업 범위의 변경은 작업 범위를 축소하거나, 작업 범위를 유지하되 기존 마감일 이후 작업을 추가하여(추가 작업) 추가금이 발생하는 등의 처리가 이루어질 수 있어요.
+            </div>
+
+        </section>
+
+        <section id="02" class="guide-content-section">
+            <div class="guide-title"><span>[02]</span>일정</div>
+            <div class="guide-subtitle">기본 일정</div>
+            <div class="guide-text">
+                기본 일정은 결제 이전 전달되는 상품 페이지 링크 내용을 기준으로 진행돼요.
+            </div>
+
+            <div class="guide-subtitle">일정 흐름</div>
+            <div class="guide-text">
+                신청 및 접수 &rarr; 계약 조건 확인 &rarr; 선급금 &rarr; 중간 검토 &rarr; 중도금(필요시) &rarr; 디자인 수정 &rarr; 잔금 결제
+            </div>
+            <div class="guide-subtitle">일정 변경</div>
+            <div class="guide-text">
+                일정 변경의 요청에는 먼저 진행 단계와 작업 범위를 기준으로 가능 여부를 안내드려요.<br>
+                모든 일정 변경은 비용과 연결될 수 있으므로 반드시 사전 합의 후 진행돼요.
+            </div>
+
+        </section>
+
+        <section id="03" class="guide-content-section">
+            <div class="guide-title"><span>[03]</span>입금 및 정산</div>
+            
+            <div class="guide-subtitle">입금 방식</div>
+            <div class="guide-text">
+                금액은 분할로 입금해 주셔야 해요.<br>
+                선급금과 잔금, 필요에 따라 중도금이 포함돼요.
+            </div>
+            
+            <div class="guide-subtitle">분할 방식</div>
+            <div class="guide-text">
+                기본은 선급금 50%, 잔금 50%로 나누어 입금해요.<br>
+                상황에 따라 선급금 35%, 중도금 35%, 잔금 30%로 나누어 진행할 수도 있어요.
+            </div>
+            
+            <div class="guide-subtitle">전자 세금계산서</div>
+            <div class="guide-text">
+                입금 전 사업자등록증 사본과 함께 요청해 주세요.<br>
+                분할 입금 방식에 맞춰 각 입금 건마다 각각 발행돼요.
+            </div>
+        </section>
+
+        <section id="04" class="guide-content-section">
+            <div class="guide-title"><span>[04]</span>취소 및 환급 규정</div>
+            <div class="guide-subtitle">제작 시작 전</div>
+            <div class="guide-text">
+                제작이 시작되기 전에는 취소 요청시 전액 환급이 가능해요.
+            </div>
+            <div class="guide-subtitle">제작 시작 후</div>
+            <div class="guide-text">
+                재판매가 불가능한 주문 제작형 디지털 컨텐츠는 제작 시작 이후 법률상 원칙적으로 환급이 제한되어 있어요.<br>
+                다만, 순(sn)에서는 더 나은 서비스를 위해 <b>이미 발생한 직접 비용을 제외한 금액</b>이 있을 때에 한하여 환급이 가능해요.<br>
+                환급시 제작 중이었거나 이미 제작된 파일은 제공되지 않아요.<br>
+            </div>
+            <div class="guide-subtitle">취소 요청 및 환급 절차</div>
+            <div class="guide-text">
+                취소 및 환급 요청을 주시면 환급 가능 여부와 금액을 안내해드려요.<br>
+                환급이 확정되면, 영업일 기준 3일 이내에 순(sn)이 고객님 계좌로 환급금을 직접 입금해 드려요.<br>
+                은행 사정에 따라 입금 확인 시점은 조금 차이가 날 수 있어요.
+            </div>
+
+        </section>
+
+        <section id="05" class="guide-content-section">
+            <div class="guide-title"><span>[05]</span>디자인 시안</div>
+            <div class="guide-subtitle">제공 목적</div>
+            <div class="guide-text">
+                디자인 시안은 검토를 목적으로 제공되는 자료로, 최종 결과물이 아니기에 이용이 제한돼요.
+            </div>
+            <div class="guide-subtitle">시안 개수</div>
+            <div class="guide-text">
+                디자인 기획 단계에서 정리된 방향을 기준으로 하나의 시안 또는 같은 분위기의 여러 시안으로 제안드려요.
+            </div>
+
+        </section>
+
+        <section id="06" class="guide-content-section">
+            <div class="guide-title"><span>[06]</span>디자인 수정</div>
+            <div class="guide-subtitle">기본 수정의 범위</div>
+            <div class="guide-text">
+                기본 수정은 7영업일, 1회 제공돼요.<br>
+                7영업일 내로 수정이 가능하다면, 한 부분이 아닌 여러 부분의 수정 요청도 가능해요.<br>
+                다만, 기존 디자인의 방향과 구조를 유지하는 범위 안에서 요청 부탁드려요.
+            </div>
+            <div class="guide-subtitle">추가 수정</div>
+            <div class="guide-text">
+                기본 수정(7일, 1회) 내에서 처리할 수 없는 수정 요청은 추가 수정으로 처리될 수 있어요.<br>
+                추가 수정으로 처리해야할 때에는 미리 안내해 드릴게요.<br>
+            </div>
+
+        </section>
+
+        <section id="07" class="guide-content-section">
+            <div class="guide-title"><span>[07]</span>제공 파일</div>
+            <div class="guide-subtitle">제공 시점</div>
+            <div class="guide-text">
+                파일은 잔금 결제 완료 이후에 제공돼요.
+            </div>
+            <div class="guide-subtitle">제공 방식</div>
+            <div class="guide-text">
+                이메일로 발송돼요.
+            </div>
+            <div class="guide-subtitle">제공 기간</div>
+            <div class="guide-text">
+                발송일로부터 30일간 재제공 가능해요.
+            </div>
+            <div class="guide-subtitle">파일 형식</div>
+            <div class="guide-text">
+                기본 이미지는 JPG, PNG, WEBP, PDF 등으로 제공되며, 
+                활용성을 고려한 로고 디자인은 어도비 일러스트레이터(.ai) 형식으로 제공돼요.<br><br>
+                웹 퍼블리싱 및 개발 결과물은 HTML, CSS, JavaScript 등의 정적 웹 파일로 전달돼요.
+                (서버 구축이나 백엔드 연동 같은 전문 서버 세팅은 포함되지 않으며,
+                파일 업로드나 도메인 연결은 <b>사전 협의된 범위</b> 내에서 지원해 드려요.)<br><br>
+                그 외에 필요한 형식은 계약 시 사전 협의에 따라 진행돼요.
+            </div>
+            <div class="guide-subtitle">파일 해상도</div>
+            <div class="guide-text">
+                파일 해상도는 높을수록 선명하지만, 해상도가 높을수록 용량도 함께 커지니 사용 목적에 맞는 해상도 선택이 중요해요.<br><br>
+                웹용 파일은 일반적으로 72dpi를 사용해요.<br>
+                인쇄용 파일은 일반적으로 300dpi를 사용해요.
+            </div>
+
+        </section>
+
+        <section id="08" class="guide-content-section">
+            <div class="guide-title"><span>[08]</span>저작권</div>
+            <div class="guide-subtitle">저작권의 귀속</div>
+            <div class="guide-text">
+                최종 디지털 컨텐츠의 저작권은 순(sn)에 귀속돼요.
+            </div>
+            <div class="guide-subtitle">이용 가능 범위</div>
+            <div class="guide-text">
+                계약된 목적과 상업적 용도(브랜드 운영 및 웹사이트 구동 등)에 한해 자유롭게 이용하실 수 있어요.
+            </div>
+            <div class="guide-subtitle">금지 행위</div>
+            <div class="guide-text">
+                편집, 변형, 재가공<br>
+                제3자에게 재판매, 양도, 재배포,<br>
+                제3자를 통한 임의 수정 및 이용은 금지 행위에 속해요.
+            </div>
+        </section>
+
+        <section id="09" class="guide-content-section">
+            <div class="guide-title"><span>[09]</span>오류 및 확인</div>
+
+            <div class="guide-subtitle">확인 기한 및 방법</div>
+            <div class="guide-text">
+                시안 등의 결과물을 받아보신 날로부터 <b>7영업일 이내</b>에 내용 확인 후, 오류가 있다면 서면(이메일 등)으로 알려주세요.<br><br>
+                기간 이후, 해당 결과물은 검토 완료된 것으로 보아 다음 단계로 진행돼요.
+            </div>
+
+            <div class="guide-subtitle">오류 해당</div>
+            <div class="guide-text">
+                문구 오류(오탈자, 내용 누락 등),<br>
+                합의된 내용의 누락(이미지 등),<br>
+                잘못 포함된 내용,<br>
+                정상 최신 버전 프로그램에서의 파일 열람 불가,<br>
+                제작 및 전달 과정상 실수
+            </div>
+
+            <div class="guide-subtitle">오류 미해당</div>
+            <div class="guide-text">
+                주관적 해석 차이,<br>
+                전체 방향 변경(기획, 컨셉, 레이아웃 등),<br>
+                제공 자료의 오류,<br>
+                계약 및 협의된 범위를 넘어서는 요청,<br>
+                추가 및 수정 작업
+            </div>
+
+            <div class="guide-subtitle">오류의 처리</div>
+            <div class="guide-text">
+                기획 및 합의된 내용과 명백히 일치하지 않는 오류는 무상 수정으로 처리돼요.
+            </div>
+
+            <div class="guide-subtitle">순(sn) 부담 비용</div>
+            <div class="guide-text">
+                오류를 바로잡기 위한 최소한의 비용(동일 조건 재인쇄 및 소재 교체),<br>
+                내부 작업 비용
+            </div>
+
+            <div class="guide-subtitle">순(sn) 미부담 비용</div>
+            <div class="guide-text">
+                외부 매체 비용(예: 전광판, 지면 광고 등),<br>
+                추가 제작 사양 비용(예: 후가공 등),<br>
+                직접 관련이 없는 추가 비용(예: 추가 인쇄, 광고 규모 확대 등),<br>
+                외부 서비스 비용(예: 광고 대행비 등)
+            </div>
+
+        </section>
+
+        <section id="10" class="guide-content-section">
+            <div class="guide-title"><span>[10]</span>추가금</div>
+            <div class="guide-subtitle">발생 상황</div>
+            <div class="guide-text">
+                추가 수정,<br>
+                추가 작업,<br>
+                결제 지연으로 인한 일정 변경,<br>
+                필수 협조 지연으로 인한 일정 변경 등
+            </div>
+            <div class="guide-subtitle">산정 기준</div>
+            <div class="guide-text">
+                추가금은 작업량, 난이도, 소요 시간에 따라 비용이 정해져요.
+            </div>
+            <div class="guide-subtitle">순(sn)의 지연 배상금</div>
+            <div class="guide-text">
+                대금 지급 완료일 이후 3영업일 안으로
+                최종 파일을 제공하지 않았을 때의 배상금은<br>
+                (총금액 × 0.00125 × 지연 일수)로 계산돼요.<br>
+                (단, 예기치 못한 상황으로 인한 상황은 배상금 발생 상황에서 제외되며,<br>
+                배상금의 총액은 계약 총금액의 10%를 초과할 수 없어요.)
+            </div>
+
+            <div class="guide-subtitle">대금 지급 지연 추가금</div>
+            <div class="guide-text">
+                대금 지급 요청 이후 3영업일 안으로
+                대금 지급이 이루어지지 않았을 때의 추가금은<br>
+                (미납된 분할금 × 0.15 ÷ 365 × 지연 일수)로 계산돼요.<br>
+                (단, 추가금 총액은 계약 총금액의 10%를 초과할 수 없어요.)
+            </div>
+
+        </section>
+
+    </div>
+</section>
+
+</Layout>
+
+<!-- var -->
+<style>
+b { font-weight: 550; }
+
+.guide-container {
+--num-width: 50px; /* '[01]' width */
+--sub-width: 150px; /* subtitle width */
+}
+
+@media (max-width: 768px) {
+.guide-container {
+    --sub-width: 100%; /* subtitle width */
+}
+}
+</style>
+
+<!-- notice ui -->
+<style>
+.guide-ui-title span {
+    display: flex;
+    flex: 0 0 50px;
+    width: 50px;
+    font-weight: 350;
+}
+
+.guide-ui-title {
+    display: flex;
+    flex: 1;
+    /* padding-top: var(--sn-top); */
+    margin-bottom: 20px;
+
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+
+    font-weight: 400;
+}
+
+@media (min-width: 768px) {
+    .guide-ui-title {
+        padding-bottom: 10px;
+    }
+}
+</style>
+
+<!-- layout -->
+<style>
+.guide-container {
+    display: flex;
+    width: 100%;
+
+    gap: var(--num-width);
+
+    word-break: keep-all;
+    overflow-wrap: break-word;
+
+    line-height: 1.5;
+}
+
+/* left index */
+.guide-ui-content {
+    flex: 1;
+    
+    display: flex;
+    align-items: flex-start;
+    line-height: 1.2;
+}
+
+/* right content */
+.guide-content {
+    flex: 2;
+    
+}
+</style>
+
+<!-- index -->
+<style>
+.guide-ui-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.guide-ui-list li {
+    display: block;
+
+    opacity: 0.5;
+
+    font-weight: 400;
+    line-height: 1;
+
+    cursor: pointer;
+    transition: all 1s var(--motion);
+}
+.guide-ui-list li:not(:last-child) {
+  padding-bottom: 5px;
+}
+
+.guide-ui-list li span {
+    display: inline-block;
+    width: var(--num-width);
+
+    font-weight: 350;
+}
+
+</style>
+
+<!-- active / hover -->
+<style>
+.guide-ui-list li.active {
+    font-weight: 550;
+    opacity: 1;
+}
+.guide-ui-list li.active span {
+    font-weight: 500;
+    opacity: 1;
+}
+
+.guide-link-btn:hover .text-roller span:first-child {
+    transform: translateY(-100%);
+}
+.guide-link-btn:hover .text-roller span:last-child {
+    transform: translateY(0);
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+
+.guide-ui-list li:hover { 
+    font-weight: 550;
+    opacity: 1;
+}
+.guide-ui-list li:hover span { 
+    font-weight: 500;
+    opacity: 1;
+}
+
+}
+
+</style>
+
+<!-- content -->
+<style>
+.guide-content-section {
+    display: grid;
+    grid-template-columns: var(--num-width) var(--sub-width) 1fr;
+    align-content: flex-start;
+
+    transition: all 1s var(--motion);
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+    padding-bottom: 0;
+
+    overflow: hidden;
+    visibility: hidden;
+}
+/* content: open */
+.guide-content-section.is-open {
+    height: auto;
+    opacity: 1;
+    pointer-events: auto;
+    padding-bottom: var(--num-width); /* section gap */
+    visibility: visible;
+}
+
+/* last sction(or only section) */
+.guide-content-section.is-open:not(:has(~ .guide-content-section.is-open)) {
+    padding-bottom: 0 !important;
+}
+
+
+/* title */
+.guide-title {
+    grid-column: 1 / 4;
+    display: flex;
+    align-items: flex-start;
+    
+    font-weight: 550;
+    word-spacing: 0rem;
+
+    margin-bottom: 10px; /* gap between title / text */
+}
+
+/* num in title */
+.guide-title span {
+    display: inline-block;
+    flex-shrink: 0;
+
+    font-weight: 500;
+
+    width: var(--num-width);
+}
+
+/* sub title */
+.guide-subtitle {
+    grid-column: 2 / 3;
+
+    flex: 1;
+    flex-shrink: 0;
+    
+    font-weight: 550;
+    margin-right: 5px;
+    padding-bottom: 5px;
+}
+/* text */
+.guide-text {
+    grid-column: 3 / 4;
+    flex-shrink: 0;
+
+    padding-bottom: 20px;
+}
+.guide-text:last-of-type {
+    padding-bottom: 0 !important;
+}
+</style>
+
+
+
+<!-- mob -->
+<style>
+@media (max-width: 768px) {
+    .guide-container {
+        flex-direction: column; 
+        gap: 0;
+    }
+
+    .guide-content-section.is-open {
+        padding-bottom: 0 !important;
+        margin-top: var(--num-width);
+    }
+    .guide-content-section.is-open:not(.is-open ~ .is-open) {
+        margin-top: 10px !important;
+    }
+
+    .guide-ui-title {
+        margin-bottom: 20px;
+    }
+
+    .guide-ui-content {
+        flex-direction: column;
+        width: 100%;
+
+        display: flex; 
+        align-items: stretch;
+    }
+
+    .guide-content {
+        flex: none;
+        width: 100%;
+    }
+
+    .guide-ui-list {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: var(--sn-gap);
+    }
+
+    .guide-ui-list li {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .guide-content-section {
+        box-sizing: border-box;
+
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .guide-subtitle,
+    .guide-text {
+        width: 100%;
+        margin: 0;
+
+        padding-left: var(--num-width);
+    }
+
+    /* link */
+
+    .guide-link-btn {
+        width: calc(100% - var(--num-width));
+        margin-left: var(--num-width); /* add space */
+    }
+}
+</style>
+
+
+
+
+<!-- index js -->
+<script>
+const listItems = document.querySelectorAll('.guide-ui-list li');
+const sections = document.querySelectorAll('.guide-content-section');
+
+function updateLastOpenSection() {
+    sections.forEach(sec => sec.classList.remove('last-open'));
+    
+    const openSecs = Array.from(sections).filter(sec => sec.classList.contains('is-open'));
+    
+    if (openSecs.length > 0) {
+        openSecs[openSecs.length - 1].classList.add('last-open');
+    }
+}
+
+// open / close
+function toggleSection(sec, isExpanding) {
+    if (!sec) return;
+
+    if (isExpanding) {
+        sec.classList.add('is-open'); // open
+        sec.setAttribute('aria-hidden', 'false');
+        sec.style.height = "0px"; // start: 0
+        sec.offsetHeight; 
+        sec.style.height = sec.scrollHeight + "px";
+
+        setTimeout(() => {
+            if (sec.classList.contains('is-open')) sec.style.height = "auto";
+        }, 350);
+    } else {
+        sec.style.height = sec.offsetHeight + "px";
+        sec.offsetHeight; 
+        sec.classList.remove('is-open'); // close
+        sec.setAttribute('aria-hidden', 'true');
+        sec.style.height = "0px";
+    }
+}
+
+listItems.forEach((item, index) => {
+
+    const runToggle = () => {
+        if (index === 0) {
+            const isExpanding = !item.classList.contains('active');
+            listItems.forEach(li => {
+                li.classList.toggle('active', isExpanding);
+                li.setAttribute('aria-expanded', isExpanding); 
+            });
+            sections.forEach(sec => toggleSection(sec, isExpanding));
+            updateLastOpenSection(); 
+            return;
+        }
+
+        const isExpanding = !item.classList.contains('active');
+        item.classList.toggle('active', isExpanding);
+        item.setAttribute('aria-expanded', isExpanding);
+        
+        toggleSection(sections[index - 1], isExpanding);
+
+        const subItems = Array.from(listItems).slice(1);
+        const allActive = subItems.every(li => li.classList.contains('active'));
+        listItems[0].classList.toggle('active', allActive);
+        listItems[0].setAttribute('aria-expanded', allActive);
+
+        updateLastOpenSection();
+    };
+
+    item.addEventListener('click', runToggle);
+
+    item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            runToggle();
+        }
+    });
+});
+</script>
+<!-- index link js -->
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const hash = window.location.hash;
+    if (!hash) return;
+
+    const targetIds = hash.split(/[\/#]+/).filter(Boolean);
+    let firstTargetSection = null;
+
+    targetIds.forEach(id => {
+        const targetSection = document.getElementById(id);
+        if (!targetSection) return;
+
+        if (!firstTargetSection) firstTargetSection = targetSection;
+
+        const targetIndex = Array.prototype.indexOf.call(sections, targetSection);
+        if (targetIndex !== -1) {
+            const targetListItem = listItems[targetIndex + 1];
+            if (targetListItem && !targetListItem.classList.contains('active')) {
+                targetListItem.click(); 
+            }
+        }
+    });
+
+    if (firstTargetSection) {
+        setTimeout(() => {
+            firstTargetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 400); 
+    }
+});
+</script>

@@ -167,7 +167,8 @@ import Layout from '@components/Layout.astro';
                     <span>수집 항목</span>
                     <span>
                         [필수] 이름(또는 상호), 연락처, 전자우편 주소,<br>
-                        사업자등록번호, 계좌번호 등 대금 결제 및 세무 증빙에 필요한 정보
+                        사업자등록번호, 계좌번호 등 대금 결제 및 세무 증빙에 필요한 정보,<br>
+                        계약 동의 시 접속 IP 주소 및 동의 일시
                     </span>
                 </div>
                 <div class="privacy-subparagraph">
@@ -240,7 +241,8 @@ import Layout from '@components/Layout.astro';
                     <span>이용 목적</span>
                     <span>
                         웹사이트 문의 폼 접수 시<br>
-                        알림 및 안내 메일 자동 발송
+                        알림 및 안내 메일 자동 발송,<br>
+                        계약 체결 및 동의 내역(IP 및 시간 증빙 기록 포함) 자동 메일 발송
                     </span>
                 </div>
             </div>
@@ -788,7 +790,8 @@ ul.privacy-index {
 
 /* each index */
 ul.privacy-index li {
-    display: block;
+    display: flex;
+    align-items: flex-start;
 
     color: var(--txt-color);
 
@@ -810,6 +813,7 @@ ul.privacy-index li span {
     width: var(--num-width); 
     font-variation-settings: "wght" 400;
     pointer-events: none;
+    flex-shrink: 0;
 }
 </style>
 <!-- index: active / hover -->
