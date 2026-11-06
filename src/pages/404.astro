@@ -1,3 +1,61 @@
 ---
-return Astro.redirect('/');
+// 불필요한 리다이렉트 코드는 전부 삭제했습니다.
 ---
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>페이지를 찾을 수 없습니다 | sn</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f9f9f9;
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      text-align: center;
+      color: #333;
+    }
+    .error-container {
+      padding: 40px;
+    }
+    h1 {
+      font-size: 100px;
+      margin: 0;
+      letter-spacing: -2px;
+      color: #111;
+    }
+    p {
+      font-size: 18px;
+      margin-top: 10px;
+      margin-bottom: 40px;
+      color: #666;
+    }
+    .home-btn {
+      display: inline-block;
+      padding: 14px 32px;
+      background-color: #111;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: background-color 0.2s ease;
+    }
+    .home-btn:hover {
+      background-color: #444;
+    }
+  </style>
+</head>
+<body>
+  <div class="error-container">
+    <h1>404</h1>
+    <p>존재하지 않는 주소를 입력하셨거나<br>요청하신 페이지의 주소가 변경, 삭제되었습니다.</p>
+    <a href="/" class="home-btn">홈으로 돌아가기</a>
+  </div>
+</body>
+</html>
