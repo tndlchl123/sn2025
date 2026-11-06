@@ -1,85 +1,182 @@
 ---
+const contractPassword = "1234";
+
 import Layout from '@components/Layout.astro';
 import ContractInfo from '@contract/ContractInfo.astro';
 import ContractTxt from '@contract/ContractTxt.astro';
+
+// 2. 고객사별 데이터 세팅 영역
+export function getStaticPaths() {
+  return [
+    // ============================================================================
+    // 고객: brand (접속 링크: sn2025.co.kr/contract/brand)
+    // ============================================================================
+    {
+      params: { id: 'sn' }, // URL 주소 뒤에 붙을 난수나 이름
+      props: {
+
+        // [01] 계약 기본 정보
+        basicInfo: {
+            title: '디지털 컨텐츠 디자인 용역 계약',
+            contractDate: '2025년 01월 01일',
+            workStart: '2025년 01월 01일 부터',
+            workEnd: '2025년 03월 01일 까지',
+            modDays: '영업일 기준 7일',
+            modStart: '2025년 02월 03일 부터',
+            modEnd: '2025년 02월 10일 까지',
+            modCount: '1회',
+        },
+
+        // [02] 수요자(고객) 정보
+        clientInfo: {
+            company: 'brand',
+            ceo: '홍길동',
+            bizNum: '123-45-67890',
+            address: '서울특별시 12345',
+            phone: '010-1234-5678',
+            email: 'tndlchl123@naver.com',
+        },
+
+        // [03] 계약 금액 설정 (공급가액과 비율만 적으면 부가세/총액/분할금이 자동 계산됩니다)
+        priceInfo: {
+            supplyPrice: 258320000, // 공급가액 (부가세 10% 제외 금액, 숫자만 입력)
+            downPercent: 35,        // 선급금 비율 (%)
+            midPercent: 35,         // 중도금 비율 (% - 중도금이 없으면 0으로 입력)
+            balancePercent: 30,     // 잔금 비율 (%)
+        },
+
+        // [04] 제공 범위 표 데이터
+        scopeGroups: [
+            {
+                category: '디자인 기획',
+                items: [
+                    { quantity: 1, name: '시장 조사 보고서', spec: '1920 × 1080 (px)', format: 'PDF', dpi: 72, usage: '웹' },
+                    { quantity: 1, name: '디자인 기획 보고서', spec: '1920 × 1080 (px)', format: 'PDF', dpi: 72, usage: '웹' },
+                ],
+            },
+            {
+                category: '디자인 제작',
+                items: [
+                    { quantity: 1, name: '로고 디자인 가로형', spec: '297 × 210 (mm)', format: 'AI', dpi: 300, usage: '인쇄' },
+                    { quantity: 1, name: '로고 디자인 세로형', spec: '210 × 297 (mm)', format: 'AI', dpi: 300, usage: '인쇄' },
+                    { quantity: 1, name: '로고 디자인 심볼형', spec: '297 × 297 (mm)', format: 'AI', dpi: 300, usage: '인쇄' },
+                    { quantity: 3, name: '로고 디자인 목업', spec: '1920 × 1080 (px)', format: 'PNG', dpi: 72, usage: '웹' },
+                    { quantity: 3, name: '로고 디자인 목업', spec: '1080 × 1920 (px)', format: 'PNG', dpi: 72, usage: '웹' },
+                    { quantity: 1, name: '웹 배너 이미지', spec: '1920 × 1080 (px)', format: 'JPG', dpi: 72, usage: '웹' },
+                ],
+            },
+            {
+                category: '가이드 제작',
+                items: [
+                    { quantity: 1, name: '브랜드 가이드북', spec: '297 × 210 (mm)', format: 'PDF', dpi: 300, usage: '인쇄' },
+                ],
+            },
+        ]
+      }
+    }
+  ];
+}
+
+// 3. 위에서 매칭된 고객 데이터를 변수로 꺼내기
+const { basicInfo, clientInfo, priceInfo, scopeGroups } = Astro.props;
 ---
 
 <Layout title="contract">
+<!-- 비밀번호 잠금 화면 -->
+<div id="pw-overlay" class="pw-overlay">
+    <input type="password" id="pw-input" placeholder="Enter password" autofocus />
+</div>
 
-<!-- 계약 내용 -->
-<ContractTxt />
+<div id="pdf-content" class="contract-pdf-container">
 
-<!-- 계약 기본 정보 -->
-<ContractInfo />
+    <!-- 계약 내용 (제1조 ~ 제21조) -->
+    <ContractTxt />
 
-<!-- 동의/완료 -->
-<div class="contract-final-submit">
-    <form id="contactForm" class="custom-form" novalidate>
-        
-        <!-- 1. 계약 내용 전체 동의 체크박스 -->
-        <div class="form-group contact-group">
-            <label class="contact-label" for="agreeAll">
-                <input type="checkbox" id="agreeAll" name="agreeAll" required />
-                <span class="custom-checkbox"></span>
-                <span class="contact-text translate" data-ko="위 계약 내용(제1조~제21조)을 모두 숙지하였으며, 이에 전체 동의합니다." data-en="I have read and fully agree to all terms and conditions above.">
-                    위 계약 내용(제1조~제21조)을 모두 숙지하였으며, 이에 전체 동의합니다.
+    <!-- 계약 기본 정보 ([01] ~ [04]) -->
+    <ContractInfo 
+    basicInfo={basicInfo} 
+    clientInfo={clientInfo} 
+    priceInfo={priceInfo} 
+    scopeGroups={scopeGroups} 
+    />
+
+    <!-- 동의/완료 -->
+    <div class="contract-final-submit">
+        <form id="contactForm" class="custom-form" novalidate>
+            
+            <!-- 1. 계약 내용 전체 동의 체크박스 -->
+            <div class="form-group contact-group">
+                <label class="contact-label" for="agreeAll">
+                    <input type="checkbox" id="agreeAll" name="agreeAll" required />
+                    <span class="custom-checkbox"></span>
+                    <span class="contact-text translate" data-ko="위 계약 내용(제1조~제21조)을 모두 숙지하였으며, 이에 전체 동의합니다." data-en="I have read and fully agree to all terms and conditions above.">
+                        위 계약 내용을 모두 숙지하였으며, 이에 전체 동의합니다.
+                    </span>
+                </label>
+                <span class="error-msg" id="agreeAllError"></span>
+            </div>
+
+            <!-- 2. IP 및 시간 수집 안내 문구 -->
+            <div class="agreement-notice">
+                <span class="translate" data-ko="본 계약의 동의 및 기록 증명을 위하여, 아래의 동의 버튼을 통해 동의 시각과 접속 IP 주소가 수집되며 계약 문서와 함께 양측에 이메일로 발송됩니다." data-en="To verify consent and maintain records for this agreement, your consent timestamp and IP address will be collected via the consent button below and emailed to both parties along with the contract document.">
+                    본 계약의 동의 및 기록 증명을 위하여, 아래의 동의 버튼을 통해 동의 시각과 접속 IP 주소가 수집되며 계약 문서와 함께 양측에 이메일로 발송됩니다.
                 </span>
-            </label>
-            <span class="error-msg" id="agreeAllError"></span>
-        </div>
+            </div>
 
-        <!-- 2. IP 및 시간 수집 안내 문구 -->
-        <div class="agreement-notice">
-            <span class="translate" data-ko="본 계약의 동의 및 기록 증명을 위하여, 아래의 동의 버튼을 통해 동의 시각과 접속 IP 주소가 수집되며 계약 문서와 함께 양측에 이메일로 발송됩니다." data-en="To verify consent and maintain records for this agreement, your consent timestamp and IP address will be collected via the consent button below and emailed to both parties along with the contract document.">
-                본 계약의 동의 및 기록 증명을 위하여, 아래의 동의 버튼을 통해 동의 시각과 접속 IP 주소가 수집되며 계약 문서와 함께 양측에 이메일로 발송됩니다.
-            </span>
-        </div>
+            <!-- 3. 개인정보처리방침 동의 체크박스 (링크 포함) -->
+            <div class="form-group contact-group">
+                <label class="contact-label" for="privacyAgree">
+                    <input type="checkbox" id="privacyAgree" name="privacyAgree" required />
+                    <span class="custom-checkbox"></span>
+                    <span class="contact-text">
+                        <a href="/privacy" target="_blank" class="privacy-link translate" data-ko="개인정보처리방침" data-en="Privacy Policy">개인정보처리방침</a><span class="translate" data-ko="을 확인하였으며, IP 및 시간 정보 수집에 동의합니다." data-en=" has been read, and I agree to the collection of my IP and timestamp.">을 확인하였으며, IP 및 시간 정보 수집에 동의합니다.</span>
+                    </span>
+                </label>
+                <span class="error-msg" id="privacyAgreeError"></span>
+            </div>
 
-        <!-- 3. 개인정보처리방침 동의 체크박스 (링크 포함) -->
-        <div class="form-group contact-group">
-            <label class="contact-label" for="privacyAgree">
-                <input type="checkbox" id="privacyAgree" name="privacyAgree" required />
-                <span class="custom-checkbox"></span>
-                <span class="contact-text">
-                    <a href="/privacy" target="_blank" class="privacy-link translate" data-ko="개인정보처리방침" data-en="Privacy Policy">개인정보처리방침</a><span class="translate" data-ko="을 확인하였으며, IP 및 시간 정보 수집에 동의합니다." data-en=" has been read, and I agree to the collection of my IP and timestamp.">을 확인하였으며, IP 및 시간 정보 수집에 동의합니다.</span>
-                </span>
-            </label>
-            <span class="error-msg" id="privacyAgreeError"></span>
-        </div>
+            <!-- 3.5 결제 계좌 안내 및 입금자명 확인/Pdf 안내 -->
+            <div class="form-group contact-group">
+                
+                <div class="bank-account-info">
+                    <span class="bank-account-title">입금 계좌 안내</span><br>
+                    
+                    <!-- ⭐️ 계좌번호 복사 버튼 영역 -->
+                    <button type="button" class="copy-account-btn" id="copyAccountBtn" aria-label="계좌번호 복사">
+                        <span class="account-number" id="accountNumber">토스뱅크 1234-5678-9012</span>
+                        
+                        <!-- 복사 SVG 아이콘 -->
+                        <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        
+                        <!-- 복사 완료 시 나타날 텍스트 -->
+                        <span class="copy-success-msg" id="copySuccessMsg">복사 완료</span>
+                    </button>
+                    <br><br>
 
-        <!-- 3.5 결제 계좌 안내 및 입금자명 확인/Pdf 안내 -->
-		<div class="form-group contact-group">
-			
-			<div class="bank-account-info">
-				<span class="bank-account-title">입금 계좌 안내</span><br>
-				
-				<!-- ⭐️ 계좌번호 복사 버튼 영역 -->
-				<button type="button" class="copy-account-btn" id="copyAccountBtn" aria-label="계좌번호 복사">
-					<span class="account-number" id="accountNumber">토스뱅크 1234-5678-9012</span>
-					
-					<!-- 복사 SVG 아이콘 -->
-					<svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-						<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-						<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-					</svg>
-					
-					<!-- 복사 완료 시 나타날 텍스트 -->
-					<span class="copy-success-msg" id="copySuccessMsg">복사 완료</span>
-				</button>
-				<br><br>
+                    <span class="bank-account-title">송금 완료 후 아래 버튼을 통해 계약서 PDF 저장</span>
+                </div>
 
-                <span class="bank-account-title">송금 완료 후 아래 버튼을 통해 계약서 PDF 저장</span>
-			</div>
+            </div>
 
-		</div>
+            <!-- 4. 최종 제출 버튼 -->
+            <button type="submit" id="finalSubmitBtn" class="translate" data-ko="계약 동의 및 전송" data-en="Agree and Submit">
+                계약 동의 및 전송
+            </button>
+            <div id="finalSubmitResult" class="form-result"></div>
+            
+        </form>
+    </div>
 
-        <!-- 4. 최종 제출 버튼 -->
-        <button type="submit" id="finalSubmitBtn" class="translate" data-ko="계약 동의 및 전송" data-en="Agree and Submit">
-            계약 동의 및 전송
+    <!-- 하단 플로팅 툴바 (아이콘 제거, PDF 텍스트 버튼 단독) -->
+    <div class="print-toolbar">
+        <button id="pdf-download-btn" class="pdf-btn" title="계약서 PDF 다운로드">
+            계약서 저장
         </button>
-        <div id="finalSubmitResult" class="form-result"></div>
-        
-    </form>
+    </div>
+
 </div>
 
 </Layout>
@@ -131,6 +228,61 @@ import ContractTxt from '@contract/ContractTxt.astro';
 /* content */
 .contract-content {
     flex: 2;
+}
+</style>
+
+<!-- password -->
+<style is:global>
+.pw-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    background-color: rgba(var(--bg-color-r), 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.pw-overlay input {
+    background-color: rgba(var(--txt-color-r), 0.05);
+    border: 1px solid rgba(var(--txt-color-r), 0.2);
+    border-radius: 100px;
+    color: var(--txt-color);
+    text-align: center;
+    padding: var(--pad);
+    width: 30%;
+    outline: none;
+    font-family: var(--font-mono);
+    transition: all 0.5s var(--motion, ease);
+}
+
+/* 마우스를 올렸을 때 살짝 진해짐 */
+.pw-overlay input:hover {
+    border-color: rgba(var(--txt-color-r), 0.5);
+    background-color: rgba(var(--txt-color-r), 0.08);
+}
+
+/* 클릭해서 입력 중일 때 테두리가 꽉 차며 강조됨 */
+.pw-overlay input:focus {
+    border-color: var(--txt-color);
+    background-color: rgba(var(--txt-color-r), 0.12);
+}
+
+.pw-overlay input::placeholder {
+    color: var(--txt-color);
+    opacity: 0.4;
+    font-size: 1rem;
+}
+
+/* 스크롤 방지 */
+body.is-locked { overflow: hidden; }
+
+/* 인쇄 시 숨김 */
+@media print {
+    .pw-overlay { display: none !important; }
 }
 </style>
 
@@ -664,129 +816,206 @@ ul.contract-index li.active span {
 }
 </style>
 
-<!-- 인쇄 설정 -->
-<style>
-/* 컨테이너 가로폭 */
-.contract-container,
-#pdf-content {
-  width: 100%;
+<!-- 하단 툴바 모션 및 시스템 인쇄(가로형 PDF) 최적화 스타일 -->
+<style is:global>
+/* ==========================================================================
+   1. 하단 플로팅 툴바 (PDF 텍스트 버튼 & 스크롤 모션)
+   ========================================================================== */
+.print-toolbar {
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 4px;
+  border-radius: 100px;
+  border: 0.1px rgba(255, 255, 255, 0.2) solid;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: transform 0.4s var(--motion), opacity 0.4s var(--motion);
+  opacity: 1;
 }
 
-/* 🌐 공통 섹션 스타일 (하위 컴포넌트의 section 및 .contract-content-section 모두 적용) */
-.contract-container :global(section),
-.contract-container :global(.contract-content-section) {
-  width: 100%;
-  aspect-ratio: 297 / 209.5;
-
-  /* 인쇄 여백 */
-  padding: 15mm;
-
-  background-color: #fff;
-  margin-bottom: 5vh;
-  color: #111;
-  overflow: hidden;
-  page-break-inside: avoid;
-  break-inside: avoid;
-  box-sizing: border-box;
+.print-toolbar.is-hidden {
+  transform: translateX(-50%) translateY(120px);
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* 섹션 내부 첫 요소(h2 등)의 기본 위쪽 여백 제거 */
-.contract-container :global(section > :first-child),
-.contract-container :global(.contract-content-section > :first-child) {
-  margin-top: 0;
+.print-toolbar .pdf-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: var(--pad);
+  border-radius: 100px;
+  font-family: var(--font-mono, monospace);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 1s var(--motion, ease);
 }
 
-/* 📱 모바일 웹 화면 기본 세로형 */
-@media screen and (max-width: 767px) {
-  .contract-container :global(section),
-  .contract-container :global(.contract-content-section) {
-    aspect-ratio: 210 / 296.5;
-  }
+.print-toolbar .pdf-btn:hover {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
-/* 🎛️ 버튼 클릭 시 가로/세로 판형 전환 */
-:global(body.is-landscape) .contract-container :global(section),
-:global(body.is-landscape) .contract-container :global(.contract-content-section) {
-  aspect-ratio: 297 / 209.5;
-}
-
-:global(body.is-portrait) .contract-container :global(section),
-:global(body.is-portrait) .contract-container :global(.contract-content-section) {
-  aspect-ratio: 210 / 296.5;
-}
-
-/* 📥 PDF 다운로드 버튼 클릭 순간: 섹션 간격(5vh) 제거 및 칼같은 페이지 나눔 */
-:global(body.pdf-exporting) .contract-container :global(section),
-:global(body.pdf-exporting) .contract-container :global(.contract-content-section) {
-  margin: 0;
-  page-break-after: always;
-  break-after: page;
-}
-
-:global(body.pdf-exporting) .contract-container :global(section:last-of-type),
-:global(body.pdf-exporting) .contract-container :global(.contract-content-section:last-of-type) {
-  page-break-after: auto;
-  break-after: auto;
-}
-
-/* 🖨️ 시스템 인쇄(Cmd + P) 시 스타일 */
+/* ==========================================================================
+   2. 시스템 인쇄 / PDF 저장 (@media print - 가장자리 검은 배경 완벽 제거)
+   ========================================================================== */
 @page {
   size: A4 landscape;
-  margin: 0;
+  margin: 15mm;
+  background-color: #ffffff;
 }
 
 @media print {
-  :global(html),
-  :global(body) {
-    background: transparent;
+  /* html:root 및 html:root body로 전역 다크모드 선택자(html body)보다 높은 우선순위 확보 */
+  html:root,
+  html:root body,
+  html:root main,
+  html:root #pdf-content {
+    --bg-color: #ffffff;
+    --txt-color: #111111;
+    --hd-color: #111111;
+    --bg-color-r: #111111;
+    --txt-color-r: #ffffff;
+    --guide-txt: #111111;
+    background-color: #ffffff;
+    background: #ffffff;
+    color: #111111;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  html:root,
+  html:root body {
+    display: block;
+    width: 100%;
+    min-height: auto;
     margin: 0;
     padding: 0;
-    display: block;
   }
 
-  :global(header),
-  :global(footer),
-  :global(nav),
-  :global(.main-header),
-  :global(.reveal-footer),
-  :global(.print-toolbar) {
-    display: none;
+  /* 인쇄에 불필요한 헤더, 푸터, 툴바, 복사 버튼 숨김 */
+  header,
+  footer,
+  .site-footer,
+  nav,
+  .main-header,
+  .reveal-footer,
+  .print-toolbar,
+  #pdf-content .pay-notice-scroll,
+  #pdf-content .copy-account-btn,
+  #pdf-content .error-msg,
+  #pdf-content #finalSubmitBtn,
+  #pdf-content #finalSubmitResult {
+    display: none !important;
   }
 
-  :global(.print-toolbar) {
-    display: none;
+  /* 본문 내부 모든 텍스트 검은색 고정 */
+  #pdf-content,
+  #pdf-content section,
+  #pdf-content div,
+  #pdf-content p,
+  #pdf-content span,
+  #pdf-content label,
+  #pdf-content a,
+  #pdf-content strong {
+    color: #111111;
   }
 
-  .contract-container,
   #pdf-content {
     display: block;
+    width: 100%;
     margin: 0;
     padding: 0;
   }
 
-  .contract-container :global(section),
-  .contract-container :global(.contract-content-section) {
-    width: 297mm;
-    height: 209.5mm;
-    margin: 0;
-    padding: 15mm;
-    page-break-after: always;
-    break-after: page;
+  /* 인덱스 + 조문 좌우 배치를 세로 블록으로 분리 */
+  #pdf-content .contract-container,
+  #pdf-content .contract-content-index,
+  #pdf-content .contract-content {
+    display: block;
+    width: 100%;
   }
 
-  :global(body.is-portrait) .contract-container :global(section),
-  :global(body.is-portrait) .contract-container :global(.contract-content-section) {
-    width: 210mm;
-    height: 296.5mm;
+  #pdf-content .contract-content-index {
+    margin-bottom: 24px;
   }
 
-  .contract-container :global(section:last-of-type),
-  .contract-container :global(.contract-content-section:last-of-type) {
-    page-break-after: auto;
-    break-after: auto;
+  /* 조문 전체(.contract-content-section)는 페이지 경계에서 자연스럽게 넘어가도록 허용 */
+  #pdf-content .contract-content-section {
+    display: block;
+    width: 100%;
+    margin: 0 0 24px 0;
+    padding-bottom: 12px;
+    page-break-inside: auto;
+    break-inside: auto;
+  }
+
+  /* 조문 내부의 개별 문단/항목 단위는 페이지 경계에서 반토막 나지 않도록 보호 */
+  #pdf-content .contract-article,
+  #pdf-content .contract-paragraph,
+  #pdf-content .contract-subparagraph,
+  #pdf-content .contract-item,
+  #pdf-content .contract-agree-wrap {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* 계약 기본 정보([01]~[04])는 새 페이지에서 시작 */
+  #pdf-content .pay-notice-wrap {
+    display: block;
+    width: 100%;
+    page-break-before: always;
+    break-before: page;
+  }
+
+  #pdf-content .pay-notice-section-wrap {
+    display: block;
+    width: 100%;
+  }
+
+  #pdf-content .pay-notice-section {
+    display: block;
+    width: 100%;
+    margin: 0 0 28px 0;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* 공급자 / 수요자 가로 배치를 세로로 전환 */
+  #pdf-content .pay-notice-body,
+  #pdf-content .pay-notice-body.is-two-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  #pdf-content .pay-notice-contractors,
+  #pdf-content .pay-notice-price {
+    width: 100%;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  #pdf-content .pay-notice-scope {
+    width: 100%;
+    overflow: visible;
+  }
+
+  #pdf-content .pay-notice-scope-row,
+  #pdf-content .contract-final-submit,
+  #pdf-content #contract-print-stamp {
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 }
 </style>
@@ -902,14 +1131,102 @@ function initcontractHashLink() {
 document.addEventListener('astro:page-load', initcontractHashLink);
 </script>
 
+<!-- password -->
+<script is:inline define:vars={{ contractPassword }}>
+(function() {
+    // 프런트매터에서 넘어온 값을 TARGET_PW에 할당
+    const TARGET_PW = contractPassword;
 
-<!-- 통합 스크립트: 복사/체크박스/전송/도장생성/라이트모드인쇄 -->
-<script>
-document.addEventListener("astro:page-load", () => {
-    // 1. 계좌번호 복사 기능
+    document.body.classList.add('is-locked');
+
+    const initPasswordLock = () => {
+        const pwInput = document.getElementById('pw-input');
+        const pwOverlay = document.getElementById('pw-overlay');
+
+        if (pwInput && pwOverlay) {
+            setTimeout(() => pwInput.focus(), 50);
+
+            pwInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    if (pwInput.value === TARGET_PW) {
+                        pwOverlay.style.display = 'none';
+                        document.body.classList.remove('is-locked');
+                    } else {
+                        pwInput.value = '';
+                    }
+                }
+            });
+        }
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initPasswordLock);
+    } else {
+        initPasswordLock();
+    }
+    document.addEventListener('astro:page-load', initPasswordLock);
+})();
+</script>
+
+<!-- 통합 스크립트: 스크롤툴바모션 / 도장영구보존 / 자동인쇄팝업 / 계좌복사 / 동의전송 -->
+<script is:inline>
+function initContractSystem() {
+    const toolbar = document.querySelector('.print-toolbar');
+    const btnDownload = document.getElementById('pdf-download-btn');
+    const form = document.getElementById('contactForm'); 
+    const submitBtn = document.getElementById('finalSubmitBtn');
+    const resultDiv = document.getElementById('finalSubmitResult');
+    const rootEl = document.getElementById('contract-info-root');
+
+    const companyName = rootEl && rootEl.dataset.company ? rootEl.dataset.company.trim() : 'sn';
+    const storageKey = `sn_contract_agreed_${companyName}`;
+
+    // ------------------------------------------------------------------
+    // 1. 하단 툴바 스크롤 방향 감지 모션 (아래로 내리면 숨김, 위로 올리면 표시)
+    // ------------------------------------------------------------------
+    let lastScrollY = window.scrollY;
+    let isScrolling = false;
+
+    window.addEventListener('scroll', () => {
+        if (!toolbar) return;
+        if (!isScrolling) {
+            window.requestAnimationFrame(() => {
+                const currentScrollY = window.scrollY;
+                if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                    toolbar.classList.add('is-hidden');
+                } else {
+                    toolbar.classList.remove('is-hidden');
+                }
+                lastScrollY = currentScrollY;
+                isScrolling = false;
+            });
+            isScrolling = true;
+        }
+    });
+
+    // ------------------------------------------------------------------
+    // 2. 시스템 인쇄(PDF 저장) 실행 공통 함수
+    // ------------------------------------------------------------------
+    const triggerPrintPdf = () => {
+        // 닫혀있는 아코디언 조문이 있다면 모두 펼치기
+        const contractSections = document.querySelectorAll('.contract-content-section');
+        contractSections.forEach(sec => sec.classList.add('is-open'));
+
+        // 고객사 상호명을 PDF 저장 기본 파일명으로 자동 세팅
+        const originalTitle = document.title;
+        document.title = `${companyName}_디지털_컨텐츠_디자인_용역계약서`;
+
+        window.print();
+
+        document.title = originalTitle;
+    };
+
+    // ------------------------------------------------------------------
+    // 3. 계좌번호 복사 기능
+    // ------------------------------------------------------------------
     const copyBtn = document.getElementById('copyAccountBtn');
     if (copyBtn) {
-        copyBtn.addEventListener('click', async () => {
+        copyBtn.onclick = async () => {
             const textToCopy = "123456789012"; 
             try {
                 await navigator.clipboard.writeText(textToCopy);
@@ -918,10 +1235,12 @@ document.addEventListener("astro:page-load", () => {
             } catch (err) {
                 alert('복사에 실패했습니다.');
             }
-        });
+        };
     }
 
-    // 2. 조문별 개별 동의 체크박스 자동 주입
+    // ------------------------------------------------------------------
+    // 4. 조문별 개별 동의 체크박스 자동 주입
+    // ------------------------------------------------------------------
     const sections = document.querySelectorAll('.contract-content-section');
     if (sections.length > 0) {
         sections.forEach((section, idx) => {
@@ -939,14 +1258,14 @@ document.addEventListener("astro:page-load", () => {
                 `;
                 agreeDiv.innerHTML = `
                     <div class="form-group contact-group" style="width: 100%;">
-                        <label class="contact-label" for="${checkboxId}">
-                            <input type="checkbox" id="${checkboxId}" name="${checkboxId}" class="auto-contract-checkbox" required aria-invalid="false" />
-                            <span class="custom-checkbox"></span>
-                            <span class="contact-text translate" data-ko="위 내용을 확인하였으며 이에 동의합니다." data-en="I have read and agree to the above terms.">
-                                위 내용을 확인하였으며 이에 동의합니다.
-                            </span>
-                        </label>
-                        <span class="error-msg" id="${checkboxId}Error" aria-hidden="true"></span>
+                    <label class="contact-label" for="${checkboxId}">
+                        <input type="checkbox" id="${checkboxId}" name="${checkboxId}" class="auto-contract-checkbox" required aria-invalid="false" />
+                        <span class="custom-checkbox"></span>
+                        <span class="contact-text translate" data-ko="위 내용을 확인하였으며 이에 동의합니다." data-en="I have read and agree to the above terms.">
+                        위 내용을 확인하였으며 이에 동의합니다.
+                        </span>
+                    </label>
+                    <span class="error-msg" id="${checkboxId}Error" aria-hidden="true"></span>
                     </div>
                 `;
                 section.appendChild(agreeDiv);
@@ -954,9 +1273,6 @@ document.addEventListener("astro:page-load", () => {
         });
     }
 
-    const form = document.getElementById('contactForm'); 
-    const submitBtn = document.getElementById('finalSubmitBtn');
-    const resultDiv = document.getElementById('finalSubmitResult');
     if (!form) return;
 
     let isAlreadySubmitted = false;
@@ -974,35 +1290,74 @@ document.addEventListener("astro:page-load", () => {
     const privacyAgreeEl = document.getElementById('privacyAgree');
     const autoCheckboxes = document.querySelectorAll('.auto-contract-checkbox');
 
-    if (agreeAllEl) {
-        agreeAllEl.addEventListener('change', (e) => {
-            const isChecked = e.target.checked;
-            autoCheckboxes.forEach(cb => {
-                cb.checked = isChecked;
-                if (isChecked) clearSingleError(cb); 
-            });
-            if (isChecked) clearSingleError(agreeAllEl);
-        });
-    }
+    // ------------------------------------------------------------------
+    // 5. [핵심] 전자 계약 동의 완료 증명 도장 생성 & 완료 상태 고정 함수
+    // ------------------------------------------------------------------
+    const renderAgreementStamp = (submitTime) => {
+        isAlreadySubmitted = true;
+        const isEnglish = localStorage.getItem('isEnglish') === 'true';
 
-    const uncheckAgreeAll = () => {
-        if (agreeAllEl && agreeAllEl.checked) agreeAllEl.checked = false;
+        let stampEl = document.getElementById('contract-print-stamp');
+        if (!stampEl) {
+            stampEl = document.createElement('div');
+            stampEl.id = 'contract-print-stamp';
+            stampEl.style.cssText = `
+                margin-top: 20px;
+                padding: 15px;
+                border: 1px solid var(--txt-color);
+                background-color: var(--bg-color);
+                border-radius: var(--rad);
+                font-size: 1rem;
+                line-height: 1.5;
+                color: var(--txt-color);
+                text-align: left;
+            `;
+            form.appendChild(stampEl);
+        }
+        stampEl.innerHTML = `
+            <p style="margin: 0; color: var(--txt-color);"><strong>[전자 계약 동의 완료 증명]</strong></p>
+            <p style="margin: 0; color: var(--txt-color);">동의 일시: ${submitTime}</p>
+            <p style="margin: 0; color: var(--txt-color);">동의 내역: 본 계약 문서의 전체 조문 및 개인정보 수집·이용 동의 완료</p>
+        `;
+
+        // 모든 체크박스 체크 상태로 고정
+        autoCheckboxes.forEach(cb => {
+            cb.checked = true;
+            cb.setAttribute('onclick', 'return false;');
+        });
+        if (agreeAllEl) {
+            agreeAllEl.checked = true;
+            agreeAllEl.setAttribute('onclick', 'return false;');
+        }
+        if (privacyAgreeEl) {
+            privacyAgreeEl.checked = true;
+            privacyAgreeEl.setAttribute('onclick', 'return false;');
+        }
+
+        // 완료 버튼을 '계약서 PDF 저장' 버튼으로 전환하여 언제든 재출력 가능하게 유지
+        if (submitBtn) {
+            updateElementLang(submitBtn, '계약서 PDF 저장', 'Save Contract PDF', isEnglish);
+            submitBtn.disabled = false;
+        }
     };
 
-    autoCheckboxes.forEach(cb => {
-        cb.addEventListener('change', (e) => {
-            if (!e.target.checked) uncheckAgreeAll();
-            else clearSingleError(e.target);
-        });
-    });
-
-    if (privacyAgreeEl) {
-        privacyAgreeEl.addEventListener('change', (e) => {
-            if (!e.target.checked) uncheckAgreeAll();
-            else clearSingleError(e.target);
-        });
+    // 페이지 접속 시 이전에 동의한 기록이 있으면 도장과 체크박스 즉시 복원
+    const savedStampTime = localStorage.getItem(storageKey);
+    if (savedStampTime) {
+        renderAgreementStamp(savedStampTime);
     }
 
+    // 하단 플로팅 [PDF] 버튼 클릭 연결
+    if (btnDownload) {
+        btnDownload.onclick = (e) => {
+            e.preventDefault();
+            triggerPrintPdf();
+        };
+    }
+
+    // ------------------------------------------------------------------
+    // 6. 폼 검증 및 제출 -> 이메일 발송 -> 도장 생성 -> 인쇄창 자동 팝업
+    // ------------------------------------------------------------------
     const showError = (id, koMsg, enMsg) => {
         const input = document.getElementById(id);
         const errorSpan = document.getElementById(`${id}Error`); 
@@ -1050,43 +1405,41 @@ document.addEventListener("astro:page-load", () => {
         });
     };
 
-    // ⭐️ 3. 인쇄 창 호출 시 강제 라이트모드 변환 및 원상복구 로직 (버튼 가로채기 방지)
-    let previousBodyStyles = null;
-    let previousRootStyles = null;
+    if (agreeAllEl) {
+        agreeAllEl.onchange = (e) => {
+            const isChecked = e.target.checked;
+            autoCheckboxes.forEach(cb => {
+                cb.checked = isChecked;
+                if (isChecked) clearSingleError(cb); 
+            });
+            if (isChecked) clearSingleError(agreeAllEl);
+        };
+    }
 
-    window.addEventListener('beforeprint', () => {
-        previousBodyStyles = document.body.style.cssText;
-        previousRootStyles = document.documentElement.style.cssText;
-        
-        document.body.classList.add('pdf-exporting');
-        document.body.style.setProperty('background-color', '#ffffff', 'important');
-        document.body.style.setProperty('color', '#111111', 'important');
-        document.documentElement.style.setProperty('--bg-color', '#ffffff', 'important');
-        document.documentElement.style.setProperty('--txt-color', '#111111', 'important');
-    });
-
-    window.addEventListener('afterprint', () => {
-        document.body.classList.remove('pdf-exporting');
-        if (previousBodyStyles !== null) document.body.style.cssText = previousBodyStyles;
-        if (previousRootStyles !== null) document.documentElement.style.cssText = previousRootStyles;
-    });
-
-    const triggerContractPrint = () => {
-        const contractSections = document.querySelectorAll('.contract-content-section');
-        contractSections.forEach(sec => sec.classList.add('is-open'));
-        // DOM 업데이트를 위해 0.1초 대기 후 인쇄(PDF) 창 호출
-        setTimeout(() => {
-            window.print();
-        }, 100);
+    const uncheckAgreeAll = () => {
+        if (agreeAllEl && agreeAllEl.checked) agreeAllEl.checked = false;
     };
 
-    // ⭐️ 4. 통합 폼 제출 (데이터 전송 -> 도장 생성 -> 라이트모드 인쇄)
-    form.addEventListener('submit', async (e) => {
+    autoCheckboxes.forEach(cb => {
+        cb.onchange = (e) => {
+            if (!e.target.checked) uncheckAgreeAll();
+            else clearSingleError(e.target);
+        };
+    });
+
+    if (privacyAgreeEl) {
+        privacyAgreeEl.onchange = (e) => {
+            if (!e.target.checked) uncheckAgreeAll();
+            else clearSingleError(e.target);
+        };
+    }
+
+    form.onsubmit = async (e) => {
         e.preventDefault();
 
-        // 💡 이미 전송된 상태면 바로 인쇄창 띄우기
+        // 이미 제출 완료된 상태라면 바로 PDF 저장(인쇄) 창 실행
         if (isAlreadySubmitted) {
-            triggerContractPrint();
+            triggerPrintPdf();
             return;
         }
 
@@ -1122,7 +1475,6 @@ document.addEventListener("astro:page-load", () => {
 
         try {
             const submitTime = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
-            const rootEl = document.getElementById('contract-info-root');
 
             const payload = {
                 type: 'contract_agreement',
@@ -1146,57 +1498,31 @@ document.addEventListener("astro:page-load", () => {
             });
             
             if (response.ok) {
-                isAlreadySubmitted = true;
+                // 1) 브라우저에 동의 일시 백업 (새로고침해도 도장 유지)
+                localStorage.setItem(storageKey, submitTime);
 
-                // ⭐️ [중요] 도장이 무조건 화면에 확실히 보이도록 직접 인라인 스타일 주입
-                let stampEl = document.getElementById('contract-print-stamp');
-                if (!stampEl) {
-                    stampEl = document.createElement('div');
-                    stampEl.id = 'contract-print-stamp';
-                    // 화면에서도 눈에 확 띄는 밝은 박스로 강제 표시
-                    stampEl.style.cssText = `
-                        margin-top: 20px;
-                        padding: 15px;
-                        border: 1px solid var(--hd-color, #111111);
-                        background-color: rgba(128,128,128,0.1);
-                        border-radius: 4px;
-                        font-size: 0.95rem;
-                        line-height: 1.6;
-                        color: var(--hd-color, #111111);
-                        text-align: left;
-                    `;
-                    form.appendChild(stampEl);
-                }
-                stampEl.innerHTML = `
-                    <p style="margin: 0 0 8px 0;"><strong>[전자 계약 동의 완료 증명]</strong></p>
-                    <p style="margin: 0;">동의 일시: ${submitTime}</p>
-                    <p style="margin: 0;">동의 내역: 제1조 ~ 제21조 전체 조문 및 개인정보 수집·이용 동의 완료</p>
-                `;
+                // 2) 도장 렌더링 및 버튼 상태 전환
+                renderAgreementStamp(submitTime);
 
                 if (resultDiv) {
                     resultDiv.className = 'form-result success translate';
                     updateElementLang(
                         resultDiv,
-                        '계약 동의 전송이 완료되었습니다. 고객님의 이메일로도 자동 발송되었으며, 뜨는 인쇄 창에서 [PDF로 저장]을 선택해 직접 보관하실 수도 있습니다.',
-                        'Agreement submitted. A confirmation has been sent to your email, and you can also select [Save as PDF] in the print dialog to keep your copy.',
+                        '계약 동의 전송이 완료되었습니다. 인쇄 창에서 [PDF로 저장]을 선택해 계약서를 보관해 주세요.',
+                        'Agreement submitted. Please select [Save as PDF] in the print dialog to save your contract.',
                         isEnglish
                     );
                     resultDiv.style.display = 'block';
                 }
 
-                autoCheckboxes.forEach(cb => cb.setAttribute('onclick', 'return false;'));
-                if (agreeAllEl) agreeAllEl.setAttribute('onclick', 'return false;');
-                if (privacyAgreeEl) privacyAgreeEl.setAttribute('onclick', 'return false;');
-
-                if (submitBtn) {
-                    updateElementLang(submitBtn, '계약서 PDF 저장 / 인쇄', 'Save as PDF / Print Contract', isEnglish);
-                    submitBtn.disabled = false;
-                }
-
-                // 폼 전송 및 도장 렌더링이 모두 끝나면 자동으로 인쇄 창 호출 (여기서 beforeprint 이벤트 발동 -> 라이트모드 됨)
-                triggerContractPrint();
+                // 3) 도장이 화면에 찍힌 직후 0.3초 뒤 자동으로 PDF 저장(인쇄) 창 오픈
+                setTimeout(() => {
+                    triggerPrintPdf();
+                }, 300);
 
             } else {
+                const errData = await response.json();
+                alert("🚨 워커 에러 원인: " + errData.error);
                 throw new Error('전송 실패');
             }
         } catch (err) {
@@ -1211,6 +1537,9 @@ document.addEventListener("astro:page-load", () => {
                 submitBtn.disabled = false;
             }
         }
-    });
-});
+    };
+}
+
+document.addEventListener('astro:page-load', initContractSystem);
+document.addEventListener('DOMContentLoaded', initContractSystem);
 </script>

@@ -49,12 +49,20 @@ import Layout from '@components/Layout.astro';
       </div>
       
       <div class="form-group">
-        <input type="text" id="phone" name="phone" class="translate" data-ko="번호" data-en="Phone" inputmode="numeric" maxlength="11" placeholder="번호" autocomplete="tel" />
+        <input type="text" id="phone" name="phone" class="translate" data-ko="전화번호" data-en="Phone" inputmode="numeric" maxlength="11" placeholder="전화번호" autocomplete="tel" />
         <span class="error-msg" id="phoneError"></span>
       </div>
       
       <div class="form-group">
-        <textarea id="message" name="message" class="translate" data-ko="내용" data-en="Details" placeholder="내용" rows="1" required></textarea>
+        <textarea 
+          id="message" 
+          name="message" 
+          class="translate" 
+          data-ko="내용 (첨부파일 포함 문의: contact@sn2025.co.kr)" 
+          data-en="Details (Have files? contact@sn2025.co.kr)" 
+          placeholder="내용 (첨부파일 포함 문의: contact@sn2025.co.kr)" 
+          rows="1" 
+          required></textarea>
         <span class="error-msg" id="messageError"></span>
       </div>
 
@@ -172,13 +180,23 @@ import Layout from '@components/Layout.astro';
 }
 
 
-.title-row span:last-child {
-  padding-right: 0.1em;
-}
+
 .title-row span:first-child {
   margin-left: -0.03em; 
 }
+.title-row span:last-child {
+  padding-right: 0.05em;
+}
 
+/* 1. 한글 모드일 때 (.title-row의 마지막 span 전체 공통 적용) */
+html:not([lang="en"]) .title-row span:last-child {
+  font-weight: 400 !important;
+}
+
+/* 2. 영어 모드일 때 (.title-row의 마지막 span 전체 공통 적용) */
+html[lang="en"] .title-row span:last-child {
+  font-weight: 500 !important;
+}
 
 </style>
 
@@ -306,221 +324,213 @@ import Layout from '@components/Layout.astro';
 
 <!-- 입력폼 -->
 <style>
-    .contact-container {
-      width: 100%;
-      padding-top: 2vh;
-      --form-fs: 1rem;
-    }
+  .contact-container {
+    width: 100%;
+    padding-top: 2vh;
+    --form-fs: 1rem;
+  }
 
-    .custom-form {
+  .custom-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    
+    --form-bg: rgba(var(--txt-color-r), 0.2);
+    --form-text: var(--txt-color);
+
+    --input-h: calc(40px + 0.25vw);
+    --input-pad: 0 calc(5px + 0.2vw);
+  }
+
+  .form-group {
       display: flex;
       flex-direction: column;
-      gap: 1px;
-      
-      --form-bg: rgba(var(--txt-color-r), 0.2);
-      --form-text: var(--txt-color);
-
-      --input-h: calc(40px + 0.25vw);
-      --input-pad: 0 calc(5px + 0.2vw);
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-    }
-    
-    /* ====================================================
-       2. 입력창 3개 + 텍스트영역 + 제출버튼 높이 완벽 통일 
-       ==================================================== */
-    .custom-form input,
-    .custom-form textarea,
-    .custom-form button[type="submit"],
-    #message {
-        width: 100%;
-        display: block;
-        
-        font-family: inherit; 
-        line-height: 1.5; 
-
-        background-color: rgba(var(--txt-color-r), 0.2);
-        color: var(--form-text);
-        border: none;
-        outline: none;
-        
-        font-size: var(--form-fs);
-
-        /* 3. 예전 코드의 핵심: height 하나로 모든 박스 높이를 절대 고정! */
-        height: var(--input-h);
-
-        padding: var(--input-pad);
-        padding-left: var(--pad);
-
-        border-radius: var(--rad);
-        
-        transition: background-color 1.5s var(--motion), color 0.5s var(--motion), border 0.5s var(--motion);
-    }
-
-    /* 영문 폰트 패밀리 지정 */
-    .custom-form input, .custom-form textarea, .custom-form button[type="submit"], #message, .custom-form button[type="submit"], .privacy-label {
-      font-family: var(--font-mono);
-    }
-
-
-    .custom-form input { overflow: hidden; }
-    .custom-form textarea { overflow: visible; }
-
-    /* 입력창/제출: 호버/포커스 */
-    .custom-form input:hover,
-    .custom-form textarea:hover,
-    .custom-form input:focus,
-    .custom-form textarea:focus,
-    .custom-form button[type="submit"]:hover,
-    .custom-form button[type="submit"]:focus {
-        background-color: rgba(var(--txt-color-r), 0.2);
-    }
-    
-    /* ====================================================
-        4. 문의: 내용 칸 (대표님 예전 코드 로직 100% 적용)
-       ==================================================== */
-    #message {
-        resize: none;
-
-        /* 높이는 위에서 var(--input-h)로 완벽히 고정되었으므로, 
-           예전 코드처럼 텍스트에리어 전용 상하 여백만 살짝 줍니다. */
-        /* 전체높이(약 40px) - 줄간격(약 24px) = 16px. 이를 위아래로 나누면 약 8px 정도가 세로 중앙에 옵니다. */
-        padding-block: calc(8px + 0.125vw); 
-
-        overflow: auto; 
-        scrollbar-width: none; 
-    }
-
-    /* 플레이스 홀더 */
-    .custom-form input::placeholder, .custom-form textarea::placeholder,
-    .custom-form input::-webkit-input-placeholder,
-    .custom-form textarea::-webkit-input-placeholder,
-    .custom-form input::-moz-placeholder,
-    .custom-form textarea::-moz-placeholder { color: var(--txt-color); opacity: 0.5; }
-
-    /* ====================================================
-       개인정보처리방침 동의 박스 스타일
-       ==================================================== */
-    .privacy-group {
-    }
-
-    .privacy-label {
-      display: flex;
-      align-items: center;
+      gap: 5px;
+  }
+  
+  /* ====================================================
+      2. 입력창 3개 + 텍스트영역 + 제출버튼 높이 완벽 통일 
+      ==================================================== */
+  .custom-form input,
+  .custom-form textarea,
+  .custom-form button[type="submit"],
+  #message {
       width: 100%;
-      box-sizing: border-box;
+      display: block;
       
+      font-family: inherit; 
+      line-height: 1.5; 
+
+      background-color: rgba(var(--txt-color-r), 0.2);
+      color: var(--form-text);
+      border: none;
+      outline: none;
+      
+      font-size: var(--form-fs);
+
+      /* 3. 예전 코드의 핵심: height 하나로 모든 박스 높이를 절대 고정! */
       height: var(--input-h);
+
       padding: var(--input-pad);
       padding-left: var(--pad);
-      
-      background-color: rgba(var(--txt-color-r), 0.2);
+
       border-radius: var(--rad);
-      transition: background-color 1.5s var(--motion), border 0.5s var(--motion);
       
+      transition: background-color 1.5s var(--motion), color 0.5s var(--motion), border 0.5s var(--motion);
+  }
+
+  /* 영문 폰트 패밀리 지정 */
+  .custom-form input, .custom-form textarea, .custom-form button[type="submit"], #message, .custom-form button[type="submit"], .privacy-label {
+    font-family: var(--font-mono);
+  }
+
+
+  .custom-form input { overflow: hidden; }
+  .custom-form textarea { overflow: visible; }
+
+  /* 입력창/제출: 호버/포커스 */
+  .custom-form input:hover,
+  .custom-form textarea:hover,
+  .custom-form input:focus,
+  .custom-form textarea:focus,
+  .custom-form button[type="submit"]:hover,
+  .custom-form button[type="submit"]:focus {
+      background-color: rgba(var(--txt-color-r), 0.2);
+  }
+  
+  /* ====================================================
+      4. 문의: 내용 칸 (대표님 예전 코드 로직 100% 적용)
+      ==================================================== */
+  #message {
+      resize: none;
+
+      /* 높이는 위에서 var(--input-h)로 완벽히 고정되었으므로, 
+          예전 코드처럼 텍스트에리어 전용 상하 여백만 살짝 줍니다. */
+      /* 전체높이(약 40px) - 줄간격(약 24px) = 16px. 이를 위아래로 나누면 약 8px 정도가 세로 중앙에 옵니다. */
+      padding-block: calc(8px + 0.125vw); 
+
+      overflow: auto; 
+      scrollbar-width: none; 
+  }
+
+  /* 플레이스 홀더 */
+  .custom-form input::placeholder, .custom-form textarea::placeholder,
+  .custom-form input::-webkit-input-placeholder,
+  .custom-form textarea::-webkit-input-placeholder,
+  .custom-form input::-moz-placeholder,
+  .custom-form textarea::-moz-placeholder { color: var(--txt-color); opacity: 0.5; }
+
+  /* ====================================================
+      개인정보처리방침 동의 박스 스타일
+      ==================================================== */
+  .privacy-group {
+  }
+
+  .privacy-label {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    
+    height: var(--input-h);
+    padding: var(--input-pad);
+    padding-left: var(--pad);
+    
+    background-color: rgba(var(--txt-color-r), 0.2);
+    border-radius: var(--rad);
+    transition: background-color 1.5s var(--motion), border 0.5s var(--motion);
+    
+    cursor: pointer;
+  }
+
+  /* 실제 기본 체크박스는 화면에서 숨김 */
+  .privacy-label input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+
+  /* 커스텀 네모 체크박스 (기본: 연하게) */
+  .custom-checkbox {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 12px;
+    
+    border: 1px solid var(--txt-color, #000);
+    background-color: transparent;
+    opacity: 0.5; /* ⭐️ 플레이스홀더처럼 연하게 시작 */
+    position: relative;
+    transition: all 0.5s var(--motion);
+  }
+
+  /* 텍스트 및 링크 스타일 (기본: 연하게) */
+  .privacy-text {
+    color: var(--txt-color, #000);
+    font-size: var(--form-fs);
+    opacity: 0.5; /* ⭐️ 입력창 플레이스홀더(0.5)와 똑같은 투명도 부여 */
+    transition: all 0.5s var(--motion);
+  }
+
+  /* ⭐️ 체크박스를 클릭(체크)했을 때 전체 활성화 */
+  /* 1. 네모 박스 색상 꽉 차고 진해짐 */
+  .privacy-label input[type="checkbox"]:checked ~ .custom-checkbox {
+    opacity: 1;
+    background-color: var(--txt-color, #000); 
+  }
+  /* 2. 글자(개인정보처리방침 내용) 전체 투명도 1로 쨍하게 켜짐 */
+  .privacy-label input[type="checkbox"]:checked ~ .privacy-text {
+    opacity: 1;
+  }
+
+  .privacy-link {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .privacy-link:hover {
+    opacity: 0.7;
+  }
+
+  /* 제출 버튼 세부 조정 */
+  .custom-form button[type="submit"] {
       cursor: pointer;
-    }
+      text-align: left;
+  }
 
-    /* 실제 기본 체크박스는 화면에서 숨김 */
-    .privacy-label input[type="checkbox"] {
-      position: absolute;
-      opacity: 0;
-      cursor: pointer;
-      height: 0;
-      width: 0;
-    }
 
-    /* 커스텀 네모 체크박스 (기본: 연하게) */
-    .custom-checkbox {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      margin-right: 12px;
-      
-      border: 1px solid var(--txt-color, #000);
-      background-color: transparent;
-      opacity: 0.5; /* ⭐️ 플레이스홀더처럼 연하게 시작 */
-      position: relative;
-      transition: all 0.5s var(--motion);
-    }
+  /* ====================================================
+      에러 상태 및 메시지 처리
+      ==================================================== */
+  /* 에러 발생 시 테두리 + 배경색 제거 공통 적용 */
+  .custom-form input.is-invalid,
+  .custom-form textarea.is-invalid,
+  #message.is-invalid,
+  .privacy-group.is-invalid .privacy-label {
+      border: 1px solid var(--txt-color);
+      background-color: var(--bg-color);
+      color: var(--txt-color);
+  }
 
-    /* 텍스트 및 링크 스타일 (기본: 연하게) */
-    .privacy-text {
-      color: var(--txt-color, #000);
+  /* 에러 메시지 */
+  .error-msg { 
+      display: none; 
+      font-size: var(--form-fs); 
+      padding-block: var(--pad); /* 요청하신 패딩 반영 */
+      padding-left: var(--pad);  /* 글자가 너무 왼쪽에 붙지 않게 띄워줌 */
+  }
+  .error-msg.show { display: block; }
+
+  /* 제출 결과 */
+  .form-result {
+      margin-top: 20px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 600;
       font-size: var(--form-fs);
-      opacity: 0.5; /* ⭐️ 입력창 플레이스홀더(0.5)와 똑같은 투명도 부여 */
-      transition: all 0.5s var(--motion);
-    }
+  }
 
-    /* ⭐️ 체크박스를 클릭(체크)했을 때 전체 활성화 */
-    /* 1. 네모 박스 색상 꽉 차고 진해짐 */
-    .privacy-label input[type="checkbox"]:checked ~ .custom-checkbox {
-      opacity: 1;
-      background-color: var(--txt-color, #000); 
-    }
-    /* 2. 글자(개인정보처리방침 내용) 전체 투명도 1로 쨍하게 켜짐 */
-    .privacy-label input[type="checkbox"]:checked ~ .privacy-text {
-      opacity: 1;
-    }
-
-    .privacy-link {
-      text-decoration: underline;
-      text-underline-offset: 3px;
-    }
-    .privacy-link:hover {
-      opacity: 0.7;
-    }
-
-    /* 제출 버튼 세부 조정 */
-    .custom-form button[type="submit"] {
-        cursor: pointer;
-        text-align: left;
-    }
-
-
-    /* ====================================================
-       에러 상태 및 메시지 처리
-       ==================================================== */
-    /* 에러 발생 시 테두리 + 배경색 제거 공통 적용 */
-    .custom-form input.is-invalid,
-    .custom-form textarea.is-invalid,
-    #message.is-invalid,
-    .privacy-group.is-invalid .privacy-label {
-        border: 1px solid var(--txt-color);
-        background-color: var(--bg-color);
-        color: var(--txt-color);
-    }
-
-    /* 에러 메시지 */
-    .error-msg { 
-        display: none; 
-        font-size: var(--form-fs); 
-        padding-block: var(--pad); /* 요청하신 패딩 반영 */
-        padding-left: var(--pad);  /* 글자가 너무 왼쪽에 붙지 않게 띄워줌 */
-    }
-    .error-msg.show { display: block; }
-
-    /* 제출 결과 */
-    .form-result {
-        margin-top: 20px;
-        padding: 16px;
-        border-radius: 8px;
-        text-align: center;
-        font-weight: 600;
-        font-size: var(--form-fs);
-    }
-    .form-result.success {
-        background-color: #e8f5e9;
-        color: #2e7d32;
-    }
-    .form-result.error {
-        background-color: #ffebee;
-        color: #c62828;
-    }
 </style>
 
 <!-- 자바스크립트 동작 및 유효성 검사 -->
@@ -667,7 +677,7 @@ import Layout from '@components/Layout.astro';
         
         if (response.ok) {
           resultDiv.className = 'form-result success translate';
-          updateElementLang(resultDiv, '문의가 성공적으로 접수되었습니다. 감사합니다!', 'Your inquiry has been successfully submitted. Thank you!', isEnglish);
+          updateElementLang(resultDiv, '문의가 성공적으로 접수되었습니다.', 'Your inquiry has been successfully submitted.', isEnglish);
           resultDiv.style.display = 'block';
           form.reset(); 
           

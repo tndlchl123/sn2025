@@ -167,31 +167,11 @@ import GalleryItems from './GallaryItems.astro';
     </div>
 </footer>
 
-<!-- 갤러리 전환용 십자가 블러 SVG 필터 -->
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="width: 0; height: 0; position: absolute; pointer-events: none;" aria-hidden="true" focusable="false">
-    <!-- 크롬/기본 브라우저용 십자가 블러 (stdDeviation 100 적용, 비비드 제거) -->
-    <filter id="cross-blur" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="100 0" result="blurX" />
-        <feGaussianBlur in="SourceGraphic" stdDeviation="0 100" result="blurY" />
-        <feComposite in="blurX" in2="blurY" operator="arithmetic" k1="0" k2="0.5" k3="0.5" k4="0" result="cross" />
-        <feGaussianBlur in="cross" stdDeviation="2" result="softCross" />
-    </filter>
 
-    <!-- 사파리 전용 정적 십자가 블러 (stdDeviation 100 적용, 비비드 제거) -->
-    <filter id="cross-blur-safari" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="100 0" result="blurX" />
-        <feGaussianBlur in="SourceGraphic" stdDeviation="0 100" result="blurY" />
-        <feComposite in="blurX" in2="blurY" operator="arithmetic" k1="0" k2="0.5" k3="0.5" k4="0" result="cross" />
-        <feGaussianBlur in="cross" stdDeviation="2" result="softCross" />
-        <feMerge>
-            <feMergeNode in="SourceGraphic" />
-            <feMergeNode in="softCross" />
-        </feMerge>
-    </filter>
-</svg>
 
 </DesignLayout>
 
+<!-- 다크모드 깜빡임 -->
 <script is:inline>
     (function() {
         // 1. 초기 실행 및 테마/언어 적용 함수
@@ -690,17 +670,7 @@ import GalleryItems from './GallaryItems.astro';
 
 <!-- 메인 컨텐츠 -->
 <style is:global>
-    svg.sr-only {
-        clip: auto !important;
-        clip-path: none !important;
-        overflow: visible !important;
-        width: 0 !important;
-        height: 0 !important;
-        margin: 0 !important;
-        pointer-events: none !important;
-    }
-
-    /* 전체 껍데기 */
+    /* 전체 껍데기 및 하단 여백 */
     .content-wrapper {
         position: relative;
         z-index: 10;
@@ -708,14 +678,11 @@ import GalleryItems from './GallaryItems.astro';
         min-height: 100vh;
         transition: background-color 0.8s var(--motion);
     }
-
-    /* 메인 컨텐츠 하단 여백 확보 및 리빌 푸터 경계선을 흐릿하게 만드는 하단 그라디언트 */
     .main-content {
         position: relative;
         width: 100%;
         padding-bottom: 12vh;
     }
-
     .content-wrapper::after {
         content: '';
         position: absolute;
@@ -733,7 +700,7 @@ import GalleryItems from './GallaryItems.astro';
         z-index: 11;
     }
 
-    /* 2개 배치 플렉스 구조 */
+    /* 갤러리 그리드 구조 */
     .grid-gallery {
         display: flex;
         flex-wrap: wrap;
@@ -741,266 +708,86 @@ import GalleryItems from './GallaryItems.astro';
         padding: var(--pad);
         width: 100%;
         box-sizing: border-box;
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
     }
-
-    /* 마이너스(-) 기호 깨짐 없이 gap을 제외한 2열(50%) 폭을 자동 확보 */
     .grid-gallery .grid-item {
         flex: 1 1 45%;
         min-width: 300px;
         width: 100%;
-        transition:
-            transform 0.5s cubic-bezier(0.25, 1, 0.5, 1),
-            opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-        opacity: 1;
-        transform: scale(1);
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
+        transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     }
-
     .grid-gallery .grid-item.is-vanishing {
         opacity: 0;
         transform: scale(0.95);
     }
-
     .grid-gallery .grid-item.is-hidden {
-        opacity: 0;
-        transform: scale(0.95);
-        pointer-events: none;
         display: none;
     }
 
-    /* 3:4 비율 고정 및 독립 GPU 레이어 격리 */
+    /* 이미지 박스 및 이미지 세팅 */
     .grid-gallery .image-box {
         position: relative;
         width: 100%;
         aspect-ratio: 3 / 4;
         overflow: hidden;
         background-color: rgba(128, 128, 128, 0.1);
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
-        contain: layout paint style;
-        isolation: isolate;
-    }
-
-    /* 꾹 누르기 및 드래그 완벽 방지 */
-    .grid-gallery .image-box,
-    .grid-gallery .image-box * {
         -webkit-touch-callout: none !important;
         -webkit-user-select: none !important;
         user-select: none !important;
         -webkit-user-drag: none !important;
     }
-
-    /* 사진 꽉 채우기 + GPU 가속 */
     .grid-gallery .image-box img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         display: block;
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
-        transition:
-            transform 0.6s var(--motion),
-            filter 0.6s var(--motion),
-            -webkit-filter 0.6s var(--motion);
+        transform: scale(1);
+        transition: transform 0.6s var(--motion); /* 스케일 애니메이션 속도 */
     }
 
-    .grid-gallery .image-box::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        z-index: 3;
-    }
-
-    /* 기본 상태에서 사진 위를 덮는 오버레이 막 (opacity: 1 -> 호버 시 0) */
-    .grid-gallery .image-box::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-color: rgba(0, 0, 0, 0.3);
-        opacity: 1;
-        transition: opacity 0.6s var(--motion);
-        will-change: opacity;
-        pointer-events: none;
-        z-index: 2;
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
-    }
-
-    /* 사파리 전용 블러 레이어는 기본 브라우저에서 숨김 */
-    .grid-gallery .safari-blur-layer {
-        display: none;
-    }
-
-    /* 캡션 기본 설정 */
-    .grid-gallery .item-caption {
-        width: 100%;
-        max-height: 0;
-        opacity: 0;
-        overflow: hidden;
-        font-family: 'Lilex', 'HakgyoansimBareondotumR', sans-serif;
-        font-size: 0.95rem;
-        line-height: var(--hd-line-height);
-        color: var(--hd-color);
-        transition:
-            max-height 0.4s var(--motion),
-            opacity 0.3s var(--motion),
-            padding 0.4s var(--motion);
-        padding: 0;
-    }
-
-    /* [1. 크롬/기본 브라우저] 기본 상태에서 backdrop-filter(#cross-blur)가 보이고(opacity: 1), 호버 시 사라짐(opacity: 0) */
-    @supports not (-webkit-hyphens: none) {
-        .grid-gallery .image-box::after {
-            backdrop-filter: url(#cross-blur);
-        }
-
-        @media (hover: hover) and (pointer: fine) {
-            .grid-gallery .grid-item:hover .image-box::after {
-                opacity: 0;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .grid-gallery .grid-item:active .image-box::after,
-            .grid-gallery .grid-item:focus-within .image-box::after,
-            .grid-gallery .grid-item.is-active .image-box::after {
-                opacity: 0;
-            }
-        }
-    }
-
-    /* [2. 사파리 전용] 기본 상태에서 #cross-blur-safari가 씌워져 있고, 호버/터치 시 선명해짐 */
-    @supports (-webkit-hyphens: none) {
-        .grid-gallery .safari-blur-layer {
-            display: block;
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-            pointer-events: none;
-            opacity: 1;
-            transition: opacity 0.6s var(--motion);
-            -webkit-transform: translate3d(0, 0, 0);
-            transform: translate3d(0, 0, 0);
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            will-change: opacity;
-        }
-
-        .grid-gallery .safari-blur-layer img {
-            width: 100% !important;
-            height: 100% !important;
-            max-width: none !important;
-            max-height: none !important;
-            object-fit: cover;
-            -webkit-filter: url('#cross-blur-safari');
-            filter: url('#cross-blur-safari');
-            -webkit-transform: translate3d(0, 0, 0);
-            transform: translate3d(0, 0, 0);
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-        }
-
-        /* 사파리 기본 상태: 호버 안 했을 때 #cross-blur-safari 필터 적용 */
-        .grid-gallery .image-box:not(:has(.safari-blur-layer)) img {
-            -webkit-filter: url('#cross-blur-safari');
-            filter: url('#cross-blur-safari');
-        }
-
-        /* PC 호버 (사파리): 호버 시 필터 해제되어 선명하게 표시 */
-        @media (hover: hover) and (pointer: fine) {
-            .grid-gallery .grid-item:hover .image-box::after,
-            .grid-gallery .grid-item:hover .safari-blur-layer {
-                opacity: 0;
-            }
-
-            .grid-gallery .grid-item:hover .image-box:not(:has(.safari-blur-layer)) img {
-                -webkit-filter: none;
-                filter: none;
-            }
-        }
-
-        /* 모바일 터치 (사파리): 터치 시 필터 해제되어 선명하게 표시 */
-        @media (max-width: 768px) {
-            .grid-gallery .grid-item:active .image-box::after,
-            .grid-gallery .grid-item:focus-within .image-box::after,
-            .grid-gallery .grid-item.is-active .image-box::after,
-            .grid-gallery .grid-item:active .safari-blur-layer,
-            .grid-gallery .grid-item:focus-within .safari-blur-layer,
-            .grid-gallery .grid-item.is-active .safari-blur-layer {
-                opacity: 0;
-            }
-
-            .grid-gallery .grid-item:active .image-box:not(:has(.safari-blur-layer)) img,
-            .grid-gallery .grid-item:focus-within .image-box:not(:has(.safari-blur-layer)) img,
-            .grid-gallery .grid-item.is-active .image-box:not(:has(.safari-blur-layer)) img {
-                -webkit-filter: none;
-                filter: none;
-            }
-        }
-    }
-</style>
-
-<!-- 캡션 및 호버 스타일 (자식 컴포넌트 적용을 위해 is:global 사용) -->
-<style is:global>
+    /* 캡션 기본 세팅 (평소엔 닫혀있음) */
     .grid-gallery .item-caption {
         width: 100%;
         max-height: 0;
         opacity: 0;
         overflow: hidden;
         box-sizing: border-box;
-        
         font-family: 'Lilex', 'HakgyoansimBareondotumR', sans-serif;
         font-size: 0.95rem;
         line-height: var(--hd-line-height);
-        color: var(--hd-color); 
-        
+        color: var(--hd-color);
         transition: max-height 0.4s var(--motion), opacity 0.3s var(--motion), padding 0.4s var(--motion);
         padding: 0;
     }
 
-    /* 🔥 1. PC 환경: 마우스 호버 시 작동 */
+    /* ----------------------------------------------------
+       인터랙션: 마우스 올릴 때(PC) / 꾹 누를 때(모바일)
+    ---------------------------------------------------- */
+
+    /* 1. PC에서 마우스 올렸을 때 */
     @media (hover: hover) and (pointer: fine) {
         .grid-gallery .grid-item:hover .image-box img {
-            filter: url(#cross-blur);
+            transform: scale(1.05); /* 1.05배 확대 */
         }
-
-        .grid-gallery .grid-item:hover .image-box::after {
-            opacity: 1;
-        }
-
         .grid-gallery .grid-item:hover .item-caption {
-            max-height: 80px; 
+            max-height: 80px;
             opacity: 1;
-            padding-top: calc(var(--pad) * 0.8); 
+            padding-top: calc(var(--pad) * 0.8);
         }
     }
 
-    /* 🔥 2. 모바일 환경: 터치(:active 또는 포커스)했을 때 작동 */
+    /* 2. 모바일에서 터치하거나 꾹 눌렀을 때 */
     @media (max-width: 768px) {
         .grid-gallery .grid-item:active .image-box img,
-        .grid-gallery .grid-item:focus-within .image-box img {
-            filter: url(#cross-blur);
+        .grid-gallery .grid-item:focus-within .image-box img,
+        .grid-gallery .grid-item.is-active .image-box img {
+            transform: scale(1.05); /* 1.05배 확대 */
         }
-
-        .grid-gallery .grid-item:active .image-box::after,
-        .grid-gallery .grid-item:focus-within .image-box::after {
-            opacity: 1;
-        }
-
         .grid-gallery .grid-item:active .item-caption,
-        .grid-gallery .grid-item:focus-within .item-caption {
-            max-height: 100px; 
+        .grid-gallery .grid-item:focus-within .item-caption,
+        .grid-gallery .grid-item.is-active .item-caption {
+            max-height: 100px;
             opacity: 1;
-            padding-top: calc(var(--pad) * 0.8); 
+            padding-top: calc(var(--pad) * 0.8);
         }
     }
 </style>
