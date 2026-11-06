@@ -5,6 +5,7 @@ import GalleryItems from './GallaryItems.astro';
 
 <DesignLayout title="IWOO">
 
+
 <div class="content-wrapper">
     <!-- 1. 독립된 헤더 영역 -->
     <header class="main-header">
@@ -317,6 +318,31 @@ import GalleryItems from './GallaryItems.astro';
         fill: var(--hd-color);
         transition: fill 0.8s cubic-bezier(0.25, 1, 0.5, 1);
     }
+</style>
+
+<!-- 로딩 -->
+<style>
+/* 로딩 화면 껍데기 */
+#global-loader {
+    position: fixed;
+    inset: 0;
+    background-color: var(--bg-color); /* 사이트 배경색과 맞춤 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.8s var(--motion), visibility 0.8s var(--motion);
+}
+
+/* 퍼센트 텍스트 스타일 */
+.loading-text {
+    font-family: 'Lilex', monospace;
+    font-size: 1.2rem;
+    color: var(--txt-color);
+    letter-spacing: 0.05em;
+}
 </style>
 
 <!-- 상단 영역 CSS (Header + Inline Contact Dropdown + Caption) -->
@@ -1623,3 +1649,4 @@ import GalleryItems from './GallaryItems.astro';
     document.addEventListener('astro:page-load', initAll);
     document.addEventListener('DOMContentLoaded', initAll);
 </script>
+
